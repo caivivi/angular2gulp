@@ -1,0 +1,21 @@
+{
+    "compilerOptions": {
+        "module": "amd",
+        "target": "es2017",
+        "noImplicitAny": false,
+        "sourceMap": false,
+        "experimentalDecorators": true,
+        "removeComments": true,
+        "lib": [
+            "dom",
+            "es2017"
+        ]
+    },
+    "include": [
+        "app/scripts/**/*"
+    ],
+    "exclude": [
+        "node_modules",
+        "app/scripts/lib/**/*"
+    ]
+}

@@ -1,0 +1,9 @@
+app/scripts/*/*.js.map
+app/scripts/*/*.js
+app/scripts/*.js.map
+app/scripts/*.js
+*.js
+*.js.map
+
+node_modules/
+.vscode/

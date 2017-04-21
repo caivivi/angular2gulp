@@ -1,0 +1,48 @@
+:root {
+  height: 100%;
+  --global-font-size: 13px;
+  --global-font-family: "monospace";
+  --global-color: #444;
+  --global-link-color: #666;
+}
+body {
+  margin: 0;
+  height: 100%;
+  overflow: auto;
+  display: grid;
+  grid-template-rows: 30px 1fr 30px;
+  font: var(--global-font-size) var(--global-font-family);
+}
+a {
+  color: var(--global-color);
+}
+a:link {
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+header,
+footer {
+  background: #ccc;
+  display: flex;
+  flex-direction: row;
+}
+header .menu,
+footer .menu {
+  flex: 1;
+  display: inline-block;
+  line-height: 22px;
+  padding: 3px 10px;
+  text-align: center;
+  border-right: solid 1px currentColor;
+}
+header .menu:last-of-type,
+footer .menu:last-of-type {
+  border-right: none;
+}
+content {
+  padding: 3px 10px;
+  border-top: solid 1px var(--global-color);
+  border-bottom: solid 1px var(--global-color);
+}
