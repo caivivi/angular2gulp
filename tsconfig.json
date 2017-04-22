@@ -15,7 +15,7 @@
         "app/scripts/**/*"
     ],
     "exclude": [
-        "node_modules",
+        "node_modules/**/*",
         "app/scripts/lib/**/*"
     ]
 }

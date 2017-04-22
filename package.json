@@ -5,8 +5,10 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "gulp startdevserver",
-    "compile": "gulp compile"
+    "start": "gulp startDevServer",
+    "compile": "gulp compile",
+    "clean": "gulp clean",
+    "build": "gulp build"
   },
   "keywords": [
     "angular"
@@ -14,11 +16,17 @@
   "author": "Chris Song",
   "license": "ISC",
   "devDependencies": {
+    "colors": "^1.1.2",
     "del": "^2.2.2",
     "gulp": "^3.9.1",
+    "gulp-debug": "^3.1.0",
+    "gulp-htmlmin": "^3.0.0",
+    "gulp-minify-css": "^1.2.4",
     "gulp-typescript": "^3.1.6",
+    "gulp-uglify": "^2.1.2",
     "gulp-watch": "^4.3.11",
     "gulp-webserver": "^0.9.1",
+    "node-inspector": "^1.1.0",
     "reflect-metadata": "^0.1.10",
     "typescript": "^2.2.2",
     "typings": "^2.1.1"
