@@ -1,8 +1,10 @@
 const gulp = require("gulp");
+const browserify = require("browserify");
 const WebServer = require("gulp-webserver");
 const gulpWatch = require("gulp-watch");
 //const Debug = require("gulp-debug");
 //const Uglify = require("gulp-uglify");
+//const plumber = require("gulp-plumber");
 const MinifyCSS = require("gulp-minify-css");
 const HtmlMin = require("gulp-htmlmin");
 const tsc = require("gulp-typescript");
@@ -23,7 +25,7 @@ gulp.task("clean", [], async () => {
     }
 });
 
-gulp.task("compile", async () => {
+gulp.task("compile", ["clean"], async () => {
     //typescript
     try {
         let tsProject = tsc.createProject("tsconfig.json");
@@ -34,13 +36,13 @@ gulp.task("compile", async () => {
             tsProject = tsc.createProject("tsconfig.json");
             stream.close();
             stream = watch();
-            console.log("Tsconfig change detected, corresponding scripts have been updated.".yellow);
+            console.log("Tsconfig change detected, corresponding scripts are being updated.".yellow);
         });
 
         function watch() {
             compile();
-            return gulpWatch(`${appScriptsFolder}**/*.ts`, (e) => {
-                console.log("Typescript file change detected:".yellow, e.history[0].gray);
+            return gulpWatch(`${appFolder}**/*.ts`, (e) => {
+                e.history.length && console.log("Typescript file change detected:".yellow, e.history[0].gray);
                 compile();
             });
         }
@@ -48,11 +50,11 @@ gulp.task("compile", async () => {
         function compile() {
             tsProject.src()
                 .pipe(tsProject())
-                .pipe(gulp.dest(destScriptsFolder));
+                .pipe(gulp.dest(destFolder));
         }
         
     } catch (ex) {
-        console.log("Typescript compile error:".red, ex.message, ex.stackTrace);
+        console.log("Typescript compilation error:".red, ex.message);
     }
 
     //css
@@ -62,7 +64,7 @@ gulp.task("compile", async () => {
         console.log("Style files are being watched for compilation and compression...".yellow);
         compile();
         gulpWatch(allCSS, (e) => {
-            console.log("Style file change detected:".yellow, e.history[0].gray);
+            !!e.history.length && console.log("Style file change detected:".yellow, e.history[0].gray);
             compile(e.history);
         });
 
@@ -82,7 +84,7 @@ gulp.task("compile", async () => {
         compile();
 
         gulpWatch(allHTML, (e) => {
-            console.log("HTML file change detected:".yellow, e.history[0].gray);
+            !!e.history.length && console.log("HTML file change detected:".yellow, e.history[0].gray);
             compile();
         });
 
@@ -105,3 +107,5 @@ gulp.task("startDevServer", ["compile"], async () => {
             open: true
         }));
 });
+
+gulp.task("default", ["startDevServer"]);

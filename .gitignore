@@ -5,3 +5,4 @@ app/scripts/*.js
 
 node_modules/
 .vscode/
+dist/
