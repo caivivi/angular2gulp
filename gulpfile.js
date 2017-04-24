@@ -28,14 +28,14 @@ const cleanCSSConfig = {};
 //tasks
 gulp.task("clean", [], async () => {
     try {
-        let deletionResult = await del(`${destFolder}**/*`);
+        let deletionResult = await del([`${destFolder}**/*`, `${appScriptLibFolder}**/*`]);
         console.log(deletionResult.length.toString().blue ,`file${deletionResult.length <= 1 ? " has" : "s have"} been deleted.`.green);
     } catch (ex) {
         console.error(`An error occurred while executing task ${this.name}:`.red, ex.message);
     }
 });
 
-gulp.task("lib", [], async () => {
+gulp.task("lib", ["clean"], async () => {
     //lib
     const requirejs = `${nodeFolder}require.js`, rxjs = `${nodeFolder}bundles/Rx.js`, zonejs = `${nodeFolder}zone.js/dist/zone.js`;
     const reflectMetadata = `${nodeFolder}reflect-metadata/Reflect.js`;
@@ -58,13 +58,15 @@ gulp.task("lib", [], async () => {
     if (appConfig.mergeAngular) {
         angularAppFolder = `${appScriptLibFolder}`;
         angularDestFolder = `${destScriptLibFolder}`;
-        angularStream.pipe(concat("angular.js"));
+        angularStream = angularStream.pipe(concat("angular.js"));
     }
 
     angularStream
         .pipe(uglify())
         .pipe(gulp.dest(angularAppFolder))
         .pipe(gulp.dest(angularDestFolder));
+
+    console.log(`Angular module compression complete with merging configured to ${appConfig.mergeAngular.toString().gray}.`.yellow);
 });
 
 gulp.task("compile", ["clean"], async () => {
