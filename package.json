@@ -8,7 +8,9 @@
     "start": "gulp startDevServer",
     "compile": "gulp compile",
     "clean": "gulp clean",
-    "build": "gulp build"
+    "build": "gulp build",
+    "typings": "typings",
+    "tsc": "tsc"
   },
   "keywords": [
     "angular"
@@ -21,6 +23,7 @@
     "del": "^2.2.2",
     "gulp": "^3.9.1",
     "gulp-clean-css": "^3.0.4",
+    "gulp-concat": "^2.6.1",
     "gulp-debug": "^3.1.0",
     "gulp-htmlmin": "^3.0.0",
     "gulp-plumber": "^1.1.0",
@@ -28,8 +31,6 @@
     "gulp-uglify": "^2.1.2",
     "gulp-watch": "^4.3.11",
     "gulp-webserver": "^0.9.1",
-    "node-inspector": "^1.1.0",
-    "reflect-metadata": "^0.1.10",
     "typescript": "^2.2.2",
     "typings": "^2.1.1"
   },
@@ -39,6 +40,8 @@
     "@angular/core": "^4.0.3",
     "@angular/platform-browser": "^4.0.3",
     "@angular/platform-browser-dynamic": "^4.0.3",
+    "reflect-metadata": "^0.1.10",
+    "requirejs": "^2.3.3",
     "rxjs": "^5.3.0",
     "zone.js": "^0.8.5"
   }

@@ -2,8 +2,9 @@ const gulp = require("gulp");
 const browserify = require("browserify");
 const WebServer = require("gulp-webserver");
 const gulpWatch = require("gulp-watch");
+const uglify = require("gulp-uglify");
+const concat = require("gulp-concat");
 //const Debug = require("gulp-debug");
-//const Uglify = require("gulp-uglify");
 //const plumber = require("gulp-plumber");
 const cleanCSS = require("gulp-clean-css");
 const HtmlMin = require("gulp-htmlmin");
@@ -13,9 +14,15 @@ const colors = require("colors");
 
 //folders
 const appFolder = "./app/", appScriptsFolder = `${appFolder}scripts/`, appStyleFolder = `${appFolder}styles/`;
+const appScriptLibFolder = `${appScriptsFolder}lib/`;
 const destFolder = "./dist/", destScriptsFolder = `${destFolder}scripts/`, destStyleFolder = `${destFolder}styles/`;
+const destScriptLibFolder = `${destScriptsFolder}lib/`;
+const nodeFolder = "./node_modules/";
 
 //configurations
+const appConfig = {
+    mergeAngular: true
+};
 const cleanCSSConfig = {};
 
 //tasks
@@ -26,6 +33,38 @@ gulp.task("clean", [], async () => {
     } catch (ex) {
         console.error(`An error occurred while executing task ${this.name}:`.red, ex.message);
     }
+});
+
+gulp.task("lib", [], async () => {
+    //lib
+    const requirejs = `${nodeFolder}require.js`, rxjs = `${nodeFolder}bundles/Rx.js`, zonejs = `${nodeFolder}zone.js/dist/zone.js`;
+    const reflectMetadata = `${nodeFolder}reflect-metadata/Reflect.js`;
+    gulp.src([requirejs, rxjs, zonejs])
+        .pipe(uglify())
+        .pipe(gulp.dest(destScriptLibFolder));
+
+    //angular
+    const angularFolder = `${nodeFolder}@angular/`;
+    const angularCore = `${angularFolder}/core/bundles/core.umd.js`;
+    const angularCommon = `${angularFolder}/common/bundles/common.umd.js`;
+    const angularCompiler = `${angularFolder}/compiler/bundles/compiler.umd.js`;
+    const angularPlatformBrowser = `${angularFolder}/platform-browser/bundles/platform-browser.umd.js`;
+    const angularPlatformBrowserDynamic = `${angularFolder}/platform-browser-dynamic/bundles/platform-browser-dynamic.umd.js`;
+    const angularBundle = [angularCore, angularCommon, angularCompiler, angularPlatformBrowser, angularPlatformBrowserDynamic];
+
+    let angularStream = gulp.src(appConfig.mergeAngular ? [rxjs, ...angularBundle] : angularBundle);
+    let angularAppFolder = `${appScriptLibFolder}@angular/`, angularDestFolder = `${destScriptLibFolder}@angular/`;
+
+    if (appConfig.mergeAngular) {
+        angularAppFolder = `${appScriptLibFolder}`;
+        angularDestFolder = `${destScriptLibFolder}`;
+        angularStream.pipe(concat("angular.js"));
+    }
+
+    angularStream
+        .pipe(uglify())
+        .pipe(gulp.dest(angularAppFolder))
+        .pipe(gulp.dest(angularDestFolder));
 });
 
 gulp.task("compile", ["clean"], async () => {
@@ -103,7 +142,7 @@ gulp.task("compile", ["clean"], async () => {
     }
 });
 
-gulp.task("startDevServer", ["compile"], async () => {
+gulp.task("startDevServer", ["compile", "lib"], async () => {
     gulp.src(destFolder)
         .pipe(WebServer({
             port: 3000,
