@@ -5,7 +5,7 @@ const gulpWatch = require("gulp-watch");
 //const Debug = require("gulp-debug");
 //const Uglify = require("gulp-uglify");
 //const plumber = require("gulp-plumber");
-const MinifyCSS = require("gulp-minify-css");
+const cleanCSS = require("gulp-clean-css");
 const HtmlMin = require("gulp-htmlmin");
 const tsc = require("gulp-typescript");
 const del = require("del");
@@ -14,6 +14,9 @@ const colors = require("colors");
 //folders
 const appFolder = "./app/", appScriptsFolder = `${appFolder}scripts/`, appStyleFolder = `${appFolder}styles/`;
 const destFolder = "./dist/", destScriptsFolder = `${destFolder}scripts/`, destStyleFolder = `${destFolder}styles/`;
+
+//configurations
+const cleanCSSConfig = {};
 
 //tasks
 gulp.task("clean", [], async () => {
@@ -70,11 +73,13 @@ gulp.task("compile", ["clean"], async () => {
 
         function compile(files) {
             gulp.src(!!files ? files : allCSS)
-                .pipe(MinifyCSS())
+                .pipe(cleanCSS(cleanCSSConfig, (detail) => {
+                    console.log(`Style file [${detail.name}] has been compressed from ${detail.stats.originalSize} to ${detail.stats.minifiedSize}.`.yellow);
+                }))
                 .pipe(gulp.dest(destStyleFolder));
         }
     } catch (ex) {
-        console.error("Error occurred while compiling css".red, ex.message);
+        console.error("Error occurred while compiling css:".red, ex.message);
     }
 
     //html
@@ -94,7 +99,7 @@ gulp.task("compile", ["clean"], async () => {
                 .pipe(gulp.dest(destFolder));
         }
     } catch (ex) {
-        console.error("Error occurred while transferring static files: ".red, ex.message.red);
+        console.error("Error occurred while transferring static files:".red, ex.message.red);
     }
 });
 
