@@ -17,11 +17,12 @@ const appFolder = "./app/", appScriptsFolder = `${appFolder}scripts/`, appStyleF
 const appScriptLibFolder = `${appScriptsFolder}lib/`;
 const destFolder = "./dist/", destScriptsFolder = `${destFolder}scripts/`, destStyleFolder = `${destFolder}styles/`;
 const destScriptLibFolder = `${destScriptsFolder}lib/`;
-const nodeFolder = "./node_modules/";
+const nodeFolder = "./node_modules/", angularFolder = `${nodeFolder}@angular/`;
 
 //configurations
 const appConfig = {
-    mergeAngular: true
+    mergeAngular: true,
+    angularAnimation: true
 };
 const cleanCSSConfig = {};
 
@@ -37,22 +38,29 @@ gulp.task("clean", [], async () => {
 
 gulp.task("lib", ["clean"], async () => {
     //lib
-    const requirejs = `${nodeFolder}require.js`, rxjs = `${nodeFolder}bundles/Rx.js`, zonejs = `${nodeFolder}zone.js/dist/zone.js`;
+    const requirejs = `${nodeFolder}requirejs/require.js`, rxjs = `${nodeFolder}rxjs/bundles/Rx.js`, zonejs = `${nodeFolder}zone.js/dist/zone.js`;
     const reflectMetadata = `${nodeFolder}reflect-metadata/Reflect.js`;
-    gulp.src([requirejs, rxjs, zonejs])
+    gulp.src([requirejs])
         .pipe(uglify())
         .pipe(gulp.dest(destScriptLibFolder));
 
     //angular
-    const angularFolder = `${nodeFolder}@angular/`;
     const angularCore = `${angularFolder}/core/bundles/core.umd.js`;
     const angularCommon = `${angularFolder}/common/bundles/common.umd.js`;
     const angularCompiler = `${angularFolder}/compiler/bundles/compiler.umd.js`;
     const angularPlatformBrowser = `${angularFolder}/platform-browser/bundles/platform-browser.umd.js`;
     const angularPlatformBrowserDynamic = `${angularFolder}/platform-browser-dynamic/bundles/platform-browser-dynamic.umd.js`;
-    const angularBundle = [angularCore, angularCommon, angularCompiler, angularPlatformBrowser, angularPlatformBrowserDynamic];
+    //angularanimation
+    const angularAnimation = `${angularFolder}/animations/bundles/animations.umd.js`;
+    const angularAnimationBrowser = `${angularFolder}/animations/bundles/animations-browser.umd.js`;
+    const angularPlatformBrowserAnimation = `${angularFolder}/platform-browser/bundles/platform-browser-animations.umd.js`;
+    //bundle
+    let angularBundle = [reflectMetadata, angularCore, angularCommon, angularCompiler, angularPlatformBrowser, angularPlatformBrowserDynamic];
+    let angularAnimationBundle = [angularAnimation, angularAnimationBrowser, angularPlatformBrowserAnimation];
 
-    let angularStream = gulp.src(appConfig.mergeAngular ? [rxjs, ...angularBundle] : angularBundle);
+    angularBundle = appConfig.angularAnimation ? [...angularBundle, ...angularAnimationBundle] : angularBundle;
+
+    let angularStream = gulp.src(appConfig.mergeAngular ? [rxjs, zonejs, ...angularBundle] : angularBundle);
     let angularAppFolder = `${appScriptLibFolder}@angular/`, angularDestFolder = `${destScriptLibFolder}@angular/`;
 
     if (appConfig.mergeAngular) {
@@ -69,7 +77,7 @@ gulp.task("lib", ["clean"], async () => {
     console.log(`Angular module compression complete with merging configured to ${appConfig.mergeAngular.toString().gray}.`.yellow);
 });
 
-gulp.task("compile", ["clean"], async () => {
+gulp.task("compile", ["lib"], async () => {
     //typescript
     try {
         let tsProject = tsc.createProject("tsconfig.json");
@@ -144,7 +152,7 @@ gulp.task("compile", ["clean"], async () => {
     }
 });
 
-gulp.task("startDevServer", ["compile", "lib"], async () => {
+gulp.task("startDevServer", [], async () => {
     gulp.src(destFolder)
         .pipe(WebServer({
             port: 3000,
