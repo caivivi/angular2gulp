@@ -20,7 +20,7 @@ declare const ng: {
 const jsFolder = "scripts/", libFolder = `${jsFolder}lib/`;
 requirejs.config({
     baseUrl: "/",
-    waitSeconds: 1,
+    waitSeconds: 2,
     paths: {
         "lodash": `${libFolder}lodash`,
         "zone": `${libFolder}zone`,

@@ -30,9 +30,9 @@ const cleanCSSConfig = {};
 gulp.task("clean", [], async () => {
     try {
         let deletionResult = await del([`${destFolder}**/*`, `${appScriptLibFolder}**/*`]);
-        console.log(deletionResult.length.toString().blue ,`file${deletionResult.length <= 1 ? " has" : "s have"} been deleted.`.green);
+        logMsg(deletionResult.length.toString().blue ,`file${deletionResult.length <= 1 ? " has" : "s have"} been deleted.`);
     } catch (ex) {
-        console.error(`An error occurred while executing task ${this.name}:`.red, ex.message);
+        logErr(`An error occurred while executing task ${this.name}:`, ex);
     }
 });
 
@@ -74,7 +74,7 @@ gulp.task("lib", ["clean"], async () => {
         .pipe(gulp.dest(angularAppFolder))
         .pipe(gulp.dest(angularDestFolder));
 
-    console.log(`Angular module compression complete with merging configured to ${appConfig.mergeAngular.toString().gray}.`.yellow);
+    logMsg(`Angular module compression complete with merging configured to ${appConfig.mergeAngular.toString().gray}.`);
 });
 
 gulp.task("compile", ["lib"], async () => {
@@ -82,19 +82,19 @@ gulp.task("compile", ["lib"], async () => {
     try {
         let tsProject = tsc.createProject("tsconfig.json");
         let stream = watch();
-        console.log("Typescript files are being watched for compilation and compression...".yellow);
+        logMsg("Typescript files are being watched for compilation and compression...");
 
         gulpWatch("tsconfig.json", (e) => {
             tsProject = tsc.createProject("tsconfig.json");
             stream.close();
             stream = watch();
-            console.log("Tsconfig change detected, corresponding scripts are being updated.".yellow);
+            logMsg("Tsconfig change detected, corresponding scripts are being updated.");
         });
 
         function watch() {
             compile();
             return gulpWatch(`${appFolder}**/*.ts`, (e) => {
-                e.history.length && console.log("Typescript file change detected:".yellow, e.history[0].gray);
+                e.history.length && logMsg("Typescript file change detected:", e.history[0].gray);
                 compile();
             });
         }
@@ -106,39 +106,39 @@ gulp.task("compile", ["lib"], async () => {
         }
         
     } catch (ex) {
-        console.log("Typescript compilation error:".red, ex.message);
+        logErr("Typescript compilation error:", ex);
     }
 
     //css
     try {
         const allCSS = `${appStyleFolder}**/*.css`;
 
-        console.log("Style files are being watched for compilation and compression...".yellow);
+        logMsg("Style files are being watched for compilation and compression...");
         compile();
         gulpWatch(allCSS, (e) => {
-            !!e.history.length && console.log("Style file change detected:".yellow, e.history[0].gray);
+            !!e.history.length && logMsg("Style file change detected:", e.history[0].gray);
             compile(e.history);
         });
 
         function compile(files) {
             gulp.src(!!files ? files : allCSS)
                 .pipe(cleanCSS(cleanCSSConfig, (detail) => {
-                    console.log(`Style file [${detail.name}] has been compressed from ${detail.stats.originalSize} to ${detail.stats.minifiedSize}.`.yellow);
+                    logMsg(`Style file [${detail.name}] has been compressed from ${detail.stats.originalSize} to ${detail.stats.minifiedSize}.`);
                 }))
                 .pipe(gulp.dest(destStyleFolder));
         }
     } catch (ex) {
-        console.error("Error occurred while compiling css:".red, ex.message);
+        logErr("Error occurred while compiling css:", ex);
     }
 
     //html
     try {
         const allHTML = [`${appFolder}**/*.html`];
-        console.log("HTML files are being watched for compilation and compression...".yellow);
+        logMsg("HTML files are being watched for compilation and compression...");
         compile();
 
         gulpWatch(allHTML, (e) => {
-            !!e.history.length && console.log("HTML file change detected:".yellow, e.history[0].gray);
+            !!e.history.length && logMsg("HTML file change detected:", e.history[0].gray);
             compile();
         });
 
@@ -148,7 +148,7 @@ gulp.task("compile", ["lib"], async () => {
                 .pipe(gulp.dest(destFolder));
         }
     } catch (ex) {
-        console.error("Error occurred while transferring static files:".red, ex.message.red);
+        logErr("Error occurred while transferring static files:", ex);
     }
 });
 
@@ -162,4 +162,18 @@ gulp.task("startDevServer", [], async () => {
         }));
 });
 
-gulp.task("default", ["startDevServer"]);
+gulp.task("default", ["compile", "startDevServer"]);
+
+function logMsg(...msg) {
+    let date = new Date();
+    date = `${padZero(date.getHours())}:${padZero(date.getMinutes())}:${padZero(date.getSeconds())}`;
+    console.log(`[${date.gray}]`.white + "[App]".green, ...msg);
+}
+
+function padZero(val) {
+    return val < 10 ? "0" + val : val;
+}
+
+function logErr(msg, ex) {
+    console.log(msg.red, ex.message);
+}
