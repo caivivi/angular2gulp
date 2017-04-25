@@ -13,6 +13,8 @@ declare const ng: {
     };
     platformBrowserDynamic: any;
     router: any;
+    http: any;
+    forms: any;
 };
 
 /**
@@ -25,7 +27,6 @@ requirejs.config({
     paths: {
         "lodash": `${libFolder}lodash`,
         "zone": `${libFolder}zone`,
-        "Rx": `${libFolder}Rx`,
         "corejs": `${libFolder}shim`,
         "angular": `${libFolder}angular`
     }
@@ -35,25 +36,27 @@ requirejs.config({
  * Dummy Modules
  */
 //rxjs
-define("rxjs/Observable", ["Rx"], () => Rx);
-define("rxjs/observable/merge", ["Rx"], () => Rx.Observable);
-define("rxjs/operator/share", ["Rx"], () => Rx.Observable.prototype);
-define("rxjs/Subject", ["Rx"], () => Rx);
-define("rxjs/BehaviorSubject", ["Rx"], () => Rx);
-define("rxjs/observable/from", ["Rx"], () => Rx.Observable);
-define("rxjs/observable/of", ["Rx"], () => Rx.Observable);
-define("rxjs/operator/concatMap", ["Rx"], () => Rx.Observable.prototype);
-define("rxjs/operator/every", ["Rx"], () => Rx.Observable.prototype);
-define("rxjs/operator/first", ["Rx"], () => Rx.Observable.prototype);
-define("rxjs/operator/map", ["Rx"], () => Rx.Observable.prototype);
-define("rxjs/operator/mergeMap", ["Rx"], () => Rx.Observable.prototype);
-define("rxjs/operator/reduce", ["Rx"], () => Rx.Observable.prototype);
-define("rxjs/operator/catch", ["Rx"], () => Rx.Observable.prototype);
-define("rxjs/operator/concatAll", ["Rx"], () => Rx.Observable.prototype);
-define("rxjs/util/EmptyError", ["Rx"], () => Rx);
-define("rxjs/observable/fromPromise", ["Rx"], () => Rx.Observable);
-define("rxjs/operator/last", ["Rx"], () => Rx.Observable.prototype);
-define("rxjs/operator/mergeAll", ["Rx"], () => Rx.Observable.prototype);
+define("rxjs/Observable", ["angular"], () => Rx);
+define("rxjs/observable/merge", ["angular"], () => Rx.Observable);
+define("rxjs/operator/share", ["angular"], () => Rx.Observable.prototype);
+define("rxjs/Subject", ["angular"], () => Rx);
+define("rxjs/BehaviorSubject", ["angular"], () => Rx);
+define("rxjs/observable/from", ["angular"], () => Rx.Observable);
+define("rxjs/observable/of", ["angular"], () => Rx.Observable);
+define("rxjs/operator/concatMap", ["angular"], () => Rx.Observable.prototype);
+define("rxjs/operator/every", ["angular"], () => Rx.Observable.prototype);
+define("rxjs/operator/first", ["angular"], () => Rx.Observable.prototype);
+define("rxjs/operator/map", ["angular"], () => Rx.Observable.prototype);
+define("rxjs/operator/mergeMap", ["angular"], () => Rx.Observable.prototype);
+define("rxjs/operator/reduce", ["angular"], () => Rx.Observable.prototype);
+define("rxjs/operator/catch", ["angular"], () => Rx.Observable.prototype);
+define("rxjs/operator/concatAll", ["angular"], () => Rx.Observable.prototype);
+define("rxjs/util/EmptyError", ["angular"], () => Rx);
+define("rxjs/observable/fromPromise", ["angular"], () => Rx.Observable);
+define("rxjs/operator/last", ["angular"], () => Rx.Observable.prototype);
+define("rxjs/operator/mergeAll", ["angular"], () => Rx.Observable.prototype);
+define("rxjs/observable/forkJoin", ["angular"], () => Rx.Observable);
+define("rxjs/operator/filter", ["angular"], () => Rx.Observable.prototype);
 //angular
 define("@angular/core", ["angular"], () => ng.core);
 define("@angular/common", ["@angular/core"], () => ng.common);
@@ -63,6 +66,8 @@ define("@angular/platform-browser-dynamic", ["@angular/compiler", "@angular/core
 define("@angular/router", ["@angular/common", "@angular/core", "rxjs/BehaviorSubject", "rxjs/Subject", "rxjs/observable/from", "rxjs/observable/of", "rxjs/operator/concatMap",
     "rxjs/operator/every", "rxjs/operator/first", "rxjs/operator/map", "rxjs/operator/mergeMap", "rxjs/operator/reduce", "rxjs/Observable", "rxjs/operator/catch", "rxjs/operator/concatAll",
     "rxjs/util/EmptyError", "rxjs/observable/fromPromise", "rxjs/operator/last", "rxjs/operator/mergeAll", "@angular/platform-browser", "rxjs/operator/filter"], () => ng.router);
+define("@angular/http", ["@angular/core", "rxjs/Observable", "@angular/platform-browser"], () => ng.http);
+define("@angular/forms", ["@angular/core", "rxjs/observable/forkJoin", "rxjs/observable/fromPromise", "rxjs/operator/map", "@angular/platform-browser"], () => ng.forms);
 //angular animation
 define("@angular/animations", [], () => ng.animations);
 define("@angular/animations/browser", ["@angular/animations"], () => ng.animations.browser);
@@ -73,5 +78,5 @@ define("@angular/platform-browser-animations", ["@angular/core", "@angular/platf
  */
 define.amd = false;
 requirejs(["@angular/platform-browser-dynamic", "modules/app/app.module"], ({ platformBrowserDynamic }, { AppModule }) => {
-    platformBrowserDynamic().bootstrapModule(AppModule).catch((err) => console.error("Angular bootstraping error:", err));
+    platformBrowserDynamic().bootstrapModule(AppModule).catch((err) => console.error("Angular bootstrap failed:", err));
 });
