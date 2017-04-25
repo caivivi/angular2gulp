@@ -50,12 +50,13 @@ gulp.task("lib", ["clean"], async () => {
     const angularCompiler = `${angularFolder}/compiler/bundles/compiler.umd.js`;
     const angularPlatformBrowser = `${angularFolder}/platform-browser/bundles/platform-browser.umd.js`;
     const angularPlatformBrowserDynamic = `${angularFolder}/platform-browser-dynamic/bundles/platform-browser-dynamic.umd.js`;
+    const angularRouter = `${angularFolder}/router/bundles/router.umd.js`;
     //angularanimation
     const angularAnimation = `${angularFolder}/animations/bundles/animations.umd.js`;
     const angularAnimationBrowser = `${angularFolder}/animations/bundles/animations-browser.umd.js`;
     const angularPlatformBrowserAnimation = `${angularFolder}/platform-browser/bundles/platform-browser-animations.umd.js`;
     //bundle
-    let angularBundle = [reflectMetadata, angularCore, angularCommon, angularCompiler, angularPlatformBrowser, angularPlatformBrowserDynamic];
+    let angularBundle = [reflectMetadata, angularCore, angularCommon, angularCompiler, angularPlatformBrowser, angularPlatformBrowserDynamic, angularRouter];
     let angularAnimationBundle = [angularAnimation, angularAnimationBrowser, angularPlatformBrowserAnimation];
 
     angularBundle = appConfig.angularAnimation ? [...angularBundle, ...angularAnimationBundle] : angularBundle;
