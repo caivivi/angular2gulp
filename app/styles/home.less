@@ -5,6 +5,8 @@
     --global-font-family: monospace;
     --global-color: #444;
     --global-link-color: #777;
+    --hover-color: #ccc;
+    --transition-duration: .2s;
 }
 
 body {
@@ -38,9 +40,22 @@ header, footer {
         font-weight: bold;
         display: inline-block;
         line-height: 22px;
+        text-decoration: none;
         padding: 3px 10px;
         text-align: center;
         border-right: solid 1px currentColor;
+        transition: background var(--transition-duration) ease-out;
+
+        &:hover {
+            background: var(--global-color);
+            color: var(--hover-color);
+            will-change: padding-top, padding-bottom;
+        }
+
+        &:active {
+            padding-top: 4px;
+            padding-bottom: 2px;
+        }
 
         &:last-of-type {
             border-right: none;

@@ -4,6 +4,8 @@
   --global-font-family: monospace;
   --global-color: #444;
   --global-link-color: #777;
+  --hover-color: #ccc;
+  --transition-duration: .2s;
 }
 body {
   margin: 0;
@@ -34,9 +36,22 @@ footer .menu {
   font-weight: bold;
   display: inline-block;
   line-height: 22px;
+  text-decoration: none;
   padding: 3px 10px;
   text-align: center;
   border-right: solid 1px currentColor;
+  transition: background var(--transition-duration) ease-out;
+}
+header .menu:hover,
+footer .menu:hover {
+  background: var(--global-color);
+  color: var(--hover-color);
+  will-change: padding-top, padding-bottom;
+}
+header .menu:active,
+footer .menu:active {
+  padding-top: 4px;
+  padding-bottom: 2px;
 }
 header .menu:last-of-type,
 footer .menu:last-of-type {
