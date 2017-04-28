@@ -31,14 +31,15 @@ const appConfig = {
         includeExtraModules: false,
         useES5: false,
         useUMD: true
-    }
+    },
+    forceDelete: true
 };
 const cleanCSSConfig = {};
 
 //tasks
 gulp.task("clean", [], async () => {
     try {
-        let deletionResult = await del([`${destFolder}**/*`, `${appScriptLibFolder}**/*`]);
+        let deletionResult = await del([`${destFolder}**/*`, `${appScriptLibFolder}**/*`], { force: appConfig.forceDelete });
         logMsg(deletionResult.length.toString().blue, `file${deletionResult.length <= 1 ? " has" : "s have"} been deleted.`);
     } catch (ex) {
         logErr(`An error occurred while executing task ${this.name}:`, ex);
@@ -214,7 +215,7 @@ gulp.task("compileumd", ["clean"], async () => {
         const angularAnimationBrowser = `${angularFolder}animations/bundles/animations-browser.umd.js`;
         const angularPlatformBrowserAnimation = `${angularFolder}platform-browser/bundles/platform-browser-animations.umd.js`;
         //bundle
-        let angularBundle = [`${destScriptLibFolder}${output}`, zonejs, reflectMetadata, angularCore, angularCommon, angularCompiler, angularPlatformBrowser, angularPlatformBrowserDynamic, angularRouter];
+        let angularBundle = [zonejs, reflectMetadata, `${destScriptLibFolder}${output}`, angularCore, angularCommon, angularCompiler, angularPlatformBrowser, angularPlatformBrowserDynamic, angularRouter];
         let angularExtraBundle = [angularHttp, angularForms];
         let angularAnimationBundle = [angularAnimation, angularAnimationBrowser, angularPlatformBrowserAnimation];
 
@@ -246,21 +247,20 @@ gulp.task("compileumd", ["clean"], async () => {
             logMsg("Compressing angular bundle...");
 
             angularStream
-                //.pipe(uglify())
+                .pipe(uglify())
                 .pipe(gulp.dest(angularDestFolder))
                 .on("finish", () => {
-                    logMsg(`Angular compression complete.`);
+                    logMsg(`Angular bundle compression complete.`);
                     resolve();
                 })
                 .on("error", () => {
-                    logErr("Error occurred while compressing angular.");
+                    logErr("Error occurred while compressing angular bundle.");
                     reject();
                 });
         });
 
         logMsg("Deleting temporary files...");
-        await del([dummyOutput]);
-        console.log("hahaha");
+        await del([dummyOutput], { force: appConfig.forceDelete });
     } catch (ex) {
         logErr("Error occurred while building angular bundle:", ex);
     }

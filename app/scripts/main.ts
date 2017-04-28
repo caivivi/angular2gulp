@@ -3,9 +3,6 @@
 /// <reference path="../../node_modules/reflect-metadata/reflect-metadata.d.ts" />
 /// <reference path="../../node_modules/zone.js/dist/zone.js.d.ts" />
 
-/**
- * Configurations
- */
 const jsFolder = "scripts/", libFolder = `${jsFolder}lib/`;
 requirejs.config({
     baseUrl: "/",
@@ -17,9 +14,6 @@ requirejs.config({
     }
 });
 
-/**
- * Main Entry
- */
 requirejs(["@angular/platform-browser-dynamic", "modules/app/app.module"], ({ platformBrowserDynamic }, { AppModule }) => {
-    platformBrowserDynamic().bootstrapModule(AppModule).catch((err) => console.error(err));
-});
+    platformBrowserDynamic().bootstrapModule(AppModule).catch((err) => console.error(`Application bootstraping error:`, err));
+}); 

@@ -23,29 +23,29 @@ declare const ng: {
  * Dummy Modules
  */
 //rxjs
-define("rxjs/Observable", ["bundle"], () => Rx);
-define("rxjs/observable/merge", ["bundle"], () => Rx.Observable);
-define("rxjs/operator/share", ["bundle"], () => Rx.Observable.prototype);
-define("rxjs/Subject", ["bundle"], () => Rx);
-define("rxjs/BehaviorSubject", ["bundle"], () => Rx);
-define("rxjs/observable/from", ["bundle"], () => Rx.Observable);
-define("rxjs/observable/of", ["bundle"], () => Rx.Observable);
-define("rxjs/operator/concatMap", ["bundle"], () => Rx.Observable.prototype);
-define("rxjs/operator/every", ["bundle"], () => Rx.Observable.prototype);
-define("rxjs/operator/first", ["bundle"], () => Rx.Observable.prototype);
-define("rxjs/operator/map", ["bundle"], () => Rx.Observable.prototype);
-define("rxjs/operator/mergeMap", ["bundle"], () => Rx.Observable.prototype);
-define("rxjs/operator/reduce", ["bundle"], () => Rx.Observable.prototype);
-define("rxjs/operator/catch", ["bundle"], () => Rx.Observable.prototype);
-define("rxjs/operator/concatAll", ["bundle"], () => Rx.Observable.prototype);
-define("rxjs/util/EmptyError", ["bundle"], () => Rx);
-define("rxjs/observable/fromPromise", ["bundle"], () => Rx.Observable);
-define("rxjs/operator/last", ["bundle"], () => Rx.Observable.prototype);
-define("rxjs/operator/mergeAll", ["bundle"], () => Rx.Observable.prototype);
-define("rxjs/observable/forkJoin", ["bundle"], () => Rx.Observable);
-define("rxjs/operator/filter", ["bundle"], () => Rx.Observable.prototype);
+define("rxjs/Observable", [], () => Rx);
+define("rxjs/observable/merge", [], () => Rx.Observable);
+define("rxjs/operator/share", [], () => Rx.Observable.prototype);
+define("rxjs/Subject", [], () => Rx);
+define("rxjs/BehaviorSubject", [], () => Rx);
+define("rxjs/observable/from", [], () => Rx.Observable);
+define("rxjs/observable/of", [], () => Rx.Observable);
+define("rxjs/operator/concatMap", [], () => Rx.Observable.prototype);
+define("rxjs/operator/every", [], () => Rx.Observable.prototype);
+define("rxjs/operator/first", [], () => Rx.Observable.prototype);
+define("rxjs/operator/map", [], () => Rx.Observable.prototype);
+define("rxjs/operator/mergeMap", [], () => Rx.Observable.prototype);
+define("rxjs/operator/reduce", [], () => Rx.Observable.prototype);
+define("rxjs/operator/catch", [], () => Rx.Observable.prototype);
+define("rxjs/operator/concatAll", [], () => Rx.Observable.prototype);
+define("rxjs/util/EmptyError", [], () => Rx);
+define("rxjs/observable/fromPromise", [], () => Rx.Observable);
+define("rxjs/operator/last", [], () => Rx.Observable.prototype);
+define("rxjs/operator/mergeAll", [], () => Rx.Observable.prototype);
+define("rxjs/observable/forkJoin", [], () => Rx.Observable);
+define("rxjs/operator/filter", [], () => Rx.Observable.prototype);
 //angular
-define("@angular/core", ["bundle"], () => ng.core);
+define("@angular/core", [], () => ng.core);
 define("@angular/common", ["@angular/core"], () => ng.common);
 define("@angular/compiler", ["@angular/core"], () => ng.compiler);
 define("@angular/platform-browser", ["@angular/common", "@angular/core"], () => ng.platformBrowser);
