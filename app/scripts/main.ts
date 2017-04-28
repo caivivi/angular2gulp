@@ -1,7 +1,4 @@
 /// <reference path="../../node_modules/@types/requirejs/index.d.ts" />
-/// <reference path="../../node_modules/@types/rx/index.d.ts" />
-/// <reference path="../../node_modules/reflect-metadata/reflect-metadata.d.ts" />
-/// <reference path="../../node_modules/zone.js/dist/zone.js.d.ts" />
 
 const jsFolder = "scripts/", libFolder = `${jsFolder}lib/`;
 requirejs.config({
