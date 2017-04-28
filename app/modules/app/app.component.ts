@@ -2,7 +2,8 @@ import { Component } from "@angular/core";
 
 @Component({
     selector: "hello-world",
-    templateUrl: "modules/app/app.component.html"
+    templateUrl: "modules/app/app.component.html",
+    
 })
  /**
  * AppComponent

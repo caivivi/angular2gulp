@@ -21,9 +21,9 @@ const destFolder = "./dist/", destScriptsFolder = `${destFolder}scripts/`, destS
 const destScriptLibFolder = `${destScriptsFolder}lib/`;
 const nodeFolder = "./node_modules/", angularFolder = `${nodeFolder}@angular/`, RxFolder = `${nodeFolder}rxjs/src/`, rxDestFolder = `${destScriptLibFolder}rxjs/`;
 let angularAppFolder = `${appScriptLibFolder}@angular/`, angularDestFolder = `${destScriptLibFolder}@angular/`;
-const requirejs = `${nodeFolder}requirejs/require.js`, output = "bundle.js";;
+const requirejs = `${nodeFolder}requirejs/require.js`, output = "bundle.js";
 
-//configurations
+// configurations
 const appConfig = {
     angular: {
         mergeAngular: true,
@@ -314,7 +314,7 @@ gulp.task("watch", ["build"], async () => {
         function compile(files) {
             gulp.src(!!files ? files : allCSS)
                 .pipe(cleanCSS(cleanCSSConfig, (detail) => {
-                    logMsg(`Style file [${detail.name}] has been compressed from ${detail.stats.originalSize.toString().gray} to ${detail.stats.minifiedSize.toString().gray}.`);
+                    //logMsg(`Style file [${detail.name}] has been compressed from ${detail.stats.originalSize.toString().gray} to ${detail.stats.minifiedSize.toString().gray}.`);
                 }))
                 .pipe(gulp.dest(destStyleFolder));
         }

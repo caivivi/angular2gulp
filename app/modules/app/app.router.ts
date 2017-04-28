@@ -7,8 +7,8 @@ export const rootRouterCocnfig: Routes = [
         redirectTo: "list",
         pathMatch: 'full'
     },
-    // {
-    //     path: "list",
-    //     component: ListComponent
-    // }
+    {
+        path: "list",
+        component: ListComponent
+    }
 ];
