@@ -6,12 +6,13 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "gulp startDevServer",
-    "compile": "gulp compile",
+    "watch": "gulp watch",
     "clean": "gulp clean",
     "build": "gulp build",
     "typings": "typings",
     "tsc": "tsc",
-    "gulp": "gulp"
+    "gulp": "gulp",
+    "browserify": "browserify"
   },
   "keywords": [
     "angular"
@@ -30,11 +31,13 @@
     "gulp-debug": "^3.1.0",
     "gulp-htmlmin": "^3.0.0",
     "gulp-plumber": "^1.1.0",
+    "gulp-rename": "^1.2.2",
     "gulp-typescript": "^3.1.6",
     "gulp-uglify": "^2.1.2",
     "gulp-watch": "^4.3.11",
     "gulp-webserver": "^0.9.1",
-    "typescript": "^2.2.2"
+    "typescript": "^2.2.2",
+    "vinyl-source-stream": "^1.1.0"
   },
   "dependencies": {
     "@angular/animations": "^4.0.3",

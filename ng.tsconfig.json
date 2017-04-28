@@ -1,0 +1,21 @@
+{
+    "compilerOptions": {
+        "module": "amd",
+        "target": "es5",
+        "noImplicitAny": false,
+        "allowJs": true,
+        "sourceMap": false,
+        "lib": [
+            "es2017",
+            "dom"
+        ],
+        "removeComments": true,
+        "moduleResolution": "classic"
+    },
+    "include": [
+        "dist/scripts/lib/"
+    ],
+    "exclude": [
+        
+    ]
+}
