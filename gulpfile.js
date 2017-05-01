@@ -28,18 +28,18 @@ const appConfig = {
     angular: {
         mergeAngular: true,
         includeAnimation: false,
-        includeExtraModules: false,
+        includeExtraModules: true,
         useES5: false,
         useUMD: true
-    },
-    forceDelete: true
+    }
 };
 const cleanCSSConfig = {};
+const delOptions = { force: true };
 
 //tasks
 gulp.task("clean", [], async () => {
     try {
-        let deletionResult = await del([`${destFolder}**/*`, `${appScriptLibFolder}**/*`], { force: appConfig.forceDelete });
+        let deletionResult = await del([`${destFolder}**/*`, `${appScriptLibFolder}**/*`], delOptions);
         logMsg(deletionResult.length.toString().blue, `file${deletionResult.length <= 1 ? " has" : "s have"} been deleted.`);
     } catch (ex) {
         logErr(`An error occurred while executing task ${this.name}:`, ex);
@@ -107,7 +107,7 @@ gulp.task("compile", ["clean"], async () => {
 
         /* Rxjs */
         let rxPro = new Promise((resolve, reject) => {
-            gulp.src(`${RxFolder}**/*`)
+            gulp.src([`${RxFolder}**/*`, `!${RxFolder}Rx.global.js`])
                 .pipe(gulp.dest(rxDestFolder))
                 .on("finish", () => {
                     logMsg("Rxjs source module files have been copied to dist folder.");
@@ -156,7 +156,7 @@ gulp.task("compile", ["clean"], async () => {
             });
 
             logMsg("Deleting temporary folders...");
-            let deletionResult = await del([`${destScriptLibFolder}/@angular/**`, `${destScriptLibFolder}/rxjs/**`], { force: true });
+            let deletionResult = await del([`${destScriptLibFolder}/@angular/**`, `${destScriptLibFolder}/rxjs/**`], delOptions);
         }
     } catch (ex) {
         logErr("Error occurred while copying angular source module", ex);
@@ -260,7 +260,7 @@ gulp.task("compileumd", ["clean"], async () => {
         });
 
         logMsg("Deleting temporary files...");
-        await del([dummyOutput], { force: appConfig.forceDelete });
+        await del([dummyOutput], delOptions);
     } catch (ex) {
         logErr("Error occurred while building angular bundle:", ex);
     }

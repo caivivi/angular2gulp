@@ -1,4 +1,6 @@
-<dl>
-    <dt>dt</dt><dd>dd</dd>
-    <dt>dt2</dt><dd>dd2</dd>
-</dl>
+<form>
+    <input type="number" [(ng-model)]="xxx">+
+    <input type="number" [(ng-model)]="yyy">=
+    {{xxx + yyy}}
+    <br><input type="button" value="Test Button" (click)="clickMyButton($event)">
+</form>

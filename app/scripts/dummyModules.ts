@@ -54,8 +54,8 @@ define("@angular/router", ["@angular/common", "@angular/core", "rxjs/BehaviorSub
     "rxjs/operator/every", "rxjs/operator/first", "rxjs/operator/map", "rxjs/operator/mergeMap", "rxjs/operator/reduce", "rxjs/Observable", "rxjs/operator/catch", "rxjs/operator/concatAll",
     "rxjs/util/EmptyError", "rxjs/observable/fromPromise", "rxjs/operator/last", "rxjs/operator/mergeAll", "@angular/platform-browser", "rxjs/operator/filter"], () => ng.router);
 //angular extra
-// define("@angular/http", ["@angular/core", "rxjs/Observable", "@angular/platform-browser"], () => ng.http);
-// define("@angular/forms", ["@angular/core", "rxjs/observable/forkJoin", "rxjs/observable/fromPromise", "rxjs/operator/map", "@angular/platform-browser"], () => ng.forms);
+define("@angular/http", ["@angular/core", "rxjs/Observable", "@angular/platform-browser"], () => ng.http);
+define("@angular/forms", ["@angular/core", "rxjs/observable/forkJoin", "rxjs/observable/fromPromise", "rxjs/operator/map", "@angular/platform-browser"], () => ng.forms);
 // //angular animation
 // define("@angular/animations", [], () => ng.animations);
 // define("@angular/animations/browser", ["@angular/animations"], () => ng.animations.browser);
