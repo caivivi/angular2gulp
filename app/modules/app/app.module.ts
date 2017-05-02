@@ -1,18 +1,21 @@
-import { NgModule } from "@angular/core";
+import { NgModule, NO_ERRORS_SCHEMA } from "@angular/core";
 import { BrowserModule } from "@angular/platform-browser";
-import { RouterModule } from "@angular/router";
+import { Routes, RouterModule } from "@angular/router";
 import { FormsModule } from "@angular/forms";
 import { HttpModule } from "@angular/http";
 
+import { AppRoute } from "./app.router";
 import { AppComponent } from "./app.component";
-import { rootRouterCocnfig } from "./app.router";
 import { ListComponent } from "../list/list.component";
+import { HomeComponent } from "../home/home.component";
+import { DetailComponent } from "../detail/detail.component";
 
 @NgModule({
-    declarations: [AppComponent, ListComponent],
-    imports: [BrowserModule, FormsModule, HttpModule, RouterModule.forRoot(rootRouterCocnfig)],
+    declarations: [AppComponent, HomeComponent, ListComponent, DetailComponent],
+    imports: [BrowserModule, FormsModule, HttpModule, AppRoute],
     providers: [],
-    bootstrap: [AppComponent]
+    bootstrap: [AppComponent],
+    schemas: [NO_ERRORS_SCHEMA]
 })
 export class AppModule {
     constructor() { }

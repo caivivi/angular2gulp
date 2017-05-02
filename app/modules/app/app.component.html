@@ -1,2 +1,13 @@
-<h3>Hello World!!!</h3>
-<router-outlet></router-outlet>
+<header>
+    <a [routerLink]="['home']" class="menu">Home</a>
+    <a [routerLink]="['list']" class="menu">List</a>
+    <a href="javascript:void(0);" class="menu">Menu 3</a>
+</header>
+<content>
+    <router-outlet></router-outlet>
+</content>
+<footer>
+    <a href="javascript:void(0);" class="menu">Menu 1</a>
+    <a href="javascript:void(0);" class="menu">Menu 2</a>
+    <a href="javascript:void(0);" class="menu">Menu 3</a>
+</footer>

@@ -1,15 +1,24 @@
-import { Routes } from "@angular/router";
-import { ListComponent } from "../list/list.component";
+import { Routes, RouterModule } from "@angular/router";
 
-export const rootRouterCocnfig: Routes = [
+import { ListComponent } from "../list/list.component";
+import { HomeComponent } from "../home/home.component";
+import { DetailComponent } from "../detail/detail.component";
+
+const rootRouterCocnfig: Routes = [
     {
         path: "",
-        //redirectTo: "list",
+        //redirectTo: "home",
         pathMatch: 'full',
-        component: ListComponent
+        component: HomeComponent
+    },
+    {
+        path: "home",
+        component: HomeComponent
     },
     {
         path: "list",
         component: ListComponent
     }
 ];
+
+export const AppRoute = RouterModule.forRoot(rootRouterCocnfig);

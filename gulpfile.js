@@ -21,10 +21,11 @@ const destFolder = "./dist/", destScriptsFolder = `${destFolder}scripts/`, destS
 const destScriptLibFolder = `${destScriptsFolder}lib/`;
 const nodeFolder = "./node_modules/", angularFolder = `${nodeFolder}@angular/`, RxFolder = `${nodeFolder}rxjs/src/`, rxDestFolder = `${destScriptLibFolder}rxjs/`;
 let angularAppFolder = `${appScriptLibFolder}@angular/`, angularDestFolder = `${destScriptLibFolder}@angular/`;
+
 const requirejs = `${nodeFolder}requirejs/require.js`, output = "bundle.js";
 
 // configurations
-const appConfig = {
+const appOptions = {
     angular: {
         mergeAngular: true,
         includeAnimation: false,
@@ -33,8 +34,19 @@ const appConfig = {
         useUMD: true
     }
 };
-const cleanCSSConfig = {};
+const cleanCSSOptions = {};
 const delOptions = { force: true };
+const serverOptions = {
+    port: 3000,
+    livereload: true,
+    directoryListing: false,
+    open: false
+};
+const htmlMinOptions = {
+    collapseWhitespace: true,
+    removeComments: true,
+    caseSensitive: true
+};
 
 //tasks
 gulp.task("clean", [], async () => {
@@ -49,7 +61,7 @@ gulp.task("clean", [], async () => {
 gulp.task("compile", ["clean"], async () => {
     try {
         /* Angular */
-        const es5 = appConfig.angular.useES5 ? ".es5" : "";
+        const es5 = appOptions.angular.useES5 ? ".es5" : "";
         const reflectMetadata = `${nodeFolder}reflect-metadata/Reflect.js`, zonejs = `${nodeFolder}zone.js/dist/zone.js`;
         const angularCore = `${angularFolder}core/@angular/core${es5}.js`;
         const angularCommon = `${angularFolder}common/@angular/common${es5}.js`;
@@ -68,8 +80,8 @@ gulp.task("compile", ["clean"], async () => {
         let angularExtraBundle = [angularHttp, angularForms];
         let angularAnimationBundle = [angularAnimation];
 
-        angularBundle = appConfig.angular.includeAnimation ? [...angularBundle, ...angularAnimationBundle] : angularBundle;
-        angularBundle = appConfig.angular.includeExtraModules ? [...angularBundle, ...angularExtraBundle] : angularBundle;
+        angularBundle = appOptions.angular.includeAnimation ? [...angularBundle, ...angularAnimationBundle] : angularBundle;
+        angularBundle = appOptions.angular.includeExtraModules ? [...angularBundle, ...angularExtraBundle] : angularBundle;
 
         let ngPro = new Promise((resolve, reject) => {
             gulp.src(angularBundle)
@@ -85,7 +97,7 @@ gulp.task("compile", ["clean"], async () => {
         });
 
         let ngAniPro = new Promise((resolve, reject) => {
-            if (appConfig.angular.includeAnimation) {
+            if (appOptions.angular.includeAnimation) {
                 gulp.src(angularAnimationBrowser)//animation/browser
                     .pipe(rename("animations/browser.js"))
                     .pipe(gulp.dest(angularDestFolder));
@@ -219,12 +231,12 @@ gulp.task("compileumd", ["clean"], async () => {
         let angularExtraBundle = [angularHttp, angularForms];
         let angularAnimationBundle = [angularAnimation, angularAnimationBrowser, angularPlatformBrowserAnimation];
 
-        angularBundle = appConfig.angular.includeAnimation ? [...angularBundle, ...angularAnimationBundle] : angularBundle;
-        angularBundle = appConfig.angular.includeExtraModules ? [...angularBundle, ...angularExtraBundle] : angularBundle;
+        angularBundle = appOptions.angular.includeAnimation ? [...angularBundle, ...angularAnimationBundle] : angularBundle;
+        angularBundle = appOptions.angular.includeExtraModules ? [...angularBundle, ...angularExtraBundle] : angularBundle;
 
-        let angularStream = gulp.src(appConfig.angular.mergeAngular ? [rxjs, ...angularBundle] : angularBundle);
+        let angularStream = gulp.src(appOptions.angular.mergeAngular ? [rxjs, ...angularBundle] : angularBundle);
 
-        if (appConfig.angular.mergeAngular) {
+        if (appOptions.angular.mergeAngular) {
             angularDestFolder = `${destScriptLibFolder}`;
 
             await new Promise((resolve, reject) => {
@@ -266,7 +278,7 @@ gulp.task("compileumd", ["clean"], async () => {
     }
 });
 
-gulp.task("build", [appConfig.angular.useUMD ? "compileumd" : "compile"]);
+gulp.task("build", [appOptions.angular.useUMD ? "compileumd" : "compile"]);
 
 gulp.task("watch", ["build"], async () => {
     //typescript
@@ -313,9 +325,7 @@ gulp.task("watch", ["build"], async () => {
 
         function compile(files) {
             gulp.src(!!files ? files : allCSS)
-                .pipe(cleanCSS(cleanCSSConfig, (detail) => {
-                    //logMsg(`Style file [${detail.name}] has been compressed from ${detail.stats.originalSize.toString().gray} to ${detail.stats.minifiedSize.toString().gray}.`);
-                }))
+                .pipe(cleanCSS(cleanCSSOptions, (detail) => { }))
                 .pipe(gulp.dest(destStyleFolder));
         }
     } catch (ex) {
@@ -335,7 +345,7 @@ gulp.task("watch", ["build"], async () => {
 
         function compile(files) {
             gulp.src(!!files ? files : allHTML)
-                .pipe(HtmlMin({ collapseWhitespace: true }))
+                .pipe(HtmlMin(htmlMinOptions))
                 .pipe(gulp.dest(destFolder));
         }
     } catch (ex) {
@@ -346,13 +356,7 @@ gulp.task("watch", ["build"], async () => {
 });
 
 gulp.task("startDevServer", [], async () => {
-    gulp.src(destFolder)
-        .pipe(WebServer({
-            port: 3000,
-            livereload: true,
-            directoryListing: false,
-            open: true
-        }));
+    gulp.src(destFolder).pipe(WebServer(serverOptions));
 });
 
 gulp.task("default", ["watch", "startDevServer"]);
