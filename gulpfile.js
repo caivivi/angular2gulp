@@ -314,7 +314,7 @@ gulp.task("watch", ["build"], async () => {
 
     //css
     try {
-        const allCSS = `${appStyleFolder}**/*.css`;
+        const allCSS = `${appFolder}**/*.css`;
 
         logMsg("Style files are being watched for compilation and compression...");
         compile();
@@ -326,7 +326,7 @@ gulp.task("watch", ["build"], async () => {
         function compile(files) {
             gulp.src(!!files ? files : allCSS)
                 .pipe(cleanCSS(cleanCSSOptions, (detail) => { }))
-                .pipe(gulp.dest(destStyleFolder));
+                .pipe(gulp.dest(destFolder));
         }
     } catch (ex) {
         logErr("Error occurred while compiling css:", ex);

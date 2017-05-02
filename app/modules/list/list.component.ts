@@ -2,18 +2,21 @@ import { Component } from "@angular/core";
 
 @Component({
     selector: "img-list",
-    templateUrl: "modules/list/list.component.html"
+    templateUrl: "modules/list/list.component.html",
+    styleUrls: ["modules/list/list.component.css"]
 })
 export class ListComponent {
     Images: Array<MSImage> = [];
     PageSize: number = 30;
-    PageIndex: number = 0;
 
-    constructor() { }
+    constructor() {
+        this.refreshImages();
+    }
 
-    async goPage(index: number = 0) {
+    async refreshImages() {
+        console.log("Retrieving images from server...");
         this.Images = await this.getImagesByPage();
-        this.PageIndex = index;
+        console.log(`${this.Images.length} images retrieved.`, this.Images);
     }
 
     async getImagesByPage() {

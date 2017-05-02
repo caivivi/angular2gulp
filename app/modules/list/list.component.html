@@ -1,5 +1,4 @@
-<input type="number" [(ngModel)]="xxx">+
-<input type="range" [(ngModel)]="yyy">=
-<output>{{xxx + yyy}}</output>
-<br><input type="button" value="Test Button" (click)="clickMyButton($event)">
-<command type="checkbox"></command>
+<picture *ngFor="let img of Images; let i = index">
+    <img src="" alt="">
+</picture>
+<button type="button" (click)="refreshImages()">refresh</button>
