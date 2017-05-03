@@ -17,6 +17,7 @@
     ],
     "exclude": [
         "node_modules/**/*",
-        "./app/scripts/dummyModules.ts"
+        "./app/scripts/dummyModules.ts",
+        "./app/scripts/systemjsConfig.ts"
     ]
 }

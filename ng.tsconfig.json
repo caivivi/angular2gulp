@@ -16,6 +16,7 @@
         "dist/scripts/lib/"
     ],
     "exclude": [
-        "./app/scripts/dummyModules.ts"
+        "./app/scripts/dummyModules.ts",
+        "./app/scripts/systemjsConfig.ts"
     ]
 }
