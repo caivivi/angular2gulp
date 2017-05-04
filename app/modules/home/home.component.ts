@@ -1,11 +1,13 @@
-import { Component } from "@angular/core";
+import { Component, ViewEncapsulation } from "@angular/core";
 
 @Component({
     selector: "app-home",
-    templateUrl: "modules/home/home.component.html"
+    templateUrl: "modules/home/home.component.html",
+    styleUrls: ["modules/home/home.component.css"],
+    encapsulation: ViewEncapsulation.None
 })
 export class HomeComponent {
-    xxx: number = 1;
+    xxx: number = 2;
     yyy: number = 2;
 
     constructor() { }

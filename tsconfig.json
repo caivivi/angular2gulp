@@ -13,10 +13,10 @@
         ]
     },
     "include": [
-        "./app/**/*"
+        "./app/"
     ],
     "exclude": [
-        "node_modules/**/*",
+        "node_modules/",
         "./app/scripts/dummyModules.ts",
         "./app/scripts/systemjsConfig.ts"
     ]

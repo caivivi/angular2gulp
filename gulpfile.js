@@ -315,15 +315,16 @@ gulp.task("watch", ["build"], async () => {
 
         function watch() {
             compile();
-            return gulpWatch([`${appFolder}**/*.ts`], (e) => {
-                e.history.length && logMsg("Typescript file change detected:", e.history[0].gray);
-                compile();
+            return gulpWatch([`${appFolder}**/*.ts`, `!${appScriptsFolder}dummyModules.ts`, `!${systemjsConfig}`], (e) => {
+                !!e.history.length && logMsg("Typescript file change detected:", e.history[0].gray);
+                compile(replaceBaseFileUrl(e.history));
             });
         }
 
-        function compile() {
-            tsProject.src()
-                .pipe(tsProject())
+        function compile(files) {
+            let stream = !!files && !!files.length ? gulp.src(files) : tsProject.src();
+
+            stream.pipe(tsProject())
                 .pipe(gulp.dest(destFolder));
         }
 
@@ -339,10 +340,11 @@ gulp.task("watch", ["build"], async () => {
         compile();
         gulpWatch(allCSS, (e) => {
             !!e.history.length && logMsg("Style file change detected:", e.history[0].gray);
-            compile(e.history);
+            compile(replaceBaseFileUrl(e.history));
         });
 
         function compile(files) {
+            logMsg("compilng", files);
             gulp.src(!!files ? files : allCSS)
                 .pipe(cleanCSS(cleanCSSOptions, (detail) => { }))
                 .pipe(gulp.dest(destFolder));
@@ -359,7 +361,7 @@ gulp.task("watch", ["build"], async () => {
 
         gulpWatch(allHTML, (e) => {
             !!e.history.length && logMsg("HTML file change detected:", e.history[0].gray);
-            compile();
+            compile(replaceBaseFileUrl(e.history));
         });
 
         function compile(files) {
@@ -397,4 +399,14 @@ function logMsg(...msg) {
 
 function logErr(msg, ex) {
     !!msg && console.log(outputDate(), msg.red, !!ex && `${ex.stack}`);
+}
+
+function replaceBaseFileUrl(arr) {
+    if (!!arr && !!arr.length) {
+        for (var i = 0; i < arr.length; i++) {
+            arr[i] = arr[i].replace(`${__dirname}\\`, "");
+        }
+    }
+
+    return arr;
 }
