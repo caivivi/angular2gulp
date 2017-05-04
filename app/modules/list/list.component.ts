@@ -1,15 +1,18 @@
-import { Component } from "@angular/core";
+import { Component, OnInit, OnDestroy } from "@angular/core";
+import { Http } from "@angular/http";
 
 @Component({
     selector: "img-list",
     templateUrl: "modules/list/list.component.html",
     styleUrls: ["modules/list/list.component.css"]
 })
-export class ListComponent {
+export class ListComponent implements OnInit, OnDestroy {
     Images: Array<MSImage> = [];
     PageSize: number = 30;
+    private http: Http;
 
-    constructor() {
+    constructor(_http: Http) {
+        this.http = _http;
         this.refreshImages();
     }
 
@@ -32,9 +35,21 @@ export class ListComponent {
             }, 1000);
         });
     }
+
+    ngOnInit(): void {
+        console.log("list component init...");
+        this.http.get("modules/list/list.json").subscribe((result) => {
+            this.Images = result.json();
+        });
+    }
+
+    ngOnDestroy(): void {
+        
+    }
 }
 
 export class MSImage {
+    ID: number;
     Name: string;
     Description: string;
     Data: string;//base64
