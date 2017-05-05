@@ -322,7 +322,7 @@ gulp.task("watch", ["build"], async () => {
         }
 
         function compile(files) {
-            let stream = !!files && !!files.length ? gulp.src(files) : tsProject.src();
+            //let stream = !!files && !!files.length ? gulp.src(files) : tsProject.src();
 
             tsProject.src().pipe(tsProject())
                 .pipe(gulp.dest(destFolder));
@@ -401,11 +401,11 @@ function logErr(msg, ex) {
 }
 
 function replaceBaseFileUrl(arr) {
-    // if (!!arr && !!arr.length) {
-    //     for (var i = 0; i < arr.length; i++) {
-    //         arr[i] = arr[i].replace(`${__dirname}\\`, "");
-    //     }
-    // }
+    if ([].includes(process.platform) && !!arr) {
+        for (let i = 0; i < arr.length; i++) {
+            arr[i] = arr[i].replace(`${__dirname}\\`, "");
+        }
+    }
 
     return arr;
 }

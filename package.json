@@ -23,6 +23,7 @@
     "@types/mocha": "^2.2.41",
     "@types/requirejs": "^2.1.29",
     "@types/rx": "^4.1.1",
+    "@types/systemjs": "^0.20.2",
     "browserify": "^14.3.0",
     "colors": "^1.1.2",
     "del": "^2.2.2",
