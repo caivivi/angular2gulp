@@ -34,4 +34,4 @@ const rootRouterCocnfig: Routes = [
     }
 ];
 
-export const AppRoute = RouterModule.forRoot(rootRouterCocnfig);
+export const AppRoute = RouterModule.forRoot(rootRouterCocnfig, { useHash: true });

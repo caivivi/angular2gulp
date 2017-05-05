@@ -138,7 +138,6 @@ gulp.task("compile", ["clean"], async () => {
         let systemPro = new Promise((resolve, reject) => {
             logMsg("Compiling systemjs configuration...");
             gulp.src([systemjsConfig])
-                .pipe(tsForDummy())
                 .pipe(gulp.dest(destScriptsFolder))
                 .on("finish", () => {
                     logMsg(`Systemjs configuration compilition complete.`);
@@ -173,7 +172,7 @@ gulp.task("compile", ["clean"], async () => {
 
             logMsg("Merging & compressing zone, reflect-metadata and requirejs...");
             await new Promise((resolve, reject) => {
-                gulp.src([...systemjsBundle, corejs, zonejs, reflectMetadata, requirejs, `${destScriptLibFolder}${output}`])
+                gulp.src([...systemjs, corejs, zonejs, reflectMetadata, requirejs, `${destScriptLibFolder}${output}`])
                     .pipe(concat(output))
                     .pipe(uglify())
                     .pipe(gulp.dest(destScriptLibFolder))
@@ -188,7 +187,7 @@ gulp.task("compile", ["clean"], async () => {
             });
 
             logMsg("Deleting temporary folders...");
-            let deletionResult = await del([`${destScriptLibFolder}/@angular/**`, `${destScriptLibFolder}/rxjs/**`, systemjsConfigOutput], delOptions);
+            let deletionResult = await del([`${destScriptLibFolder}/@angular/**`, `${destScriptLibFolder}/rxjs/**`, `${destScriptsFolder}systemjsConfig.ts`], delOptions);
         }
     } catch (ex) {
         logErr("Error occurred while copying angular source module", ex);

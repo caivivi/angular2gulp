@@ -1,7 +1,4 @@
-declare const SystemJS: {
-    config: (option: any) => void,
-    import: (module: string) => void,
-};
+/// <reference path="../../node_modules/@types/systemjs/index.d.ts" />
 
 SystemJS.config({
     baseURL: "/",
