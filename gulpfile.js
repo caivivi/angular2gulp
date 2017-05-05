@@ -23,8 +23,8 @@ const nodeFolder = "./node_modules/", angularFolder = `${nodeFolder}@angular/`, 
 let angularAppFolder = `${appScriptLibFolder}@angular/`, angularDestFolder = `${destScriptLibFolder}@angular/`;
 
 const requirejs = `${nodeFolder}requirejs/require.js`, output = "bundle.js";
-let systemjs = `${nodeFolder}systemjs/dist/system.src.js`, systemjsConfig = `${appScriptsFolder}systemjsConfig.ts`, systemjsConfigOutput = `${destScriptsFolder}systemjsConfig.js`, systemjsBundle = [systemjs, systemjsConfigOutput];
-let corejs = `${nodeFolder}core-js/client/core.js`;
+const systemjs = `${nodeFolder}systemjs/dist/system.src.js`, systemjsConfig = `${appScriptsFolder}systemjsConfig.ts`, systemjsConfigOutput = `${destScriptsFolder}systemjsConfig.js`, systemjsBundle = [systemjs, systemjsConfigOutput];
+const corejs = `${nodeFolder}core-js/client/core.js`;
 
 // configurations
 const appOptions = {
