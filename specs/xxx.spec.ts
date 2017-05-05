@@ -25,7 +25,7 @@ describe('Test HomeComponent', () => {
         el = de.nativeElement;
     }));
 
-    it("should write some testing code.", () => {
-        //test code here...
+    it("should write some testing code.", async () => {
+        
     });
 });

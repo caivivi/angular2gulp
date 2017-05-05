@@ -24,6 +24,7 @@ let angularAppFolder = `${appScriptLibFolder}@angular/`, angularDestFolder = `${
 
 const requirejs = `${nodeFolder}requirejs/require.js`, output = "bundle.js";
 let systemjs = `${nodeFolder}systemjs/dist/system.src.js`, systemjsConfig = `${appScriptsFolder}systemjsConfig.ts`, systemjsConfigOutput = `${destScriptsFolder}systemjsConfig.js`, systemjsBundle = [systemjs, systemjsConfigOutput];
+let corejs = `${nodeFolder}core-js/client/core.js`;
 
 // configurations
 const appOptions = {
@@ -32,7 +33,7 @@ const appOptions = {
         includeAnimation: false,
         includeExtraModules: true,
         useES5: false,
-        useUMD: true
+        useUMD: false
     }
 };
 const cleanCSSOptions = {};
@@ -172,7 +173,7 @@ gulp.task("compile", ["clean"], async () => {
 
             logMsg("Merging & compressing zone, reflect-metadata and requirejs...");
             await new Promise((resolve, reject) => {
-                gulp.src([...systemjsBundle, zonejs, reflectMetadata, requirejs, `${destScriptLibFolder}${output}`])
+                gulp.src([...systemjsBundle, corejs, zonejs, reflectMetadata, requirejs, `${destScriptLibFolder}${output}`])
                     .pipe(concat(output))
                     .pipe(uglify())
                     .pipe(gulp.dest(destScriptLibFolder))
@@ -246,7 +247,7 @@ gulp.task("compileumd", ["clean"], async () => {
         const angularAnimationBrowser = `${angularFolder}animations/bundles/animations-browser.umd.js`;
         const angularPlatformBrowserAnimation = `${angularFolder}platform-browser/bundles/platform-browser-animations.umd.js`;
         //bundle
-        let angularBundle = [systemjs, zonejs, reflectMetadata, `${destScriptLibFolder}${output}`, angularCore, angularCommon, angularCompiler, angularPlatformBrowser, angularPlatformBrowserDynamic, angularRouter];
+        let angularBundle = [systemjs, zonejs, reflectMetadata, corejs, `${destScriptLibFolder}${output}`, angularCore, angularCommon, angularCompiler, angularPlatformBrowser, angularPlatformBrowserDynamic, angularRouter];
         let angularExtraBundle = [angularHttp, angularForms];
         let angularAnimationBundle = [angularAnimation, angularAnimationBrowser, angularPlatformBrowserAnimation];
 
@@ -324,7 +325,7 @@ gulp.task("watch", ["build"], async () => {
         function compile(files) {
             let stream = !!files && !!files.length ? gulp.src(files) : tsProject.src();
 
-            stream.pipe(tsProject())
+            tsProject.src().pipe(tsProject())
                 .pipe(gulp.dest(destFolder));
         }
 
@@ -344,7 +345,6 @@ gulp.task("watch", ["build"], async () => {
         });
 
         function compile(files) {
-            logMsg("compilng", files);
             gulp.src(!!files ? files : allCSS)
                 .pipe(cleanCSS(cleanCSSOptions, (detail) => { }))
                 .pipe(gulp.dest(destFolder));
@@ -402,11 +402,11 @@ function logErr(msg, ex) {
 }
 
 function replaceBaseFileUrl(arr) {
-    if (!!arr && !!arr.length) {
-        for (var i = 0; i < arr.length; i++) {
-            arr[i] = arr[i].replace(`${__dirname}\\`, "");
-        }
-    }
+    // if (!!arr && !!arr.length) {
+    //     for (var i = 0; i < arr.length; i++) {
+    //         arr[i] = arr[i].replace(`${__dirname}\\`, "");
+    //     }
+    // }
 
     return arr;
 }

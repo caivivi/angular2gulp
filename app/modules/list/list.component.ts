@@ -1,24 +1,48 @@
-import { Component, OnInit, OnDestroy } from "@angular/core";
-import { Http } from "@angular/http";
+import { Component, OnInit, OnDestroy, Inject, Injectable } from "@angular/core";
+import { Http, Response, Jsonp } from "@angular/http";
+import 'rxjs/add/operator/map';
+import 'rxjs/add/operator/toPromise';
+import 'rxjs/add/operator/catch';
+
+@Injectable()
+export class ImageService {
+    constructor(
+        @Inject(Http) public http: Http
+    ) { }
+
+    getImages() {
+        //return [new MSImage(), new MSImage(), new MSImage(), new MSImage()];
+        return this.http.get("modules/list/list.json");
+    }
+}
 
 @Component({
     selector: "img-list",
     templateUrl: "modules/list/list.component.html",
-    styleUrls: ["modules/list/list.component.css"]
+    styleUrls: ["modules/list/list.component.css"],
+    providers: [ImageService]
 })
+@Injectable()
 export class ListComponent implements OnInit, OnDestroy {
-    Images: Array<MSImage> = [];
+    Images: MSImage[] = [];
     PageSize: number = 30;
-    private http: Http;
 
-    constructor(_http: Http) {
-        this.http = _http;
-        this.refreshImages();
-    }
+    constructor(
+        @Inject(ImageService) private imgSVC: ImageService
+    ) { }
 
     async refreshImages() {
         console.log("Retrieving images from server...");
-        this.Images = await this.getImagesByPage();
+        // this.Images = await this.imgSVC.getImages();
+        this.imgSVC.getImages()
+            .map((result) => {
+                console.log("result", result, result.json());
+                return result.json();
+            })
+            .subscribe(result => {
+                console.log("subscribed result", result);
+                this.Images = result;
+            });
         console.log(`${this.Images.length} images retrieved.`, this.Images);
     }
 
@@ -26,7 +50,7 @@ export class ListComponent implements OnInit, OnDestroy {
         return await new Promise<Array<MSImage>>((resolve, reject) => {
             setTimeout(() => {
                 let imgs: Array<MSImage> = [];
-        
+
                 for (var i = 0; i < this.PageSize; i++) {
                     imgs.push(new MSImage());
                 }
@@ -38,13 +62,11 @@ export class ListComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         console.log("list component init...");
-        this.http.get("modules/list/list.json").subscribe((result) => {
-            this.Images = result.json();
-        });
+        this.refreshImages();
     }
 
     ngOnDestroy(): void {
-        
+        console.log("Destorying ListComponent...");
     }
 }
 
@@ -52,7 +74,7 @@ export class MSImage {
     ID: number;
     Name: string;
     Description: string;
-    Data: string;//base64
+    Data: string;
 
     constructor() {
         this.Name = `${Math.random().toString().replace(/0\./ig, "")}.png`;

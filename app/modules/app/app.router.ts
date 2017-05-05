@@ -2,6 +2,7 @@ import { Routes, RouterModule } from "@angular/router";
 
 import { HomeComponent } from "../home/home.component";
 import { DetailComponent } from "../detail/detail.component";
+import { ListComponent } from "../list/list.component";
 
 const rootRouterCocnfig: Routes = [
     {
@@ -26,9 +27,10 @@ const rootRouterCocnfig: Routes = [
     },
     {
         path: "list",
-        loadChildren: "modules/list/list.module#ListModule",
-        canActivate: [],
-        canDeactivate: []
+        component: ListComponent
+        //loadChildren: "modules/list/list.module#ListModule",
+        // canActivate: [],
+        // canDeactivate: []
     }
 ];
 
