@@ -190,7 +190,7 @@ gulp.task("compile", ["clean"], async () => {
             logMsg("Deleting temporary folders...");
             let deletionResult = await del([`${destScriptsFolder}/@angular/**`, `${destScriptsFolder}/rxjs/**`, `${destScriptsFolder}systemjsConfig.ts`, maintsOutput], delOptions);
 
-            logMsg("Merging dependencies...");
+            logMsg("Compressing & merging dependencies...");
             await new Promise((resolve, reject) => {
                 let files = [systemjs, zonejs, reflectMetadata, `${destScriptsFolder}${output}`];
                 appOptions.moduleLoader === requirejs && files.splice(2, 0, requirejs);
