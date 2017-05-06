@@ -3,7 +3,8 @@ import { Component, ViewEncapsulation } from "@angular/core";
 @Component({
     selector: "body",
     templateUrl: "modules/app/app.component.html",
-    encapsulation: ViewEncapsulation.Emulated
+    styleUrls: ["modules/app/app.component.css"],
+    encapsulation: ViewEncapsulation.None
 })
 export class AppComponent {
     constructor() { }

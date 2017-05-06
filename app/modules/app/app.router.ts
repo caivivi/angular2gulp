@@ -28,7 +28,7 @@ const rootRouterCocnfig: Routes = [
     {
         path: "list",
         component: ListComponent
-        //loadChildren: "modules/list/list.module#ListModule",
+        // loadChildren: "modules/list/list.module#ListModule",
         // canActivate: [],
         // canDeactivate: []
     }

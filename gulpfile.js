@@ -12,14 +12,15 @@ const browserify = require("browserify");
 const source = require('vinyl-source-stream');
 const tsc = require("gulp-typescript");
 const del = require("del");
+const path = require("path");
 const colors = require("colors");
 
 //folders
-const appFolder = "./app/", appScriptsFolder = `${appFolder}scripts/`, appStyleFolder = `${appFolder}styles/`;
+const appFolder = "app/", appScriptsFolder = `${appFolder}scripts/`, appStyleFolder = `${appFolder}styles/`;
 const appScriptLibFolder = `${appScriptsFolder}lib/`;
-const destFolder = "./dist/", destScriptsFolder = `${destFolder}scripts/`, destStyleFolder = `${destFolder}styles/`;
+const destFolder = "dist/", destScriptsFolder = `${destFolder}scripts/`, destStyleFolder = `${destFolder}styles/`;
 const destScriptLibFolder = `${destScriptsFolder}lib/`;
-const nodeFolder = "./node_modules/", angularFolder = `${nodeFolder}@angular/`, RxFolder = `${nodeFolder}rxjs/src/`, rxDestFolder = `${destScriptLibFolder}rxjs/`;
+const nodeFolder = "node_modules/", angularFolder = `${nodeFolder}@angular/`, RxFolder = `${nodeFolder}rxjs/src/`, rxDestFolder = `${destScriptLibFolder}rxjs/`;
 let angularAppFolder = `${appScriptLibFolder}@angular/`, angularDestFolder = `${destScriptLibFolder}@angular/`;
 
 const requirejs = `${nodeFolder}requirejs/require.js`, output = "bundle.js";
@@ -300,6 +301,9 @@ gulp.task("compileumd", ["clean"], async () => {
 gulp.task("build", [appOptions.angular.useUMD ? "compileumd" : "compile"]);
 
 gulp.task("watch", ["build"], async () => {
+    const allHTML = `${appFolder}**/*.html`, allCSS = `${appFolder}**/*.css`, allScript = `${appFolder}**/*.ts`;
+    const otherFiles = [`${appFolder}**/*`, `!${allHTML}`, `!${allCSS}`, `!${allScript}`];
+
     //typescript
     try {
         let tsProject = tsc.createProject("tsconfig.json");
@@ -317,7 +321,7 @@ gulp.task("watch", ["build"], async () => {
             compile();
             return gulpWatch([`${appFolder}**/*.ts`, `!${appScriptsFolder}dummyModules.ts`, `!${systemjsConfig}`], (e) => {
                 !!e.history.length && logMsg("Typescript file change detected:", e.history[0].gray);
-                compile(replaceBaseFileUrl(e.history));
+                compile(e.history);
             });
         }
 
@@ -334,19 +338,18 @@ gulp.task("watch", ["build"], async () => {
 
     //css
     try {
-        const allCSS = `${appFolder}**/*.css`;
-
-        logMsg("Style files are being watched for compilation and compression...");
         compile();
+        logMsg("Style files are being watched for compilation and compression...");
+
         gulpWatch(allCSS, (e) => {
             !!e.history.length && logMsg("Style file change detected:", e.history[0].gray);
-            compile(replaceBaseFileUrl(e.history));
+            compile(e.history);
         });
 
         function compile(files) {
-            gulp.src(!!files ? files : allCSS)
+            gulp.src(!!files ? files: allCSS)
                 .pipe(cleanCSS(cleanCSSOptions, (detail) => { }))
-                .pipe(gulp.dest(destFolder));
+                .pipe(gulp.dest(!!files && files.length === 1 ? path.dirname(files[0].toDist()) : destFolder));
         }
     } catch (ex) {
         logErr("Error occurred while compiling css:", ex);
@@ -354,22 +357,38 @@ gulp.task("watch", ["build"], async () => {
 
     //html
     try {
-        const allHTML = [`${appFolder}**/*.html`];
-        logMsg("HTML files are being watched for compilation and compression...");
         compile();
+        logMsg("HTML files are being watched for compilation and compression...");
 
         gulpWatch(allHTML, (e) => {
             !!e.history.length && logMsg("HTML file change detected:", e.history[0].gray);
-            compile(replaceBaseFileUrl(e.history));
+            compile(e.history);
         });
 
         function compile(files) {
-            gulp.src(!!files ? files : allHTML)
+            gulp.src(!!files && files.length ? files : allHTML)
                 .pipe(HtmlMin(htmlMinOptions))
-                .pipe(gulp.dest(destFolder));
+                .pipe(gulp.dest(!!files && files.length === 1 ? path.dirname(files[0].toDist()) : destFolder));
         }
     } catch (ex) {
-        logErr("Error occurred while transferring static files:", ex);
+        logErr("Error occurred while transferring html files:", ex);
+    }
+
+    //others
+    try {
+        transfer();
+
+        gulpWatch(otherFiles, (e) => {
+            !!e.history.length && logMsg(`File ${e.history[0].gray} has been copied to dist folder.`);
+            transfer(e.history);
+        });
+
+        function transfer(files) {
+            gulp.src(!!files && files.length ? files : otherFiles)
+                .pipe(gulp.dest(!!files && files.length === 1 ? path.dirname(files[0].toDist()) : destFolder));
+        }
+    } catch (ex) {
+        logErr("Error occurred while copying files:", ex);
     }
 
     await new Promise(() => { });
@@ -400,12 +419,18 @@ function logErr(msg, ex) {
     !!msg && console.log(outputDate(), msg.red, !!ex && `${ex.stack}`);
 }
 
-function replaceBaseFileUrl(arr) {
-    if ([].includes(process.platform) && !!arr) {
-        for (let i = 0; i < arr.length; i++) {
-            arr[i] = arr[i].replace(`${__dirname}\\`, "");
-        }
-    }
+String.prototype.toDist = function () {
+    const appPathIndex = this.indexOf(appFolder);
+    if (appPathIndex < 0) return this;
 
-    return arr;
+    let appPath = this.substring(0, appPathIndex);
+    return path.join(appPath, destFolder, this.substring(appPathIndex + appFolder.length));
+}
+
+String.prototype.toDist = function () {
+    const appPathIndex = this.indexOf(appFolder);
+    if (appPathIndex < 0) return this;
+
+    let appPath = this.substring(0, appPathIndex);
+    return path.join(appPath, destFolder, this.substring(appPathIndex + appFolder.length));
 }

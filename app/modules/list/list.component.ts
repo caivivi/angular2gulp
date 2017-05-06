@@ -33,14 +33,9 @@ export class ListComponent implements OnInit, OnDestroy {
 
     async refreshImages() {
         console.log("Retrieving images from server...");
-        // this.Images = await this.imgSVC.getImages();
         this.imgSVC.getImages()
-            .map((result) => {
-                console.log("result", result, result.json());
-                return result.json();
-            })
+            .map((result) => result.json())
             .subscribe(result => {
-                console.log("subscribed result", result);
                 this.Images = result;
             });
         console.log(`${this.Images.length} images retrieved.`, this.Images);
