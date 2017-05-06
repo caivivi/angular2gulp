@@ -16,14 +16,12 @@ const path = require("path");
 const colors = require("colors");
 
 //folders
-const appFolder = "app/", appScriptsFolder = `${appFolder}scripts/`, appStyleFolder = `${appFolder}styles/`;
-const appScriptLibFolder = `${appScriptsFolder}lib/`;
-const destFolder = "dist/", destScriptsFolder = `${destFolder}scripts/`, destStyleFolder = `${destFolder}styles/`;
-const destScriptLibFolder = `${destScriptsFolder}lib/`;
-const nodeFolder = "node_modules/", angularFolder = `${nodeFolder}@angular/`, RxFolder = `${nodeFolder}rxjs/src/`, rxDestFolder = `${destScriptLibFolder}rxjs/`;
-let angularAppFolder = `${appScriptLibFolder}@angular/`, angularDestFolder = `${destScriptLibFolder}@angular/`;
+const appFolder = "app/", appScriptsFolder = `${appFolder}scripts/`;
+const destFolder = "dist/", destScriptsFolder = `${destFolder}scripts/`;
+const nodeFolder = "node_modules/", angularFolder = `${nodeFolder}@angular/`, RxFolder = `${nodeFolder}rxjs/src/`, rxDestFolder = `${destScriptsFolder}rxjs/`;
+let angularAppFolder = `${appScriptsFolder}@angular/`, angularDestFolder = `${destScriptsFolder}@angular/`;
 
-const requirejs = `${nodeFolder}requirejs/require.js`, output = "bundle.js";
+const requirejs = `${nodeFolder}requirejs/require.js`, output = "bundle.js", maints = `${appScriptsFolder}main.ts`, maintsOutput = `${destScriptsFolder}main.ts`;
 const systemjs = `${nodeFolder}systemjs/dist/system.src.js`, systemjsConfig = `${appScriptsFolder}systemjsConfig.ts`, systemjsConfigOutput = `${destScriptsFolder}systemjsConfig.js`, systemjsBundle = [systemjs, systemjsConfigOutput];
 const corejs = `${nodeFolder}core-js/client/core.js`;
 
@@ -35,6 +33,22 @@ const appOptions = {
         includeExtraModules: true,
         useES5: false,
         useUMD: false
+    },
+    tsc: {
+        get module() {
+            let mod = "system";
+
+            switch (appOptions.moduleLoader) {
+                case systemjs: break;
+                case requirejs: mod = "amd"; break;
+                default: break;
+            }
+
+            return mod;
+        }
+    },
+    get moduleLoader() {
+        return systemjs;//systemjs, requirejs
     }
 };
 const cleanCSSOptions = {};
@@ -52,12 +66,12 @@ const htmlMinOptions = {
 };
 
 /* variables */
-let tsForDummy = tsc.createProject({ target: "es5", lib: ["dom", "es2017"] });
+let tsForDummy = tsc.createProject({ target: "es5", lib: ["dom", "es2017"], module: appOptions.tsc.module });
 
 //tasks
 gulp.task("clean", [], async () => {
     try {
-        let deletionResult = await del([`${destFolder}**/*`, `${appScriptLibFolder}**/*`], delOptions);
+        let deletionResult = await del([`${destFolder}**/*`], delOptions);
         logMsg(deletionResult.length.toString().blue, `file${deletionResult.length <= 1 ? " has" : "s have"} been deleted.`);
     } catch (ex) {
         logErr(`An error occurred while executing task ${this.name}:`, ex);
@@ -137,30 +151,32 @@ gulp.task("compile", ["clean"], async () => {
         });
 
         let systemPro = new Promise((resolve, reject) => {
-            logMsg("Compiling systemjs configuration...");
-            gulp.src([systemjsConfig])
+            logMsg("Copying systemjs configuration...");
+            let files = [systemjsConfig];
+            appOptions.moduleLoader === systemjs && files.push(maints);
+
+            gulp.src(files)
                 .pipe(gulp.dest(destScriptsFolder))
                 .on("finish", () => {
-                    logMsg(`Systemjs configuration compilition complete.`);
+                    logMsg(`Systemjs configuration copy complete.`);
                     resolve(true);
                 })
                 .on("error", () => {
-                    logErr("Error occurred while compiling systemjs configuration.");
+                    logErr("Error occurred while copying systemjs configuration.");
                     reject(false);
                 });
         });
 
         let pResult = await Promise.all([ngPro, ngAniPro, rxPro, systemPro]);
 
-        if (pResult.every(r => r)) {//when both angular and rxjs source module copied successfully.
+        if (pResult.every(r => r)) {
             logMsg("Compiling & merging angular bundle...");
-            tsProject = tsc.createProject("ng.tsconfig.json", { out: output });
+            tsProject = tsc.createProject("ng.tsconfig.json", { module: appOptions.tsc.module, out: output });
 
             await new Promise((resolve, reject) => {
-                tsProject
-                    .src()
+                tsProject.src()//Must us ts stream instead of gulp.src here.
                     .pipe(tsProject())
-                    .pipe(gulp.dest(destScriptLibFolder))
+                    .pipe(gulp.dest(destScriptsFolder))
                     .on("finish", () => {
                         logMsg("Angular bundle has been compiled.");
                         resolve(true);
@@ -171,12 +187,18 @@ gulp.task("compile", ["clean"], async () => {
                     });
             });
 
-            logMsg("Merging & compressing zone, reflect-metadata and requirejs...");
+            logMsg("Deleting temporary folders...");
+            let deletionResult = await del([`${destScriptsFolder}/@angular/**`, `${destScriptsFolder}/rxjs/**`, `${destScriptsFolder}systemjsConfig.ts`, maintsOutput], delOptions);
+
+            logMsg("Merging dependencies...");
             await new Promise((resolve, reject) => {
-                gulp.src([...systemjs, corejs, zonejs, reflectMetadata, requirejs, `${destScriptLibFolder}${output}`])
+                let files = [systemjs, zonejs, reflectMetadata, `${destScriptsFolder}${output}`];
+                appOptions.moduleLoader === requirejs && files.splice(2, 0, requirejs);
+
+                gulp.src(files)
                     .pipe(concat(output))
                     .pipe(uglify())
-                    .pipe(gulp.dest(destScriptLibFolder))
+                    .pipe(gulp.dest(destScriptsFolder))
                     .on("finish", () => {
                         logMsg("Bundle compression complete.");
                         resolve(true);
@@ -186,9 +208,6 @@ gulp.task("compile", ["clean"], async () => {
                         reject(false);
                     });
             });
-
-            logMsg("Deleting temporary folders...");
-            let deletionResult = await del([`${destScriptLibFolder}/@angular/**`, `${destScriptLibFolder}/rxjs/**`, `${destScriptsFolder}systemjsConfig.ts`], delOptions);
         }
     } catch (ex) {
         logErr("Error occurred while copying angular source module", ex);
@@ -197,7 +216,7 @@ gulp.task("compile", ["clean"], async () => {
 
 gulp.task("compileumd", ["clean"], async () => {
     try {
-        //requirejs & fake module
+        //fake module
         const dummyModules = `${appScriptsFolder}dummyModules.ts`, dummyOutput = `${destScriptsFolder}dummyModules.js`;
 
         await new Promise((resolve, reject) => {
@@ -217,16 +236,16 @@ gulp.task("compileumd", ["clean"], async () => {
         });
 
         await new Promise((resolve, reject) => {
-            logMsg("Merging dummy modules to requirejs...");
-            gulp.src([requirejs, dummyOutput])
+            logMsg("Merging dummy modules...");
+            gulp.src([appOptions.moduleLoader, dummyOutput])
                 .pipe(concat(output))
-                .pipe(gulp.dest(destScriptLibFolder))
+                .pipe(gulp.dest(destScriptsFolder))
                 .on("finish", () => {
                     logMsg(`Requirejs merging complete.`);
                     resolve();
                 })
                 .on("error", () => {
-                    logErr("Error occurred while merging requirejs.");
+                    logErr("Error occurred while merging dummy module.");
                     reject();
                 });
         });
@@ -247,17 +266,18 @@ gulp.task("compileumd", ["clean"], async () => {
         const angularAnimationBrowser = `${angularFolder}animations/bundles/animations-browser.umd.js`;
         const angularPlatformBrowserAnimation = `${angularFolder}platform-browser/bundles/platform-browser-animations.umd.js`;
         //bundle
-        let angularBundle = [systemjs, zonejs, reflectMetadata, corejs, `${destScriptLibFolder}${output}`, angularCore, angularCommon, angularCompiler, angularPlatformBrowser, angularPlatformBrowserDynamic, angularRouter];
+        let angularBundle = [zonejs, reflectMetadata, corejs, `${destScriptsFolder}${output}`, angularCore, angularCommon, angularCompiler, angularPlatformBrowser, angularPlatformBrowserDynamic, angularRouter];
         let angularExtraBundle = [angularHttp, angularForms];
         let angularAnimationBundle = [angularAnimation, angularAnimationBrowser, angularPlatformBrowserAnimation];
 
         angularBundle = appOptions.angular.includeAnimation ? [...angularBundle, ...angularAnimationBundle] : angularBundle;
         angularBundle = appOptions.angular.includeExtraModules ? [...angularBundle, ...angularExtraBundle] : angularBundle;
+        angularBundle = appOptions.moduleLoader === requirejs ? [systemjs, ...angularBundle] : angularBundle;
 
         let angularStream = gulp.src(appOptions.angular.mergeAngular ? [rxjs, ...angularBundle] : angularBundle);
 
         if (appOptions.angular.mergeAngular) {
-            angularDestFolder = `${destScriptLibFolder}`;
+            angularDestFolder = destScriptsFolder;
 
             await new Promise((resolve, reject) => {
                 logMsg("Merging angular bundle...");
@@ -301,17 +321,19 @@ gulp.task("compileumd", ["clean"], async () => {
 gulp.task("build", [appOptions.angular.useUMD ? "compileumd" : "compile"]);
 
 gulp.task("watch", ["build"], async () => {
-    const allHTML = `${appFolder}**/*.html`, allCSS = `${appFolder}**/*.css`, allScript = `${appFolder}**/*.ts`;
-    const otherFiles = [`${appFolder}**/*`, `!${allHTML}`, `!${allCSS}`, `!${allScript}`];
+    const allHTML = `${appFolder}**/*.html`, allCSS = `${appFolder}**/*.css`, allScript = [`${appFolder}**/*.ts`, `!${appScriptsFolder}dummyModules.ts`, `!${systemjsConfig}`];
+    const otherFiles = [`${appFolder}**/*`, `!${allHTML}`, `!${allCSS}`, `!${appFolder}**/*.ts`];
+
+    appOptions.moduleLoader === systemjs && allScript.push(`!${maints}`);
 
     //typescript
     try {
-        let tsProject = tsc.createProject("tsconfig.json");
+        let tsProject = tsc.createProject("tsconfig.json", appOptions.tsc);
         let stream = watch();
         logMsg("Typescript files are being watched for compilation and compression...");
 
         gulpWatch("tsconfig.json", (e) => {
-            tsProject = tsc.createProject("tsconfig.json");
+            tsProject = tsc.createProject("tsconfig.json", appOptions.tsc);
             stream.close();
             stream = watch();
             logMsg("Tsconfig change detected, corresponding scripts are being updated.");
@@ -319,16 +341,14 @@ gulp.task("watch", ["build"], async () => {
 
         function watch() {
             compile();
-            return gulpWatch([`${appFolder}**/*.ts`, `!${appScriptsFolder}dummyModules.ts`, `!${systemjsConfig}`], (e) => {
+            return gulpWatch(allScript, (e) => {
                 !!e.history.length && logMsg("Typescript file change detected:", e.history[0].gray);
                 compile(e.history);
             });
         }
 
         function compile(files) {
-            //let stream = !!files && !!files.length ? gulp.src(files) : tsProject.src();
-
-            tsProject.src().pipe(tsProject())
+            return gulp.src(!!files && !!files.length === 1 ? files : allScript).pipe(tsProject())
                 .pipe(gulp.dest(destFolder));
         }
 

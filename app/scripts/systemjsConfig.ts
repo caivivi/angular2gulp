@@ -2,11 +2,12 @@
 
 SystemJS.config({
     baseURL: "/",
-    //transpiler: "typescript",
     paths: {
         
     },
     packages: {
-        defaultExtension: "js"
+        modules: {
+            defaultExtension: 'js'
+        }
     }
 });

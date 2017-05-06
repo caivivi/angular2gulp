@@ -8,10 +8,9 @@ import { AppRoute } from "./app.router";
 import { AppComponent } from "./app.component";
 import { HomeComponent } from "../home/home.component";
 import { DetailComponent } from "../detail/detail.component";
-import { ListComponent } from "../list/list.component";
 
 @NgModule({
-    declarations: [AppComponent, HomeComponent, DetailComponent, ListComponent],
+    declarations: [AppComponent, HomeComponent, DetailComponent],
     imports: [BrowserModule, FormsModule, HttpModule, AppRoute],
     providers: [],
     bootstrap: [AppComponent],

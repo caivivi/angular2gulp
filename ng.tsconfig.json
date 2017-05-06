@@ -1,6 +1,6 @@
 {
     "compilerOptions": {
-        "module": "amd",
+        "module": "system",
         "target": "es5",
         "noImplicitAny": false,
         "allowJs": true,
@@ -13,11 +13,9 @@
         "moduleResolution": "classic"
     },
     "include": [
-        "dist/scripts/lib/"
+        "dist/scripts/"
     ],
     "exclude": [
-        "./node_modules/",
-        "./specs/",
-        "./app/scripts/dummyModules.ts"
+        "node_modules/"
     ]
 }

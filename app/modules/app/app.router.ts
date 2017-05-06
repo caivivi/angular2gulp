@@ -2,12 +2,11 @@ import { Routes, RouterModule } from "@angular/router";
 
 import { HomeComponent } from "../home/home.component";
 import { DetailComponent } from "../detail/detail.component";
-import { ListComponent } from "../list/list.component";
+// import { ListComponent } from "../list/list.component";
 
 const rootRouterCocnfig: Routes = [
     {
         path: "",
-        //redirectTo: "home",
         pathMatch: 'full',
         component: HomeComponent
     },
@@ -18,19 +17,11 @@ const rootRouterCocnfig: Routes = [
     {
         path: "home",
         component: HomeComponent
-        // children: [
-        //     {
-        //         path: "detail",
-        //         component: DetailComponent
-        //     }
-        // ]
     },
     {
         path: "list",
-        component: ListComponent
-        // loadChildren: "modules/list/list.module#ListModule",
-        // canActivate: [],
-        // canDeactivate: []
+        // component: ListComponent
+        loadChildren: "modules/list/list.module#ListModule"
     }
 ];
 
