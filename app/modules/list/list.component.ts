@@ -34,7 +34,7 @@ export class ListComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
-        console.log("Destorying ListComponent...");
+        console.log("Destorying list component...");
     }
 }
 
