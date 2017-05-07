@@ -1,5 +1,5 @@
 # angular2gulp
-`Angular` is a new web-oriented MVX framework built for comprehensive web applications using latest web technology. It uses `Typescript` & `Rxjs` as underlying implementation.This project is a demo to show how it works including characterstics below:
+`Angular` is a new web-oriented MVX framework built for comprehensive web applications using latest web technology. It uses `Typescript` & `ReactiveX`(Rxjs) as underlying implementation.This project is a demo to show how it works including characterstics below:
 * Environment & dependencies.<br />
 * Future roadmap & perspective.<br />
 * Features:<br />
@@ -7,7 +7,7 @@
    * Modulization & componentization.<br />
    * Lazy loading.<br />
    * Dependency Injection.<br />
-   * Interaction with backend.<br />
+   * Interaction with backend & external services.<br />
    * Testing support (in progress).<br />
 ## Technical specs<br />
 * [angular](https://github.com/angular/angular)@4.1.0+<br />
