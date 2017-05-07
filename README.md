@@ -17,7 +17,7 @@
 ## How to run
 * Clone this repository to your local environment via git command `git clone`.
 * Go to root of your cloned folder in command line.
-* Input commands in 3 command windows:
+* Run commands in 3 command windows sequently:
     * `npm install`
     * `npm run watch`
     * `npm start`
