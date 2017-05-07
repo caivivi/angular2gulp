@@ -11,7 +11,7 @@
    * Testing support (in progress).<br />
 ## Technical specs<br />
 * [angular](https://github.com/angular/angular)@4.1.0+<br />
-* [Rxjs](https://github.com/ReactiveX/rxjs)@5.3.0+<br />
+* [rxjs](https://github.com/ReactiveX/rxjs)@5.3.0+<br />
 * [typescript](https://github.com/Microsoft/TypeScript)@2.3.2+<br />
 * [gulp](https://github.com/gulpjs/gulp)@3.9.1+<br />
 ## How to run<br />
