@@ -3,11 +3,11 @@
 SystemJS.config({
     baseURL: "/",
     paths: {
-        
+
     },
     packages: {
-        modules: {
-            defaultExtension: 'js'
+        'modules': {
+            defaultExtension: "js"
         }
     }
 });

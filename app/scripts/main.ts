@@ -10,7 +10,7 @@
 //     platformBrowserDynamic().bootstrapModule(AppModule).catch((err) => console.error(`Application bootstraping error:`, err));
 // });
 
-Promise.all([System.import("@angular/platform-browser-dynamic"), System.import("modules/app/app.module")])
+Promise.all([System.import("@angular/platform-browser-dynamic"), System.import("./modules/app/app.module")])
 .then(([{ platformBrowserDynamic }, { AppModule }]) => {
     platformBrowserDynamic().bootstrapModule(AppModule).catch((err) => console.error(`Application bootstraping error:`, err));
 });
