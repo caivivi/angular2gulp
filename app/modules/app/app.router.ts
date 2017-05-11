@@ -7,7 +7,7 @@ const rootRouterCocnfig: Routes = [
     {
         path: "",
         pathMatch: 'full',
-        component: HomeComponent
+        redirectTo: "home"
     },
     // {
     //     path: "**",
