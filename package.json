@@ -12,7 +12,9 @@
     "build": "gulp build",
     "tsc": "tsc",
     "gulp": "gulp",
-    "karma": "karma"
+    "karma": "karma",
+    "app": "electron . --enable-touch-events",
+    "pack": "gulp buildApp"
   },
   "keywords": [
     "angular"
@@ -20,12 +22,25 @@
   "author": "Chris Song",
   "license": "ISC",
   "devDependencies": {
+    "@angular/animations": "^4.1.2",
+    "@angular/common": "^4.1.2",
+    "@angular/compiler": "^4.1.2",
+    "@angular/core": "^4.1.2",
+    "@angular/forms": "^4.1.2",
+    "@angular/http": "^4.1.2",
+    "@angular/platform-browser": "^4.1.2",
+    "@angular/platform-browser-dynamic": "^4.1.2",
+    "@angular/router": "^4.1.2",
     "@types/mocha": "^2.2.41",
     "@types/requirejs": "^2.1.29",
     "@types/rx": "^4.1.1",
     "@types/systemjs": "^0.20.2",
     "colors": "^1.1.2",
+    "core-js": "^2.4.1",
     "del": "^2.2.2",
+    "electron": "^1.6.7",
+    "electron-builder": "^17.5.0",
+    "electron-packager": "^8.7.0",
     "gulp": "^3.9.1",
     "gulp-clean-css": "^3.0.4",
     "gulp-concat": "^2.6.1",
@@ -37,23 +52,13 @@
     "gulp-webserver": "^0.9.1",
     "karma": "^1.6.0",
     "path": "^0.12.7",
-    "typescript": "^2.3.2"
-  },
-  "dependencies": {
-    "@angular/animations": "^4.1.0",
-    "@angular/common": "^4.1.0",
-    "@angular/compiler": "^4.1.0",
-    "@angular/core": "^4.1.0",
-    "@angular/forms": "^4.1.0",
-    "@angular/http": "^4.1.0",
-    "@angular/platform-browser": "^4.1.0",
-    "@angular/platform-browser-dynamic": "^4.1.0",
-    "@angular/router": "^4.1.0",
     "reflect-metadata": "^0.1.10",
     "requirejs": "^2.3.3",
-    "rxjs": "^5.3.0",
-    "zone.js": "^0.8.5",
+    "rxjs": "^5.4.0",
     "systemjs": "^0.20.12",
-    "core-js": "^2.4.1"
-  }
+    "typescript": "^2.3.2",
+    "url": "^0.11.0",
+    "zone.js": "^0.8.5"
+  },
+  "dependencies": {}
 }

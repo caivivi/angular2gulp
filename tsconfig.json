@@ -13,11 +13,11 @@
         ]
     },
     "include": [
-        "app/"
+        "src/"
     ],
     "exclude": [
         "node_modules/",
-        "app/scripts/dummyModules.ts",
-        "app/scripts/systemjsConfig.ts"
+        "src/scripts/dummyModules.ts",
+        "src/scripts/systemjsConfig.ts"
     ]
 }

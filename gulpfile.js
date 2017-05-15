@@ -1,3 +1,4 @@
+const packageJson = require('./package.json');
 const gulp = require("gulp");
 const WebServer = require("gulp-webserver");
 const gulpWatch = require("gulp-watch");
@@ -7,19 +8,24 @@ const concat = require("gulp-concat");
 const cleanCSS = require("gulp-clean-css");
 const HtmlMin = require("gulp-htmlmin");
 const tsc = require("gulp-typescript");
+const electronPackager = require('electron-packager');
+const electronBuilder = require('electron-builder');
 const del = require("del");
 const path = require("path");
 const colors = require("colors");
 
 //folders
-const appFolder = "app/", appScriptsFolder = `${appFolder}scripts/`;
-const destFolder = "dist/", destScriptsFolder = `${destFolder}scripts/`;
+const srcFolder = "src/", srcScriptsFolder = `${srcFolder}scripts/`;
+const destFolder = "dist/", destScriptsFolder = `${destFolder}scripts/`, outFolder = "out/";
 const nodeFolder = "node_modules/", angularFolder = `${nodeFolder}@angular/`, RxFolder = `${nodeFolder}rxjs/src/`, rxDestFolder = `${destScriptsFolder}rxjs/`;
-let angularAppFolder = `${appScriptsFolder}@angular/`, angularDestFolder = `${destScriptsFolder}@angular/`;
+let angularSrcFolder = `${srcScriptsFolder}@angular/`, angularDestFolder = `${destScriptsFolder}@angular/`;
 
-const requirejs = `${nodeFolder}requirejs/require.js`, output = "bundle.js", maints = `${appScriptsFolder}main.ts`, maintsOutput = `${destScriptsFolder}main.ts`;
-const systemjs = `${nodeFolder}systemjs/dist/system.src.js`, systemjsConfig = `${appScriptsFolder}systemjsConfig.ts`, systemjsConfigOutput = `${destScriptsFolder}systemjsConfig.js`, systemjsBundle = [systemjs, systemjsConfigOutput];
+const requirejs = `${nodeFolder}requirejs/require.js`, output = "bundle.js", maints = `${srcScriptsFolder}main.ts`, maintsOutput = `${destScriptsFolder}main.ts`;
+const systemjs = `${nodeFolder}systemjs/dist/system.src.js`, systemjsConfig = `${srcScriptsFolder}systemjsConfig.ts`, systemjsConfigOutput = `${destScriptsFolder}systemjsConfig.js`, systemjsBundle = [systemjs, systemjsConfigOutput];
 const corejs = `${nodeFolder}core-js/client/core.js`;
+
+const allHTML = `${srcFolder}**/*.html`, allCSS = `${srcFolder}**/*.css`, allScript = [`${srcFolder}**/*.ts`, `!${srcScriptsFolder}dummyModules.ts`, `!${systemjsConfig}`];
+const otherFiles = [`${srcFolder}**/*`, `!${allHTML}`, `!${allCSS}`, `!${srcFolder}**/*.ts`];
 
 // configurations
 const appOptions = {
@@ -60,17 +66,23 @@ const htmlMinOptions = {
     removeComments: true,
     caseSensitive: true
 };
+const packagerOptions = {
+    name: packageJson.name,
+    dir: "./",
+    out: "out",
+    ignore: [/src/ig, /specs/ig, /node_modules/ig]///(?!dist){1}/ig
+};
 
 /* variables */
 let tsForDummy = tsc.createProject({ target: "es5", lib: ["dom", "es2017"], module: appOptions.tsc.module });
 
-//tasks
+//app tasks
 gulp.task("clean", [], async () => {
     try {
-        let deletionResult = await del([`${destFolder}**/*`], delOptions);
+        let deletionResult = await del([`${destFolder}**/*`, `${outFolder}**/*`], delOptions);
         logMsg(deletionResult.length.toString().blue, `file${deletionResult.length <= 1 ? " has" : "s have"} been deleted.`);
     } catch (ex) {
-        logErr(`An error occurred while executing task ${this.name}:`, ex);
+        logErr(`An error occurred while cleanninng:`, ex);
     }
 });
 
@@ -167,7 +179,7 @@ gulp.task("compile", ["clean"], async () => {
 
         if (pResult.every(r => r)) {
             logMsg("Compiling & merging angular bundle...");
-            tsProject = tsc.createProject("ng.tsconfig.json", { module: appOptions.tsc.module, out: output });
+            let tsProject = tsc.createProject("ng.tsconfig.json", { module: appOptions.tsc.module, out: output });
 
             await new Promise((resolve, reject) => {
                 tsProject.src()//Must us ts stream instead of gulp.src here.
@@ -213,7 +225,7 @@ gulp.task("compile", ["clean"], async () => {
 gulp.task("compileumd", ["clean"], async () => {
     try {
         //fake module
-        const dummyModules = `${appScriptsFolder}dummyModules.ts`, dummyOutput = `${destScriptsFolder}dummyModules.js`;
+        const dummyModules = `${srcScriptsFolder}dummyModules.ts`, dummyOutput = `${destScriptsFolder}dummyModules.js`;
 
         await new Promise((resolve, reject) => {
             logMsg("Compiling dummy modules...");
@@ -314,12 +326,58 @@ gulp.task("compileumd", ["clean"], async () => {
     }
 });
 
-gulp.task("build", [appOptions.angular.useUMD ? "compileumd" : "compile"]);
+gulp.task("build", [appOptions.angular.useUMD ? "compileumd" : "compile"], async () => {
+    let tsProject = tsc.createProject("tsconfig.json", appOptions.tsc);
+
+    //typescript
+    let tsPro = new Promise((resolve, reject) => {
+        gulp.src(allScript)
+            .pipe(tsProject())
+            .pipe(gulp.dest(destFolder))
+            .on("finish", () => {
+                logMsg("App typescript compilation complete.");
+                resolve(true);
+            })
+            .on("error", () => {
+                logErr("An error occurred while compiling app typescript.");
+                reject(false);
+            });
+    });
+
+    //css
+    let cssPro = new Promise((resolve, reject) => {
+        gulp.src(allCSS)
+            .pipe(cleanCSS(cleanCSSOptions))
+            .pipe(gulp.dest(destFolder))
+            .on("finish", () => {
+                logMsg("App css compilation complete.");
+                resolve(true);
+            })
+            .on("error", () => {
+                logErr("An error occurred while compiling app css.");
+                reject(false);
+            });
+    });
+
+    //html
+    let htmlPro = new Promise((resolve, reject) => {
+        gulp.src(allHTML)
+            .pipe(HtmlMin(htmlMinOptions))
+            .pipe(gulp.dest(destFolder))
+            .on("finish", () => {
+                logMsg("App html compilation complete.");
+                resolve(true);
+            })
+            .on("error", () => {
+                logErr("An error occurred while compiling app html.");
+                reject(false);
+            });
+    });
+
+    await Promise.all([tsPro, cssPro, htmlPro]);
+});
 
 gulp.task("watch", ["build"], async () => {
-    const allHTML = `${appFolder}**/*.html`, allCSS = `${appFolder}**/*.css`, allScript = [`${appFolder}**/*.ts`, `!${appScriptsFolder}dummyModules.ts`, `!${systemjsConfig}`];
-    const otherFiles = [`${appFolder}**/*`, `!${allHTML}`, `!${allCSS}`, `!${appFolder}**/*.ts`];
-
     appOptions.moduleLoader === systemjs && allScript.push(`!${maints}`);
 
     //typescript
@@ -416,6 +474,25 @@ gulp.task("startDevServer", [], async () => {
 
 gulp.task("default", ["watch", "startDevServer"]);
 
+//electron tasks
+gulp.task("cleanOut", [], async () => {
+    try {
+        let deletionResult = await del([`${outFolder}**/*`], delOptions);
+        logMsg(deletionResult.length.toString().blue, `file${deletionResult.length <= 1 ? " has" : "s have"} been deleted.`);
+    } catch (ex) {
+        logErr(`An error occurred while cleaning out folder:`, ex);
+    }
+});
+
+gulp.task("buildApp", ["build"], async () => {
+    await new Promise((resolve, reject) => {
+        electronPackager(packagerOptions, (err, appPaths) => {
+            !!err ? logErr("Error occurred while building app:", err) : logMsg("App build complete at", appPaths[0]);
+            resolve(true);
+        });
+    });
+});
+
 function padZero(val) {
     return val < 10 ? "0" + val : val;
 }
@@ -436,17 +513,17 @@ function logErr(msg, ex) {
 }
 
 String.prototype.toDist = function () {
-    const appPathIndex = this.indexOf(appFolder);
-    if (appPathIndex < 0) return this;
+    const srcPathIndex = this.indexOf(srcFolder);
+    if (srcPathIndex < 0) return this;
 
-    let appPath = this.substring(0, appPathIndex);
-    return path.join(appPath, destFolder, this.substring(appPathIndex + appFolder.length));
+    let appPath = this.substring(0, srcPathIndex);
+    return path.join(appPath, destFolder, this.substring(srcPathIndex + srcFolder.length));
 }
 
 String.prototype.toDist = function () {
-    const appPathIndex = this.indexOf(appFolder);
-    if (appPathIndex < 0) return this;
+    const srcPathIndex = this.indexOf(srcFolder);
+    if (srcPathIndex < 0) return this;
 
-    let appPath = this.substring(0, appPathIndex);
-    return path.join(appPath, destFolder, this.substring(appPathIndex + appFolder.length));
+    let appPath = this.substring(0, srcPathIndex);
+    return path.join(appPath, destFolder, this.substring(srcPathIndex + srcFolder.length));
 }
