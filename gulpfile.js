@@ -379,7 +379,21 @@ gulp.task("build", [appOptions.angular.useUMD ? "compileumd" : "compile"], async
             });
     });
 
-    await Promise.all([tsPro, cssPro, htmlPro]);
+    //other
+    let otherPro = new Promise((resolve, reject) => {
+        gulp.src(otherFiles)
+            .pipe(gulp.dest(destFolder))
+            .on("finish", () => {
+                logMsg("App files transferring complete.");
+                resolve(true);
+            })
+            .on("error", () => {
+                logErr("An error occurred while transferring app files.");
+                reject(false);
+            });
+    });
+
+    await Promise.all([tsPro, cssPro, htmlPro, otherPro]);
 });
 
 gulp.task("watch", ["build"], async () => {
