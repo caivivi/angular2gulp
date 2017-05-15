@@ -70,7 +70,12 @@ const packagerOptions = {
     name: packageJson.name,
     dir: "./",
     out: "out",
-    ignore: [/src/ig, /specs/ig, /node_modules/ig]///(?!dist){1}/ig
+    ignore: (path) => {
+        const allowList = ["/index.js", "/package.json"];
+        if (!path.startsWith("/dist") && !allowList.includes(path)) {
+            return path;
+        }
+    }///^(?!(\/dist)).*$/i
 };
 
 /* variables */
