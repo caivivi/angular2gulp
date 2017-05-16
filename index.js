@@ -14,8 +14,9 @@ const windowOption = {
     minWidth: 1024,
     minHeight: 768,
     center: true,
-    transparent: true,
-    titleBarStyle: "hidden",
+    transparent: false,
+    backgroundColor: "#fff",
+    titleBarStyle: "default",
     title: packageJson.name,
     webPreferences: {
         webSecurity: true,
