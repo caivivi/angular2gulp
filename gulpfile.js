@@ -80,10 +80,7 @@ const packagerOptions = {
 const builderOptions = {
     targets: eleBuilder.Platform.current().createTarget(),
     config: {
-        productName: packageJson.name,
         compression: "maximum",
-        buildVersion: "1.2.3",
-        asar: true,
         files: [
             destFolder,
             "index.js",
@@ -523,7 +520,7 @@ gulp.task("buildApp", ["build"], async () => {
 gulp.task("releaseApp", ["build"], async () => {
     try {
         let result = await eleBuilder.build(builderOptions);
-        logMsg("Installer build complete", result);
+        logMsg("Installer build complete: ", result[0]);
     } catch (err) {
         logErr("Error occurred while building installer:", err);
     }
