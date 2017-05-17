@@ -6,4 +6,4 @@ app/*.js
 node_modules/
 .vscode/
 dist/
-out/
+output/
