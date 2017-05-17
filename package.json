@@ -20,7 +20,11 @@
   "keywords": [
     "angular"
   ],
-  "author": "Chris Song",
+  "author": {
+    "name": "Chris Song",
+    "email": "kaiyuan.song@zeiss.com",
+    "url": "https://github.com/andy5638"
+  },
   "license": "ISC",
   "devDependencies": {
     "@angular/animations": "^4.1.2",
