@@ -78,6 +78,15 @@ const packagerOptions = {
     }///^(?!(\/dist)).*$/i
 };
 const builderOptions = {
+    appMetadata: {
+        name: packageJson.name,
+        version: packageJson.version,
+        homepage: packageJson.author.url,
+        author: {
+            name: packageJson.author.name,
+            email: packageJson.author.email
+        }
+    },
     targets: eleBuilder.Platform.current().createTarget(),
     config: {
         compression: "maximum",
@@ -88,6 +97,18 @@ const builderOptions = {
         ],
         directories: {
             output: appOutputFolder
+        },
+        linux: {
+            target: "deb",
+            icon: ""//app.png
+        },
+        win: {
+            target: "zip",
+            icon: ""//app.ico
+        },
+        mac: {
+            target: "dmg",
+            icon: ""//app.icns
         }
     }
 };
