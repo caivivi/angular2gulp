@@ -8,15 +8,15 @@ const concat = require("gulp-concat");
 const cleanCSS = require("gulp-clean-css");
 const HtmlMin = require("gulp-htmlmin");
 const tsc = require("gulp-typescript");
-const electronPackager = require('electron-packager');
-const electronBuilder = require('electron-builder');
+const elePackager = require('electron-packager');
+const eleBuilder = require('electron-builder');
 const del = require("del");
 const path = require("path");
 const colors = require("colors");
 
 //folders
-const srcFolder = "src/", srcScriptsFolder = `${srcFolder}scripts/`;
-const destFolder = "dist/", destScriptsFolder = `${destFolder}scripts/`, outFolder = "out/";
+const srcFolder = "src/", srcScriptsFolder = `${srcFolder}scripts/`, appOutputFolder = "out/";
+const destFolder = "dist/", destScriptsFolder = `${destFolder}scripts/`;
 const nodeFolder = "node_modules/", angularFolder = `${nodeFolder}@angular/`, RxFolder = `${nodeFolder}rxjs/src/`, rxDestFolder = `${destScriptsFolder}rxjs/`;
 let angularSrcFolder = `${srcScriptsFolder}@angular/`, angularDestFolder = `${destScriptsFolder}@angular/`;
 
@@ -69,13 +69,30 @@ const htmlMinOptions = {
 const packagerOptions = {
     name: packageJson.name,
     dir: "./",
-    out: "out",
+    out: appOutputFolder,
     ignore: (path) => {
         const allowList = ["/index.js", "/package.json"];
         if (!path.startsWith("/dist") && !allowList.includes(path)) {
             return path;
         }
     }///^(?!(\/dist)).*$/i
+};
+const builderOptions = {
+    targets: eleBuilder.Platform.current().createTarget(),
+    config: {
+        productName: packageJson.name,
+        compression: "maximum",
+        buildVersion: "1.2.3",
+        asar: true,
+        files: [
+            destFolder,
+            "index.js",
+            "package.json"
+        ],
+        directories: {
+            output: appOutputFolder
+        }
+    }
 };
 
 /* variables */
@@ -84,7 +101,7 @@ let tsForDummy = tsc.createProject({ target: "es5", lib: ["dom", "es2017"], modu
 //app tasks
 gulp.task("clean", [], async () => {
     try {
-        let deletionResult = await del([`${destFolder}**/*`, `${outFolder}**/*`], delOptions);
+        let deletionResult = await del([`${destFolder}**/*`, `${appOutputFolder}**/*`], delOptions);
         logMsg(deletionResult.length.toString().blue, `file${deletionResult.length <= 1 ? " has" : "s have"} been deleted.`);
     } catch (ex) {
         logErr(`An error occurred while cleanninng:`, ex);
@@ -494,22 +511,22 @@ gulp.task("startDevServer", [], async () => {
 gulp.task("default", ["watch", "startDevServer"]);
 
 //electron tasks
-gulp.task("cleanOut", [], async () => {
-    try {
-        let deletionResult = await del([`${outFolder}**/*`], delOptions);
-        logMsg(deletionResult.length.toString().blue, `file${deletionResult.length <= 1 ? " has" : "s have"} been deleted.`);
-    } catch (ex) {
-        logErr(`An error occurred while cleaning out folder:`, ex);
-    }
-});
-
 gulp.task("buildApp", ["build"], async () => {
     await new Promise((resolve, reject) => {
-        electronPackager(packagerOptions, (err, appPaths) => {
+        elePackager(packagerOptions, (err, appPaths) => {
             !!err ? logErr("Error occurred while building app:", err) : logMsg("App build complete at", appPaths[0]);
             resolve(true);
         });
     });
+});
+
+gulp.task("releaseApp", ["build"], async () => {
+    try {
+        let result = await eleBuilder.build(builderOptions);
+        logMsg("Installer build complete", result);
+    } catch (err) {
+        logErr("Error occurred while building installer:", err);
+    }
 });
 
 function padZero(val) {

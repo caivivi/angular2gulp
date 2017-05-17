@@ -14,7 +14,8 @@
     "gulp": "gulp",
     "karma": "karma",
     "app": "electron . --enable-touch-events",
-    "pack": "gulp buildApp"
+    "pack": "gulp buildApp",
+    "release": "gulp releaseApp"
   },
   "keywords": [
     "angular"
