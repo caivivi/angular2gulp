@@ -103,7 +103,7 @@ const builderOptions = {
             icon: ""//app.png
         },
         win: {
-            target: "zip",
+            target: "nsis",
             icon: ""//app.ico
         },
         mac: {
@@ -538,7 +538,7 @@ gulp.task("buildApp", ["build"], async () => {
     });
 });
 
-gulp.task("releaseApp", ["build"], async () => {
+gulp.task("releaseApp", [], async () => {
     try {
         let result = await eleBuilder.build(builderOptions);
         logMsg("Installer build complete: ", result[0]);
