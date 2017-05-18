@@ -20,6 +20,7 @@
   "keywords": [
     "angular"
   ],
+  "homepage": "https://www.zeiss.com/",
   "author": {
     "name": "Chris Song",
     "email": "kaiyuan.song@zeiss.com",
@@ -45,6 +46,7 @@
     "del": "^2.2.2",
     "electron": "^1.6.7",
     "electron-builder": "^17.5.0",
+    "electron-builder-squirrel-windows": "^17.6.1",
     "electron-packager": "^8.7.0",
     "gulp": "^3.9.1",
     "gulp-clean-css": "^3.0.4",

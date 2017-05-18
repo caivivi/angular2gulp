@@ -1,3 +1,4 @@
+"use strict";
 const packageJson = require('./package.json');
 const gulp = require("gulp");
 const WebServer = require("gulp-webserver");
@@ -25,7 +26,7 @@ const systemjs = `${nodeFolder}systemjs/dist/system.src.js`, systemjsConfig = `$
 const corejs = `${nodeFolder}core-js/client/core.js`;
 
 const allHTML = `${srcFolder}**/*.html`, allCSS = `${srcFolder}**/*.css`, allScript = [`${srcFolder}**/*.ts`, `!${srcScriptsFolder}dummyModules.ts`, `!${systemjsConfig}`];
-const otherFiles = [`${srcFolder}**/*`, `!${allHTML}`, `!${allCSS}`, `!${srcFolder}**/*.ts`];
+const otherFiles = [`${srcFolder}**/*`, `!${allHTML}`, `!${allCSS}`, `!${srcFolder}**/*.ts`], appIcon = "dist/favicon.ico", appIconParsed = path.join(__dirname, appIcon);
 
 // configurations
 const appOptions = {
@@ -100,15 +101,29 @@ const builderOptions = {
         },
         linux: {
             target: "deb",
-            icon: ""//app.png
+            icon: appIconParsed
         },
         win: {
-            target: "nsis",
-            icon: ""//app.ico
+            target: "squirrel",
+            icon: appIconParsed
         },
         mac: {
+            category: "Utilities",
             target: "dmg",
-            icon: ""//app.icns
+            icon: appIconParsed
+        },
+        nsis: {
+            oneClick: false,
+            perMachine: true,
+            allowToChangeInstallationDirectory: true,
+            runAfterFinish: false,
+            installerIcon: appIconParsed,
+            deleteAppDataOnUninstall: true,
+        },
+        squirrelWindows: {
+            iconUrl: appIconParsed,
+            loadingGif: null,
+            msi: true
         }
     }
 };
@@ -475,7 +490,7 @@ gulp.task("watch", ["build"], async () => {
         });
 
         function compile(files) {
-            gulp.src(!!files ? files: allCSS)
+            gulp.src(!!files && files.length ? files: allCSS)
                 .pipe(cleanCSS(cleanCSSOptions, (detail) => { }))
                 .pipe(gulp.dest(!!files && files.length === 1 ? path.dirname(files[0].toDist()) : destFolder));
         }
@@ -538,7 +553,7 @@ gulp.task("buildApp", ["build"], async () => {
     });
 });
 
-gulp.task("releaseApp", [], async () => {
+gulp.task("releaseApp", ["build"], async () => {
     try {
         let result = await eleBuilder.build(builderOptions);
         logMsg("Installer build complete: ", result[0]);
@@ -567,15 +582,7 @@ function logErr(msg, ex) {
 }
 
 String.prototype.toDist = function () {
-    const srcPathIndex = this.indexOf(srcFolder);
-    if (srcPathIndex < 0) return this;
-
-    let appPath = this.substring(0, srcPathIndex);
-    return path.join(appPath, destFolder, this.substring(srcPathIndex + srcFolder.length));
-}
-
-String.prototype.toDist = function () {
-    const srcPathIndex = this.indexOf(srcFolder);
+    const srcPathIndex = this.indexOf(path.join(__dirname, srcFolder));
     if (srcPathIndex < 0) return this;
 
     let appPath = this.substring(0, srcPathIndex);
