@@ -26,7 +26,7 @@ const systemjs = `${nodeFolder}systemjs/dist/system.src.js`, systemjsConfig = `$
 const corejs = `${nodeFolder}core-js/client/core.js`;
 
 const allHTML = `${srcFolder}**/*.html`, allCSS = `${srcFolder}**/*.css`, allScript = [`${srcFolder}**/*.ts`, `!${srcScriptsFolder}dummyModules.ts`, `!${systemjsConfig}`];
-const otherFiles = [`${srcFolder}**/*`, `!${allHTML}`, `!${allCSS}`, `!${srcFolder}**/*.ts`], appIcon = "dist/favicon.ico", appIconParsed = path.join(__dirname, appIcon);
+const otherFiles = [`${srcFolder}**/*`, `!${allHTML}`, `!${allCSS}`, `!${srcFolder}**/*.ts`], appIcon = "dist/favicon.ico", appIconAbsolute = path.join(__dirname, appIcon);
 
 // configurations
 const appOptions = {
@@ -90,6 +90,7 @@ const builderOptions = {
     },
     targets: eleBuilder.Platform.current().createTarget(),
     config: {
+        artifactName: "${productName} Setup ${version}.${ext}",
         compression: "maximum",
         files: [
             destFolder,
@@ -101,27 +102,27 @@ const builderOptions = {
         },
         linux: {
             target: "deb",
-            icon: appIconParsed
+            icon: appIconAbsolute
         },
         win: {
             target: "squirrel",
-            icon: appIconParsed
+            icon: appIconAbsolute
         },
         mac: {
             category: "Utilities",
             target: "dmg",
-            icon: appIconParsed
+            icon: appIconAbsolute
         },
         nsis: {
             oneClick: false,
             perMachine: true,
             allowToChangeInstallationDirectory: true,
             runAfterFinish: false,
-            installerIcon: appIconParsed,
-            deleteAppDataOnUninstall: true,
+            installerIcon: appIconAbsolute,
+            deleteAppDataOnUninstall: true
         },
         squirrelWindows: {
-            iconUrl: appIconParsed,
+            iconUrl: appIconAbsolute,
             loadingGif: null,
             msi: true
         }
