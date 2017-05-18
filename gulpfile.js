@@ -15,7 +15,7 @@ const path = require("path");
 const colors = require("colors");
 
 //folders
-const srcFolder = "src/", srcScriptsFolder = `${srcFolder}scripts/`, appOutputFolder = "out/";
+const srcFolder = "src/", srcScriptsFolder = `${srcFolder}scripts/`, appOutputFolder = "output/";
 const destFolder = "dist/", destScriptsFolder = `${destFolder}scripts/`;
 const nodeFolder = "node_modules/", angularFolder = `${nodeFolder}@angular/`, RxFolder = `${nodeFolder}rxjs/src/`, rxDestFolder = `${destScriptsFolder}rxjs/`;
 let angularSrcFolder = `${srcScriptsFolder}@angular/`, angularDestFolder = `${destScriptsFolder}@angular/`;
