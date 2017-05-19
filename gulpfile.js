@@ -91,7 +91,7 @@ const builderOptions = {
         },
         linux: {
             target: ["deb", "zip"],
-            icon: appIconAbsolute
+            // icon: appIconAbsolute
         },
         win: {
             target: ["nsis", "zip"],
@@ -101,7 +101,7 @@ const builderOptions = {
         mac: {
             category: "Utilities",
             target: ["dmg", "zip"],
-            icon: appIconAbsolute
+            // icon: appIconAbsolute
         },
         nsis: {
             oneClick: false,
