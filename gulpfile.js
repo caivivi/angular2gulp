@@ -90,7 +90,8 @@ const builderOptions = {
         files: [
             destFolder,
             "index.js",
-            "package.json"
+            "package.json",
+            "license.txt"
         ],
         directories: {
             output: appOutputFolder
@@ -100,7 +101,7 @@ const builderOptions = {
             // icon: appIconAbsolute
         },
         win: {
-            target: ["nsis", "zip"],
+            target: ["nsis"],
             icon: appIconAbsolute,
             publisherName: [packageJson.author.name]
         },
@@ -117,8 +118,7 @@ const builderOptions = {
             deleteAppDataOnUninstall: true,
             license: path.join(__dirname, licenseFile),
             multiLanguageInstaller: true,
-            menuCategory: true,
-            useZip: true
+            menuCategory: true
         },
         squirrelWindows: {
             iconUrl: appIconAbsolute,
@@ -545,7 +545,7 @@ gulp.task("releaseApp", ["build"], async () => {
         let result = await eleBuilder.build(builderOptions);
         logMsg("Installer build complete: ", result[0]);
     } catch (err) {
-        logErr("Error occurred while building installer:", err);
+        !!err && logErr("Error occurred while building installer:", err);
     }
 });
 

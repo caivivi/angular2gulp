@@ -95,8 +95,6 @@ app.on("ready", onAppReady)
     .on("activate", () => !win && createWindow())
     .on("window-all-closed", () => app.quit());
 
-
-
 autoUpdater.on("error", (err) => {
     autoUpdater.logger.error("Error occurred when updating application");
     autoUpdater.logger.error(err);
