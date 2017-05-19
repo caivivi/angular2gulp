@@ -9,7 +9,6 @@ const concat = require("gulp-concat");
 const cleanCSS = require("gulp-clean-css");
 const HtmlMin = require("gulp-htmlmin");
 const tsc = require("gulp-typescript");
-const elePackager = require('electron-packager');
 const eleBuilder = require('electron-builder');
 const del = require("del");
 const path = require("path");
@@ -17,7 +16,7 @@ const colors = require("colors");
 
 //folders
 const srcFolder = "src/", srcScriptsFolder = `${srcFolder}scripts/`, appOutputFolder = "output/";
-const destFolder = "dist/", destScriptsFolder = `${destFolder}scripts/`;
+const destFolder = "dist/", destScriptsFolder = `${destFolder}scripts/`, licenseFile = "license.txt";
 const nodeFolder = "node_modules/", angularFolder = `${nodeFolder}@angular/`, RxFolder = `${nodeFolder}rxjs/src/`, rxDestFolder = `${destScriptsFolder}rxjs/`;
 let angularSrcFolder = `${srcScriptsFolder}@angular/`, angularDestFolder = `${destScriptsFolder}@angular/`;
 
@@ -67,27 +66,17 @@ const htmlMinOptions = {
     removeComments: true,
     caseSensitive: true
 };
-const packagerOptions = {
-    name: packageJson.name,
-    dir: "./",
-    out: appOutputFolder,
-    ignore: (path) => {
-        const allowList = ["/index.js", "/package.json"];
-        if (!path.startsWith("/dist") && !allowList.includes(path)) {
-            return path;
-        }
-    }///^(?!(\/dist)).*$/i
-};
 const builderOptions = {
     appMetadata: {
         name: packageJson.name,
         version: packageJson.version,
-        homepage: packageJson.author.url,
+        homepage: packageJson.homepage,
         author: {
             name: packageJson.author.name,
             email: packageJson.author.email
         }
     },
+    publish: null,
     targets: eleBuilder.Platform.current().createTarget(),
     config: {
         artifactName: "${productName} Setup ${version}.${ext}",
@@ -101,30 +90,33 @@ const builderOptions = {
             output: appOutputFolder
         },
         linux: {
-            target: "deb",
+            target: ["deb", "zip"],
             icon: appIconAbsolute
         },
         win: {
-            target: "squirrel",
-            icon: appIconAbsolute
+            target: ["nsis", "zip"],
+            icon: appIconAbsolute,
+            publisherName: [packageJson.author.name]
         },
         mac: {
             category: "Utilities",
-            target: "dmg",
+            target: ["dmg", "zip"],
             icon: appIconAbsolute
         },
         nsis: {
             oneClick: false,
-            perMachine: true,
             allowToChangeInstallationDirectory: true,
             runAfterFinish: false,
             installerIcon: appIconAbsolute,
-            deleteAppDataOnUninstall: true
+            deleteAppDataOnUninstall: true,
+            license: path.join(__dirname, licenseFile),
+            multiLanguageInstaller: true,
+            menuCategory: true,
+            useZip: true
         },
         squirrelWindows: {
             iconUrl: appIconAbsolute,
-            loadingGif: null,
-            msi: true
+            loadingGif: null
         }
     }
 };
@@ -542,18 +534,6 @@ gulp.task("startDevServer", [], async () => {
     gulp.src(destFolder).pipe(WebServer(serverOptions));
 });
 
-gulp.task("default", ["watch", "startDevServer"]);
-
-//electron tasks
-gulp.task("buildApp", ["build"], async () => {
-    await new Promise((resolve, reject) => {
-        elePackager(packagerOptions, (err, appPaths) => {
-            !!err ? logErr("Error occurred while building app:", err) : logMsg("App build complete at", appPaths[0]);
-            resolve(true);
-        });
-    });
-});
-
 gulp.task("releaseApp", ["build"], async () => {
     try {
         let result = await eleBuilder.build(builderOptions);
@@ -562,6 +542,8 @@ gulp.task("releaseApp", ["build"], async () => {
         logErr("Error occurred while building installer:", err);
     }
 });
+
+gulp.task("default", ["watch", "startDevServer"]);
 
 function padZero(val) {
     return val < 10 ? "0" + val : val;
