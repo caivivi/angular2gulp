@@ -76,7 +76,13 @@ const builderOptions = {
             email: packageJson.author.email
         }
     },
-    publish: null,
+    publish: [
+        {
+            provider: "generic",
+            owner: packageJson.author.name,
+            url: "http://zc01n02074:81/"
+        }
+    ],
     targets: eleBuilder.Platform.current().createTarget(),
     config: {
         artifactName: "${productName} Setup ${version}.${ext}",

@@ -47,6 +47,7 @@
     "electron": "^1.6.7",
     "electron-builder": "^17.5.0",
     "electron-builder-squirrel-windows": "^17.6.1",
+    "electron-updater": "^1.15.0",
     "gulp": "^3.9.1",
     "gulp-clean-css": "^3.0.4",
     "gulp-concat": "^2.6.1",

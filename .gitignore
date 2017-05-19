@@ -3,6 +3,8 @@ app/**/*.js
 app/*.js.map
 app/*.js
 
+dev-app-update.yml
+
 node_modules/
 .vscode/
 dist/
