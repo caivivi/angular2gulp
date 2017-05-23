@@ -27,6 +27,9 @@ self.addEventListener("fetch", (e: any) => e.respondWith((async () => {
 })()));
 
 self.addEventListener("message", (e) => {
-    console.log("Service Worker received a message from page:", e.data);
-    !!e.ports.length && e.ports[0].postMessage({ msg: "Send message back to window", previousData: e.data });
+    console.log("Service Worker received a message from page:", e.data, e.ports);
+
+    e.ports.length && e.ports.forEach((port) => {
+        port.postMessage({ msg: "Send message back to window", previousData: e.data });
+    });
 });
