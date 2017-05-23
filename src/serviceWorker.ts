@@ -5,16 +5,15 @@ const appCache = "app_cache_v1", cacheFiles = [
     "modules/list/list.component.css"
 ];
 
-self.addEventListener("install", (e: any) => e.waitUntil((async () => {
+self.addEventListener("install", (e: any) => e.waitUntil((<any>self).skipWaiting()));
+
+self.addEventListener("activate", (e: any) => e.waitUntil((async () => {
+    await (<any>self).clients.claim();
     let cache = await caches.open(appCache);
     await cache.addAll(cacheFiles);
 })()));
 
-self.addEventListener('activate', (e: any) => e.waitUntil((async () => {
-
-})()));
-
-this.addEventListener('fetch', (e) => e.respondWith((async () => {
+self.addEventListener("fetch", (e: any) => e.respondWith((async () => {
     let response: Response = await caches.match(e.request);
 
     if (!response) {
@@ -25,3 +24,7 @@ this.addEventListener('fetch', (e) => e.respondWith((async () => {
 
     return response;
 })()));
+
+self.addEventListener("message", (e) => {
+    e.ports[0].postMessage({ msg: "Send message back to window", previousData: e.data });
+});
