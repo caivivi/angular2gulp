@@ -1,20 +1,21 @@
 const appCache = "app_cache_v1", cacheFiles = [
     'index.html',
     'modules/app/app.component.css',
-    'scripts/main.js'
+    'scripts/main.js',
+    "modules/list/list.component.css"
 ];
 
-self.addEventListener("install", (e: any) => e.waitUntil(async () => {
+self.addEventListener("install", (e: any) => e.waitUntil((async () => {
     let cache = await caches.open(appCache);
     await cache.addAll(cacheFiles);
-}));
+})()));
 
-self.addEventListener('activate', (e: any) => e.waitUntil(async () => {
+self.addEventListener('activate', (e: any) => e.waitUntil((async () => {
 
-}));
+})()));
 
 this.addEventListener('fetch', (e) => e.respondWith((async () => {
-    let response = await caches.match(e.request);
+    let response: Response = await caches.match(e.request);
 
     if (!response) {
         response = await fetch(e.request);
