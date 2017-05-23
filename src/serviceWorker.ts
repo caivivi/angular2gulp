@@ -5,12 +5,13 @@ const appCache = "app_cache_v1", cacheFiles = [
     "modules/list/list.component.css"
 ];
 
-self.addEventListener("install", (e: any) => e.waitUntil((<any>self).skipWaiting()));
+self.addEventListener("install", (e: any) => e.waitUntil((async () => {
+    let cache = await caches.open(appCache);
+    await cache.addAll(cacheFiles);
+})()));
 
 self.addEventListener("activate", (e: any) => e.waitUntil((async () => {
     await (<any>self).clients.claim();
-    let cache = await caches.open(appCache);
-    await cache.addAll(cacheFiles);
 })()));
 
 self.addEventListener("fetch", (e: any) => e.respondWith((async () => {
@@ -26,5 +27,6 @@ self.addEventListener("fetch", (e: any) => e.respondWith((async () => {
 })()));
 
 self.addEventListener("message", (e) => {
-    e.ports[0].postMessage({ msg: "Send message back to window", previousData: e.data });
+    console.log("Service Worker received a message from page:", e.data);
+    !!e.ports.length && e.ports[0].postMessage({ msg: "Send message back to window", previousData: e.data });
 });
