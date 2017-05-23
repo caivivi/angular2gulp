@@ -13,16 +13,16 @@ let swChannel: MessageChannel, appReady = false, swReady = !!navigator.serviceWo
 
 if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("serviceWorker.js").then((registration) => {
-        console.log("Service Worker has been successfully registered");
+        console.log("Service Worker has been successfully registered.");
     }).catch((err) => console.log("Error occurred while registering Service Worker:", err));
     
     swChannel = new MessageChannel();
 
     swChannel.port1.onmessage = (e) => {
-        console.log("Port1 got message from service worker", e.data);
+        console.log("Port1 got message from service worker:", e.data);
     };
     swChannel.port2.onmessage = (e) => {
-        console.log("Port2 got got message from service worker", e.data);
+        console.log("Port2 got got message from service worker:", e.data);
     };
 
     navigator.serviceWorker.addEventListener("controllerchange", (e) => (swReady = true) && initSWData());
