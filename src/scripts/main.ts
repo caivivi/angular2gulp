@@ -11,8 +11,8 @@
 // });
 
 if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/sw.js').then((registration) => {
-        console.log('ServiceWorker registration successfully', registration);
+    navigator.serviceWorker.register('serviceWorker.js').then((registration) => {
+        console.log('ServiceWorker has been successfully registered', registration);
     }).catch((err) => console.log('ServiceWorker registration failed', err));
 }
 
