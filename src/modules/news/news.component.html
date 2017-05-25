@@ -1,5 +1,8 @@
-<select [(ngModel)]="selectedLang" (change)="switchLanguage($event)">
+<select class="lang-picker" tabindex="0" [(ngModel)]="selectedLang" (change)="switchLanguage($event)">
     <option *ngFor="let lang of langSVC.languages" [value]="lang">{{lang}}</option>
 </select>
-<h3>{{langSVC.current.data.articleTitle}}</h3>
-<article>{{langSVC.current.data.articleContent}}</article>
+<span>{{date | date:langSVC.current.dateFormat }}</span>
+<span>{{date.getHours() }}<span class="date-splitter"></span>{{date.getMinutes().toString().padStart(2, "0") }}<span class="date-splitter"></span>{{date.getSeconds().toString().padStart(2, "0") }}</span>
+<hr>
+<h3>{{ langSVC.current.data.articleTitle }}</h3>
+<article [lang]="langSVC.current.code">{{ langSVC.current.data.articleContent }}</article>

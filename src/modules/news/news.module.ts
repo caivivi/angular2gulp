@@ -9,7 +9,7 @@ import { NewsService } from "./news.service";
 @NgModule({
     imports: [FormsModule, CommonModule, newsRoute],
     declarations: [NewsComponent],
-    providers: [NewsService]
+    providers: []
 })
 export class NewsModule {
     constructor() { }

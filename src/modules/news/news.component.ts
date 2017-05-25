@@ -1,7 +1,7 @@
 import { Injectable, Inject, Component, OnInit, OnDestroy } from "@angular/core";
 import { Observable } from "rxjs/Observable";
 import { LanguageService, AppLanguageCode } from "../app/app.service";
-import 'rxjs/add/operator/publish';
+import "rxjs/add/observable/timer";
 
 @Component({
     selector: "app-news",
@@ -9,6 +9,7 @@ import 'rxjs/add/operator/publish';
     styleUrls: ["modules/news/news.component.css"]
 })
 export class NewsComponent implements OnInit, OnDestroy {
+    date: Date = new Date();
     selectedLang: AppLanguageCode = "en-US";
 
     constructor(@Inject(LanguageService) private langSVC: LanguageService) { }
@@ -17,7 +18,9 @@ export class NewsComponent implements OnInit, OnDestroy {
         this.langSVC.switchLanguage(this.selectedLang);
     }
 
-    ngOnInit(): void { }
+    ngOnInit(): void {
+        Observable.timer(1000, 1000).subscribe((time) => this.date = new Date());
+    }
 
     ngOnDestroy(): void { }
 }

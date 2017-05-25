@@ -1,0 +1,31 @@
+@keyframes shine {
+    from {
+        opacity: 1;
+    }
+
+    to {
+        opacity: 0;
+    }
+}
+
+.date-splitter {
+    display: inline-block;
+    animation: shine alternate infinite ease-in-out .5s .5s;
+}
+
+.date-splitter:before {
+    content: ":";
+}
+
+.lang-picker {
+    display: inline-block;
+    margin-right: 10px;
+}
+
+article[lang^="zh"] {
+    text-indent: 26px;
+}
+
+article:lang(zh-CN) {
+    color: #03f;
+}
