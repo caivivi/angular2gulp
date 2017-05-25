@@ -1,4 +1,5 @@
-import { Component, ViewEncapsulation } from "@angular/core";
+import { Component, ViewEncapsulation, Inject, OnInit, OnDestroy } from "@angular/core";
+import { LanguageService, AppLanguageCode } from "../app/app.service";
 
 @Component({
     selector: "body",
@@ -6,6 +7,12 @@ import { Component, ViewEncapsulation } from "@angular/core";
     styleUrls: ["modules/app/app.component.css"],
     encapsulation: ViewEncapsulation.None
 })
-export class AppComponent {
-    constructor() { }
+export class AppComponent implements OnInit, OnDestroy {
+    constructor(@Inject(LanguageService) private langSVC: LanguageService) { }
+
+    ngOnInit(): void {
+        this.langSVC.switchLanguage();
+    }
+
+    ngOnDestroy(): void { }
 }

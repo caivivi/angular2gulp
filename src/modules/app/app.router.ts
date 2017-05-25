@@ -1,7 +1,6 @@
 import { Routes, RouterModule } from "@angular/router";
 
 import { HomeComponent } from "../home/home.component";
-//import { DetailComponent } from "../detail/detail.component";
 
 const rootRouterCocnfig: Routes = [
     {
@@ -20,6 +19,10 @@ const rootRouterCocnfig: Routes = [
     {
         path: "list",
         loadChildren: "modules/list/list.module#ListModule"
+    },
+    {
+        path: "news",
+        loadChildren: "modules/news/news.module#NewsModule"
     }
 ];
 

@@ -571,9 +571,10 @@ function logErr(msg, ex) {
 }
 
 String.prototype.toDist = function () {
-    const srcPathIndex = this.indexOf(path.join(__dirname, srcFolder));
+    let src = path.join(__dirname, srcFolder);
+    let srcPathIndex = this.indexOf(src);
     if (srcPathIndex < 0) return this;
 
-    let appPath = this.substring(0, srcPathIndex);
-    return path.join(appPath, destFolder, this.substring(srcPathIndex + srcFolder.length));
+    let dist = path.join(__dirname, destFolder);
+    return this.replace(src, dist);
 }

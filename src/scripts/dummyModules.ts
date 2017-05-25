@@ -1,5 +1,4 @@
 /// <reference path="../../node_modules/@types/requirejs/index.d.ts" />
-/// <reference path="../../node_modules/@types/rx/index.d.ts" />
 
 declare const ng: {
     core: any;
@@ -16,6 +15,12 @@ declare const ng: {
     http: any;
     forms: any;
 };
+
+declare const Rx: {
+    Observable: {
+        prototype: any;
+    }
+}
 
 /**
  * Dummy Modules

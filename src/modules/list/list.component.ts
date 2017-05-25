@@ -5,12 +5,10 @@ import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/toPromise';
 import 'rxjs/add/operator/catch';
 
-@Injectable()
 @Component({
     selector: "img-list",
     templateUrl: "modules/list/list.component.html",
-    styleUrls: ["modules/list/list.component.css"],
-    providers: [ImageService]
+    styleUrls: ["modules/list/list.component.css"]
 })
 export class ListComponent implements OnInit, OnDestroy {
     Images: MSImage[] = [];
@@ -38,7 +36,7 @@ export class ListComponent implements OnInit, OnDestroy {
     }
 }
 
-export class MSImage {
+export interface MSImage {
     ID: number;
     Name: string;
     Description: string;

@@ -1,0 +1,5 @@
+<select [(ngModel)]="selectedLang" (change)="switchLanguage($event)">
+    <option *ngFor="let lang of langSVC.languages" [value]="lang">{{lang}}</option>
+</select>
+<h3>{{langSVC.current.data.articleTitle}}</h3>
+<article>{{langSVC.current.data.articleContent}}</article>
