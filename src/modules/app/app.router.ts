@@ -23,6 +23,10 @@ const rootRouterCocnfig: Routes = [
     {
         path: "news",
         loadChildren: "modules/news/news.module#NewsModule"
+    },
+    {
+        path: "measure",
+        loadChildren: "modules/measure/measure.module#MeasureModule"
     }
 ];
 
