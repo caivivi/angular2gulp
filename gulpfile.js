@@ -32,7 +32,7 @@ const buildOptions = {
     angular: {
         includeAnimation: false,
         useES5: false,
-        useUMD: true
+        useUMD: false
     },
     tsc: {
         get module() {
