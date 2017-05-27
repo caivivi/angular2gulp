@@ -223,11 +223,11 @@ gulp.task("compile", ["clean"], async () => {
         let pResult = await Promise.all([ngPro, ngAniPro, rxPro, appPro]);
 
         if (pResult.every(r => r)) {
-            logMsg("Compiling & merging angular bundle...");
             let tsProject = tsc.createProject("ng.tsconfig.json", { module: buildOptions.tsc.module, out: output });
 
             await new Promise((resolve, reject) => {
-                tsProject.src()//Must us ts stream instead of gulp.src here.
+                logMsg("Compiling & merging angular bundle...");
+                tsProject.src()//Must use ts stream instead of gulp.src here.
                     .pipe(tsProject())
                     .pipe(gulp.dest(destScriptsFolder))
                     .on("finish", () => {
@@ -243,8 +243,8 @@ gulp.task("compile", ["clean"], async () => {
             logMsg("Deleting temporary folders...");
             let deletionResult = await del([`${destScriptsFolder}/@angular/**`, `${destScriptsFolder}/rxjs/**`, maintsOutput], delOptions);
 
-            logMsg("Compressing & merging dependencies...");
             await new Promise((resolve, reject) => {
+                logMsg("Compressing & merging dependencies...");
                 let files = [...angularPolyfill, systemjs, `${destScriptsFolder}${output}`];
 
                 gulp.src(files)
@@ -307,7 +307,7 @@ gulp.task("compileumd", ["clean"], async () => {
         await new Promise((resolve, reject) => {
             logMsg("Compiling application scripts...");
             
-            tsProject.src()//Must us ts stream instead of gulp.src here.
+            tsProject.src()//Must use ts stream instead of gulp.src here.
                 .pipe(tsProject())
                 .pipe(gulp.dest(destScriptsFolder))
                 .on("finish", () => {
