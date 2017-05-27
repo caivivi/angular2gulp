@@ -1,4 +1,4 @@
-<input type="number" [(ngModel)]="xxx">+
-<input type="range" [(ngModel)]="yyy">=
-<output>{{xxx + yyy}}</output><sub [subValue]="zzz.id"></sub>
-<br><input type="button" value="Test Button" (click)="clickMyButton($event)">
+<input type="number" [(ngModel)]="number1">+
+<input type="number" [(ngModel)]="number2">=
+<sub [subValue]="number1 + number2"></sub>
+<input type="button" class="btn-random" value="Random" (click)="randomNumber($event)">

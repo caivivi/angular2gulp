@@ -1,4 +1,4 @@
-input {
-    --input-color: #aaa;
-    border: dashed 1px var(--input-color);
+.btn-random {
+    display: block;
+    margin-top: 3px;
 }

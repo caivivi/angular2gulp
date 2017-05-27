@@ -1,4 +1,4 @@
-import { Component, ViewEncapsulation, Input, OnChanges, SimpleChanges, OnInit, EventEmitter } from "@angular/core";
+import { Component, ViewEncapsulation, Input, OnInit, EventEmitter } from "@angular/core";
 
 @Component({
     selector: "app-home",
@@ -6,28 +6,16 @@ import { Component, ViewEncapsulation, Input, OnChanges, SimpleChanges, OnInit, 
     styleUrls: ["modules/home/home.component.css"],
     encapsulation: ViewEncapsulation.Emulated
 })
-export class HomeComponent implements OnInit, OnChanges {
-    @Input("xxx") xxx: number = 2;
-    @Input("yyy") yyy: number = 2;
-    @Input("zzz") zzz = new ZZZ();
+export class HomeComponent implements OnInit {
+    @Input("xxx") number1: number = 2;
+    @Input("yyy") number2: number = 2;
 
     constructor() { }
-
-    clickMyButton(e: MouseEvent) {
-        this.yyy = 0;
-        this.zzz = new ZZZ();
-
-        setTimeout(() => this.zzz = new ZZZ(), 1000);
-    }
 
     ngOnInit() { }
 
-    ngOnChanges(changes: SimpleChanges) {
-        console.log("Change detected on home component:", changes);
+    randomNumber(e: MouseEvent) {
+        this.number1 = parseInt((Math.random() * 10).toFixed(0));
+        this.number2 = parseInt((Math.random() * 10).toFixed(0));
     }
-}
-
-class ZZZ {
-    id: number = Math.random();
-    constructor() { }
 }

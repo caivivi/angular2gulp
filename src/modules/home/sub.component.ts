@@ -2,7 +2,7 @@ import { Component, OnInit, OnChanges, SimpleChanges, Input } from "@angular/cor
 
 @Component({
     selector: "sub",
-    template: `<span style="display: inline-block; background: #ccc; border: solid 1px #333; height: 16px">{{subValue}}</span>`
+    template: `<output>{{subValue}}</output>`
 })
 export class SubComponent implements OnChanges {
     @Input() subValue: any;
