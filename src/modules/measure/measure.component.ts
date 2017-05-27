@@ -1,7 +1,7 @@
-import { Component, OnInit, OnDestroy, Inject, DoCheck, OnChanges, SimpleChanges, Input } from "@angular/core";
+import { Component, OnInit, Inject, Input } from "@angular/core";
 import { LanguageService } from "../app/app.service";
 import { Observable } from "rxjs/Observable";
-import { AppImageFilter } from "./measure.model";
+import { AppImageFilter, ImageFilterType } from "./measure.model";
 
 @Component({
     selector: "img-measure",
@@ -13,13 +13,10 @@ export class MeasureComponent implements OnInit {
     context: CanvasRenderingContext2D;
     imgStream: Observable<any>;
     imgFilter: AppImageFilter = {
-        saturation: 10,
-        hue: 20,
-        contrast: 30
+        saturation: 0,
+        hue: 0,
+        contrast: 0
     };
-    saturation: number = 10;
-    hue: number = 20;
-    contrast: number = 30;
 
     constructor(@Inject(LanguageService) private langSVC: LanguageService) { }
 
@@ -27,18 +24,6 @@ export class MeasureComponent implements OnInit {
         this.canvas = <HTMLCanvasElement>document.querySelector("#canMeasure");
         this.context = this.canvas.getContext("2d");
         this.loadImage("resources/images/specimen1.jpg");
-    }
-
-    ngOnChanges(changes: SimpleChanges) {
-        console.log("on change triggered", changes);
-        for (var field in changes) {
-            let change = changes[field];
-            
-            switch (field) {
-                case "imgFilter": this.filterImage(); break;
-                default: console.log("model changed", field); break;
-            }
-        }
     }
 
     loadImage(url: string) {
@@ -61,7 +46,7 @@ export class MeasureComponent implements OnInit {
         console.log("filter value", this.imgFilter);
     }
 
-    textFunc(e) {
-        
+    modifyFilter(e: Event, type: ImageFilterType) {
+        console.log("filter modified", e, type);
     }
 }

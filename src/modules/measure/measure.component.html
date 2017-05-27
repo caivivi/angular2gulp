@@ -1,8 +1,6 @@
 <canvas id="canMeasure" width="500" height="500"></canvas>
 <div class="measurements">
-    <span class="operator-label">Saturation</span><input type="range" [(ngModel)]="saturation">[{{saturation}}]<br>
-    <span class="operator-label">Hue</span><input type="range" [(ngModel)]="hue">[{{hue}}]<br>
-    <span class="operator-label">Contrast</span><input type="range" [(ngModel)]="contrast">[{{contrast}}]<br>
+    <span class="operator-label">Saturation</span><input class="image-filter" type="range" [(ngModel)]="imgFilter.saturation" (input)="modifyFilter($event, 'saturation')"><br>
+    <span class="operator-label">Hue</span><input class="image-filter" type="range" [(ngModel)]="imgFilter.hue" (input)="modifyFilter($event, 'hue')"><br>
+    <span class="operator-label">Contrast</span><input class="image-filter" type="range" [(ngModel)]="imgFilter.contrast" (input)="modifyFilter($event, 'contrast')"><br>
 </div>
-<span style="width: 150px; display: inline-block">{{xxx.id}}</span>
-<button (click)="textFunc($event)">test</button>
