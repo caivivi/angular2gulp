@@ -20,11 +20,11 @@ const destFolder = "dist/", destScriptsFolder = `${destFolder}scripts/`, license
 const nodeFolder = "node_modules/", angularFolder = `${nodeFolder}@angular/`, RxFolder = `${nodeFolder}rxjs/src/`, rxDestFolder = `${destScriptsFolder}rxjs/`;
 const angularDestFolder = `${destScriptsFolder}@angular/`;
 
-const output = "bundle.js", maints = `${srcScriptsFolder}main.ts`, maintsOutput = `${destScriptsFolder}main.ts`, mainJs = `${destScriptsFolder}main.js`;
+const output = "bundle.js", maints = `${srcScriptsFolder}main.ts`, maintsOutput = `${destScriptsFolder}main.ts`, mainJs = `${destScriptsFolder}main.js`, serviceWorkerTS = `${srcFolder}serviceWorker.ts`;
 const reflectMetadata = `${nodeFolder}reflect-metadata/Reflect.js`, zonejs = `${nodeFolder}zone.js/dist/zone.js`, corejs = `${nodeFolder}core-js/client/core.js`;
 const systemjs = `${nodeFolder}systemjs/dist/system.src.js`, dummyModule = `${srcScriptsFolder}dummyModules.ts`, angularPolyfill = [zonejs, reflectMetadata, systemjs];
 
-const allHTML = `${srcFolder}**/*.html`, allCSS = `${srcFolder}**/*.css`, allScript = [`${srcFolder}**/*.ts`, `!${maints}`, `!${dummyModule}`];
+const allHTML = `${srcFolder}**/*.html`, allCSS = `${srcFolder}**/*.css`, allScript = [`${srcFolder}**/*.ts`, `!${maints}`, `!${dummyModule}`, `!${serviceWorkerTS}`];
 const otherFiles = [`${srcFolder}**/*`, `!${allHTML}`, `!${allCSS}`, `!${srcFolder}**/*.ts`], appIcon = "dist/favicon.ico", appIconAbsolute = path.join(__dirname, appIcon);
 
 // configurations
@@ -438,7 +438,6 @@ gulp.task("watch", ["build"], async () => {
         });
 
         function watch() {
-            compile();
             return gulpWatch(allScript, (e) => {
                 !!e.history.length && logMsg("Typescript file change detected:", e.history[0].gray);
                 compile(e.history);
@@ -456,9 +455,7 @@ gulp.task("watch", ["build"], async () => {
 
     //css
     try {
-        compile();
         logMsg("Style files are being watched for compilation and compression...");
-
         gulpWatch(allCSS, (e) => {
             !!e.history.length && logMsg("Style file change detected:", e.history[0].gray);
             compile(e.history);
@@ -475,9 +472,7 @@ gulp.task("watch", ["build"], async () => {
 
     //html
     try {
-        compile();
         logMsg("HTML files are being watched for compilation and compression...");
-
         gulpWatch(allHTML, (e) => {
             !!e.history.length && logMsg("HTML file change detected:", e.history[0].gray);
             compile(e.history);
@@ -494,8 +489,6 @@ gulp.task("watch", ["build"], async () => {
 
     //others
     try {
-        transfer();
-
         gulpWatch(otherFiles, (e) => {
             !!e.history.length && logMsg(`File ${e.history[0].gray} has been copied to dist folder.`);
             transfer(e.history);

@@ -17,6 +17,7 @@
     ],
     "exclude": [
         "node_modules/",
-        "src/scripts/dummyModules.ts"
+        "src/scripts/dummyModules.ts",
+        "src/serviceWorker.ts"
     ]
 }
