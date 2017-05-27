@@ -20,7 +20,7 @@ const destFolder = "dist/", destScriptsFolder = `${destFolder}scripts/`, license
 const nodeFolder = "node_modules/", angularFolder = `${nodeFolder}@angular/`, RxFolder = `${nodeFolder}rxjs/src/`, rxDestFolder = `${destScriptsFolder}rxjs/`;
 let angularSrcFolder = `${srcScriptsFolder}@angular/`, angularDestFolder = `${destScriptsFolder}@angular/`;
 
-const requirejs = `${nodeFolder}requirejs/require.js`, output = "bundle.js", maints = `${srcScriptsFolder}main.ts`, maintsOutput = `${destScriptsFolder}main.ts`;
+const output = "bundle.js", maints = `${srcScriptsFolder}main.ts`, maintsOutput = `${destScriptsFolder}main.ts`;
 const systemjs = `${nodeFolder}systemjs/dist/system.src.js`, systemjsConfig = `${srcScriptsFolder}systemjsConfig.ts`, systemjsConfigOutput = `${destScriptsFolder}systemjsConfig.js`, systemjsBundle = [systemjs, systemjsConfigOutput];
 const corejs = `${nodeFolder}core-js/client/core.js`;
 
@@ -42,7 +42,6 @@ const appOptions = {
 
             switch (appOptions.moduleLoader) {
                 case systemjs: break;
-                case requirejs: mod = "amd"; break;
                 default: break;
             }
 
@@ -50,7 +49,7 @@ const appOptions = {
         }
     },
     get moduleLoader() {
-        return systemjs;//systemjs, requirejs
+        return systemjs;
     }
 };
 const cleanCSSOptions = {};
@@ -255,7 +254,6 @@ gulp.task("compile", ["clean"], async () => {
             logMsg("Compressing & merging dependencies...");
             await new Promise((resolve, reject) => {
                 let files = [systemjs, zonejs, reflectMetadata, `${destScriptsFolder}${output}`];
-                appOptions.moduleLoader === requirejs && files.splice(2, 0, requirejs);
 
                 gulp.src(files)
                     .pipe(concat(output))
@@ -278,9 +276,6 @@ gulp.task("compile", ["clean"], async () => {
 
 gulp.task("compileumd", ["clean"], async () => {
     try {
-        //fake module
-        const dummyModules = `${srcScriptsFolder}dummyModules.ts`, dummyOutput = `${destScriptsFolder}dummyModules.js`;
-
         await new Promise((resolve, reject) => {
             logMsg("Compiling dummy modules...");
             gulp.src([dummyModules, systemjsConfig])
@@ -293,21 +288,6 @@ gulp.task("compileumd", ["clean"], async () => {
                 })
                 .on("error", () => {
                     logErr("Error occurred while compiling dummy module.");
-                    reject();
-                });
-        });
-
-        await new Promise((resolve, reject) => {
-            logMsg("Merging dummy modules...");
-            gulp.src([appOptions.moduleLoader, dummyOutput])
-                .pipe(concat(output))
-                .pipe(gulp.dest(destScriptsFolder))
-                .on("finish", () => {
-                    logMsg(`Requirejs merging complete.`);
-                    resolve();
-                })
-                .on("error", () => {
-                    logErr("Error occurred while merging dummy module.");
                     reject();
                 });
         });
@@ -328,13 +308,12 @@ gulp.task("compileumd", ["clean"], async () => {
         const angularAnimationBrowser = `${angularFolder}animations/bundles/animations-browser.umd.js`;
         const angularPlatformBrowserAnimation = `${angularFolder}platform-browser/bundles/platform-browser-animations.umd.js`;
         //bundle
-        let angularBundle = [zonejs, reflectMetadata, corejs, `${destScriptsFolder}${output}`, angularCore, angularCommon, angularCompiler, angularPlatformBrowser, angularPlatformBrowserDynamic, angularRouter];
+        let angularBundle = [systemjs, zonejs, reflectMetadata, corejs, `${destScriptsFolder}${output}`, angularCore, angularCommon, angularCompiler, angularPlatformBrowser, angularPlatformBrowserDynamic, angularRouter];
         let angularExtraBundle = [angularHttp, angularForms];
         let angularAnimationBundle = [angularAnimation, angularAnimationBrowser, angularPlatformBrowserAnimation];
 
         angularBundle = appOptions.angular.includeAnimation ? [...angularBundle, ...angularAnimationBundle] : angularBundle;
         angularBundle = appOptions.angular.includeExtraModules ? [...angularBundle, ...angularExtraBundle] : angularBundle;
-        angularBundle = appOptions.moduleLoader === requirejs ? [systemjs, ...angularBundle] : angularBundle;
 
         let angularStream = gulp.src(appOptions.angular.mergeAngular ? [rxjs, ...angularBundle] : angularBundle);
 
