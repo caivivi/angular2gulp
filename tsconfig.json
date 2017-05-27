@@ -17,7 +17,6 @@
     ],
     "exclude": [
         "node_modules/",
-        "src/scripts/dummyModules.ts",
-        "src/scripts/systemjsConfig.ts"
+        "src/scripts/dummyModules.ts"
     ]
 }

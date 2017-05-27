@@ -22,9 +22,9 @@ const angularDestFolder = `${destScriptsFolder}@angular/`;
 
 const output = "bundle.js", maints = `${srcScriptsFolder}main.ts`, maintsOutput = `${destScriptsFolder}main.ts`, mainJs = `${destScriptsFolder}main.js`;
 const reflectMetadata = `${nodeFolder}reflect-metadata/Reflect.js`, zonejs = `${nodeFolder}zone.js/dist/zone.js`, corejs = `${nodeFolder}core-js/client/core.js`;
-const systemjs = `${nodeFolder}systemjs/dist/system.src.js`, angularPolyfill = [corejs, zonejs, reflectMetadata];
+const systemjs = `${nodeFolder}systemjs/dist/system.src.js`, dummyModule = `${srcScriptsFolder}dummyModules.ts`, angularPolyfill = [zonejs, reflectMetadata, systemjs];
 
-const allHTML = `${srcFolder}**/*.html`, allCSS = `${srcFolder}**/*.css`, allScript = [`${srcFolder}**/*.ts`, `!${maints}`];
+const allHTML = `${srcFolder}**/*.html`, allCSS = `${srcFolder}**/*.css`, allScript = [`${srcFolder}**/*.ts`, `!${maints}`, `!${dummyModule}`];
 const otherFiles = [`${srcFolder}**/*`, `!${allHTML}`, `!${allCSS}`, `!${srcFolder}**/*.ts`], appIcon = "dist/favicon.ico", appIconAbsolute = path.join(__dirname, appIcon);
 
 // configurations
@@ -245,7 +245,7 @@ gulp.task("compile", ["clean"], async () => {
 
             await new Promise((resolve, reject) => {
                 logMsg("Compressing & merging dependencies...");
-                let files = [...angularPolyfill, systemjs, `${destScriptsFolder}${output}`];
+                let files = [...angularPolyfill, `${destScriptsFolder}${output}`];
 
                 gulp.src(files)
                     .pipe(concat(output))
@@ -283,9 +283,9 @@ gulp.task("compileumd", ["clean"], async () => {
         const angularAnimationBrowser = `${angularFolder}animations/bundles/animations-browser.umd.js`;
         const angularPlatformBrowserAnimation = `${angularFolder}platform-browser/bundles/platform-browser-animations.umd.js`;
         //bundle
-        const angularBundle = [...angularPolyfill, rxjs, systemjs,  `${destScriptsFolder}${output}`, angularCore, angularCommon, angularCompiler, angularPlatformBrowser, angularPlatformBrowserDynamic, angularRouter, angularHttp, angularForms];
+        const angularBundle = [...angularPolyfill, rxjs, `${destScriptsFolder}${output}`, angularCore, angularCommon, angularCompiler, angularPlatformBrowser, angularPlatformBrowserDynamic, angularRouter, angularHttp, angularForms];
         const angularAnimationBundle = [angularAnimation, angularAnimationBrowser, angularPlatformBrowserAnimation];
-        let tsProject = tsc.createProject("ng.tsconfig.json", { module: buildOptions.tsc.module });
+        let tsProject = tsc.createProject("ng.tsconfig.json", { module: buildOptions.tsc.module }), angularStream;
 
         buildOptions.angular.includeAnimation && angularBundle.unshift(angularAnimationBundle);
 
@@ -320,7 +320,9 @@ gulp.task("compileumd", ["clean"], async () => {
                 });
         });
 
-        let angularStream;
+        logMsg("Deleting temporary files...");
+        await del([maintsOutput, mainJs], delOptions);
+        
         await new Promise((resolve, reject) => {
             logMsg("Merging angular bundle...");
 
@@ -351,9 +353,6 @@ gulp.task("compileumd", ["clean"], async () => {
                     reject();
                 });
         });
-
-        logMsg("Deleting temporary files...");
-        await del([maintsOutput, mainJs], delOptions);
     } catch (ex) {
         logErr("Error occurred while building angular bundle:", ex);
     }
