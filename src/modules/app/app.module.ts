@@ -8,9 +8,10 @@ import { AppRoute } from "./app.router";
 import { LanguageService } from "./app.service";
 import { AppComponent } from "./app.component";
 import { HomeComponent } from "../home/home.component";
+import { SubComponent } from "../home/sub.component";
 
 @NgModule({
-    declarations: [AppComponent, HomeComponent],
+    declarations: [AppComponent, HomeComponent, SubComponent],
     imports: [BrowserModule, FormsModule, HttpModule, AppRoute],
     providers: [LanguageService],
     bootstrap: [AppComponent],

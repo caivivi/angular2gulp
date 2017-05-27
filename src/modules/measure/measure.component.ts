@@ -8,7 +8,7 @@ import { AppImageFilter } from "./measure.model";
     templateUrl: "modules/measure/measure.component.html",
     styleUrls: ["modules/measure/measure.component.css"]
 })
-export class MeasureComponent implements OnInit, OnDestroy, OnChanges {
+export class MeasureComponent implements OnInit {
     canvas: HTMLCanvasElement;
     context: CanvasRenderingContext2D;
     imgStream: Observable<any>;
@@ -28,8 +28,6 @@ export class MeasureComponent implements OnInit, OnDestroy, OnChanges {
         this.context = this.canvas.getContext("2d");
         this.loadImage("resources/images/specimen1.jpg");
     }
-
-    ngOnDestroy() { }
 
     ngOnChanges(changes: SimpleChanges) {
         console.log("on change triggered", changes);
@@ -61,5 +59,9 @@ export class MeasureComponent implements OnInit, OnDestroy, OnChanges {
 
     filterImage(filter: string = "") {
         console.log("filter value", this.imgFilter);
+    }
+
+    textFunc(e) {
+        
     }
 }
