@@ -18,28 +18,27 @@ const colors = require("colors");
 const srcFolder = "src/", srcScriptsFolder = `${srcFolder}scripts/`, appOutputFolder = "output/";
 const destFolder = "dist/", destScriptsFolder = `${destFolder}scripts/`, licenseFile = "license.txt";
 const nodeFolder = "node_modules/", angularFolder = `${nodeFolder}@angular/`, RxFolder = `${nodeFolder}rxjs/src/`, rxDestFolder = `${destScriptsFolder}rxjs/`;
-let angularSrcFolder = `${srcScriptsFolder}@angular/`, angularDestFolder = `${destScriptsFolder}@angular/`;
+const angularDestFolder = `${destScriptsFolder}@angular/`;
 
-const output = "bundle.js", maints = `${srcScriptsFolder}main.ts`, maintsOutput = `${destScriptsFolder}main.ts`;
-const systemjs = `${nodeFolder}systemjs/dist/system.src.js`, corejs = `${nodeFolder}core-js/client/core.js`;
+const output = "bundle.js", maints = `${srcScriptsFolder}main.ts`, maintsOutput = `${destScriptsFolder}main.ts`, mainJs = `${destScriptsFolder}main.js`;
+const reflectMetadata = `${nodeFolder}reflect-metadata/Reflect.js`, zonejs = `${nodeFolder}zone.js/dist/zone.js`, corejs = `${nodeFolder}core-js/client/core.js`;
+const systemjs = `${nodeFolder}systemjs/dist/system.src.js`, angularPolyfill = [corejs, zonejs, reflectMetadata];
 
 const allHTML = `${srcFolder}**/*.html`, allCSS = `${srcFolder}**/*.css`, allScript = [`${srcFolder}**/*.ts`, `!${maints}`];
 const otherFiles = [`${srcFolder}**/*`, `!${allHTML}`, `!${allCSS}`, `!${srcFolder}**/*.ts`], appIcon = "dist/favicon.ico", appIconAbsolute = path.join(__dirname, appIcon);
 
 // configurations
-const appOptions = {
+const buildOptions = {
     angular: {
-        mergeAngular: true,
         includeAnimation: false,
-        includeExtraModules: true,
         useES5: false,
-        useUMD: false
+        useUMD: true
     },
     tsc: {
         get module() {
             let mod = "system";
 
-            switch (appOptions.moduleLoader) {
+            switch (buildOptions.moduleLoader) {
                 case systemjs: break;
                 default: break;
             }
@@ -126,7 +125,7 @@ const builderOptions = {
 };
 
 /* variables */
-let tsForDummy = tsc.createProject({ target: "es5", lib: ["dom", "es2017"], module: appOptions.tsc.module });
+let tsForDummy = tsc.createProject({ target: "es5", lib: ["dom", "es2017"], module: buildOptions.tsc.module });
 
 //app tasks
 gulp.task("clean", [], async () => {
@@ -140,10 +139,8 @@ gulp.task("clean", [], async () => {
 
 gulp.task("compile", ["clean"], async () => {
     try {
-        /* Angular */
-        const es5 = appOptions.angular.useES5 ? ".es5" : "";
-        const reflectMetadata = `${nodeFolder}reflect-metadata/Reflect.js`, zonejs = `${nodeFolder}zone.js/dist/zone.js`;
-        
+        const es5 = buildOptions.angular.useES5 ? ".es5" : "";
+        /* angular */
         const angularCore = `${angularFolder}core/@angular/core${es5}.js`;
         const angularCommon = `${angularFolder}common/@angular/common${es5}.js`;
         const angularCompiler = `${angularFolder}compiler/@angular/compiler${es5}.js`;
@@ -157,12 +154,10 @@ gulp.task("compile", ["clean"], async () => {
         const angularPlatformBrowserAnimation = `${angularFolder}platform-browser/@angular/platform-browser/animations${es5}.js`;
         const angularAnimationBrowser = `${angularFolder}animations/@angular/animations/browser${es5}.js`;
         //bundle
-        let angularBundle = [angularCore, angularCommon, angularCompiler, angularPlatformBrowser, angularPlatformBrowserDynamic, angularRouter];
-        let angularExtraBundle = [angularHttp, angularForms];
+        let angularBundle = [angularCore, angularCommon, angularCompiler, angularPlatformBrowser, angularPlatformBrowserDynamic, angularRouter, angularHttp, angularForms];
         let angularAnimationBundle = [angularAnimation];
 
-        angularBundle = appOptions.angular.includeAnimation ? [...angularBundle, ...angularAnimationBundle] : angularBundle;
-        angularBundle = appOptions.angular.includeExtraModules ? [...angularBundle, ...angularExtraBundle] : angularBundle;
+        angularBundle = buildOptions.angular.includeAnimation ? [...angularBundle, ...angularAnimationBundle] : angularBundle;
 
         let ngPro = new Promise((resolve, reject) => {
             gulp.src(angularBundle)
@@ -178,7 +173,7 @@ gulp.task("compile", ["clean"], async () => {
         });
 
         let ngAniPro = new Promise((resolve, reject) => {
-            if (appOptions.angular.includeAnimation) {
+            if (buildOptions.angular.includeAnimation) {
                 gulp.src(angularAnimationBrowser)//animation/browser
                     .pipe(rename("animations/browser.js"))
                     .pipe(gulp.dest(angularDestFolder));
@@ -229,7 +224,7 @@ gulp.task("compile", ["clean"], async () => {
 
         if (pResult.every(r => r)) {
             logMsg("Compiling & merging angular bundle...");
-            let tsProject = tsc.createProject("ng.tsconfig.json", { module: appOptions.tsc.module, out: output });
+            let tsProject = tsc.createProject("ng.tsconfig.json", { module: buildOptions.tsc.module, out: output });
 
             await new Promise((resolve, reject) => {
                 tsProject.src()//Must us ts stream instead of gulp.src here.
@@ -250,7 +245,7 @@ gulp.task("compile", ["clean"], async () => {
 
             logMsg("Compressing & merging dependencies...");
             await new Promise((resolve, reject) => {
-                let files = [systemjs, zonejs, reflectMetadata, `${destScriptsFolder}${output}`];
+                let files = [...angularPolyfill, systemjs, `${destScriptsFolder}${output}`];
 
                 gulp.src(files)
                     .pipe(concat(output))
@@ -274,8 +269,7 @@ gulp.task("compile", ["clean"], async () => {
 gulp.task("compileumd", ["clean"], async () => {
     try {
         //angular
-        const rxjs = `${nodeFolder}rxjs/bundles/Rx.js`, zonejs = `${nodeFolder}zone.js/dist/zone.js`;
-        const reflectMetadata = `${nodeFolder}reflect-metadata/Reflect.js`;
+        const rxjs = `${nodeFolder}rxjs/bundles/Rx.js`;
         const angularCore = `${angularFolder}core/bundles/core.umd.js`;
         const angularCommon = `${angularFolder}common/bundles/common.umd.js`;
         const angularCompiler = `${angularFolder}compiler/bundles/compiler.umd.js`;
@@ -289,40 +283,65 @@ gulp.task("compileumd", ["clean"], async () => {
         const angularAnimationBrowser = `${angularFolder}animations/bundles/animations-browser.umd.js`;
         const angularPlatformBrowserAnimation = `${angularFolder}platform-browser/bundles/platform-browser-animations.umd.js`;
         //bundle
-        let angularBundle = [systemjs, zonejs, reflectMetadata, corejs, `${destScriptsFolder}${output}`, angularCore, angularCommon, angularCompiler, angularPlatformBrowser, angularPlatformBrowserDynamic, angularRouter];
-        let angularExtraBundle = [angularHttp, angularForms];
-        let angularAnimationBundle = [angularAnimation, angularAnimationBrowser, angularPlatformBrowserAnimation];
+        const angularBundle = [...angularPolyfill, rxjs, systemjs,  `${destScriptsFolder}${output}`, angularCore, angularCommon, angularCompiler, angularPlatformBrowser, angularPlatformBrowserDynamic, angularRouter, angularHttp, angularForms];
+        const angularAnimationBundle = [angularAnimation, angularAnimationBrowser, angularPlatformBrowserAnimation];
+        let tsProject = tsc.createProject("ng.tsconfig.json", { module: buildOptions.tsc.module });
 
-        angularBundle = appOptions.angular.includeAnimation ? [...angularBundle, ...angularAnimationBundle] : angularBundle;
-        angularBundle = appOptions.angular.includeExtraModules ? [...angularBundle, ...angularExtraBundle] : angularBundle;
+        buildOptions.angular.includeAnimation && angularBundle.unshift(angularAnimationBundle);
 
-        let angularStream = gulp.src(appOptions.angular.mergeAngular ? [rxjs, ...angularBundle] : angularBundle);
+        await new Promise((resolve, reject) => {
+            logMsg("Copying application scripts...");
+            
+            gulp.src([maints])
+                .pipe(gulp.dest(destScriptsFolder))
+                .on("finish", () => {
+                    logMsg(`Application scripts copy complete.`);
+                    resolve(true);
+                })
+                .on("error", () => {
+                    logErr("Error occurred while copying application scripta.");
+                    reject(false);
+                });
+        });
 
-        if (appOptions.angular.mergeAngular) {
-            angularDestFolder = destScriptsFolder;
+        await new Promise((resolve, reject) => {
+            logMsg("Compiling application scripts...");
+            
+            tsProject.src()//Must us ts stream instead of gulp.src here.
+                .pipe(tsProject())
+                .pipe(gulp.dest(destScriptsFolder))
+                .on("finish", () => {
+                    logMsg(`Application scripts compilation complete.`);
+                    resolve(true);
+                })
+                .on("error", () => {
+                    logErr("Error occurred while compiling application scripta.");
+                    reject(false);
+                });
+        });
 
-            await new Promise((resolve, reject) => {
-                logMsg("Merging angular bundle...");
+        let angularStream;
+        await new Promise((resolve, reject) => {
+            logMsg("Merging angular bundle...");
 
-                angularStream = angularStream.pipe(concat(output));
-                angularStream
-                    .on("finish", () => {
-                        logMsg(`Angular bundle merging complete.`);
-                        resolve();
-                    })
-                    .on("error", () => {
-                        logErr("Error occurred while merging angular bundle.");
-                        reject();
-                    });
-            });
-        }
+            angularStream = gulp.src([...angularBundle, mainJs])
+                .pipe(concat(output))
+                .on("finish", () => {
+                    logMsg(`Angular bundle merge complete.`);
+                    resolve();
+                })
+                .on("error", () => {
+                    logErr("Error occurred while merging angular bundle.");
+                    reject();
+                });
+        });
 
         await new Promise((resolve, reject) => {
             logMsg("Compressing angular bundle...");
 
             angularStream
                 .pipe(uglify())
-                .pipe(gulp.dest(angularDestFolder))
+                .pipe(gulp.dest(destScriptsFolder))
                 .on("finish", () => {
                     logMsg(`Angular bundle compression complete.`);
                     resolve();
@@ -334,14 +353,14 @@ gulp.task("compileumd", ["clean"], async () => {
         });
 
         logMsg("Deleting temporary files...");
-        await del([dummyOutput], delOptions);
+        await del([maintsOutput, mainJs], delOptions);
     } catch (ex) {
         logErr("Error occurred while building angular bundle:", ex);
     }
 });
 
-gulp.task("build", [appOptions.angular.useUMD ? "compileumd" : "compile"], async () => {
-    let tsProject = tsc.createProject("tsconfig.json", appOptions.tsc);
+gulp.task("build", [buildOptions.angular.useUMD ? "compileumd" : "compile"], async () => {
+    let tsProject = tsc.createProject("tsconfig.json", buildOptions.tsc);
 
     //typescript
     let tsPro = new Promise((resolve, reject) => {
@@ -408,12 +427,12 @@ gulp.task("build", [appOptions.angular.useUMD ? "compileumd" : "compile"], async
 gulp.task("watch", ["build"], async () => {
     //typescript
     try {
-        let tsProject = tsc.createProject("tsconfig.json", appOptions.tsc);
+        let tsProject = tsc.createProject("tsconfig.json", buildOptions.tsc);
         let stream = watch();
         logMsg("Typescript files are being watched for compilation and compression...");
 
         gulpWatch("tsconfig.json", (e) => {
-            tsProject = tsc.createProject("tsconfig.json", appOptions.tsc);
+            tsProject = tsc.createProject("tsconfig.json", buildOptions.tsc);
             stream.close();
             stream = watch();
             logMsg("Tsconfig change detected, corresponding scripts are being updated.");
