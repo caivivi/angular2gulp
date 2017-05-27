@@ -1,15 +1,4 @@
-// /// <reference path="../../node_modules/@types/requirejs/index.d.ts" />
-
-// requirejs.config({
-//     baseUrl: "/",
-//     waitSeconds: 2,
-//     paths: { }
-// });
-
-// requirejs(["@angular/platform-browser-dynamic", "modules/app/app.module"], ({ platformBrowserDynamic }, { AppModule }) => {
-//     platformBrowserDynamic().bootstrapModule(AppModule).catch((err) => console.error(`Application bootstraping error:`, err));
-// });
-
+/// <reference path="../../node_modules/@types/systemjs/index.d.ts" />
 // let swChannel: MessageChannel, appReady = false, swReady = !!navigator.serviceWorker.controller;
 
 // if ("serviceWorker" in navigator) {
@@ -32,6 +21,17 @@
 // function initSWData(data: any = { msg: "Hello service worker!" }) {
 //     !!swChannel && appReady && swReady && navigator.serviceWorker.controller.postMessage(data, [swChannel.port2]);
 // }
+SystemJS.config({
+    baseURL: "/",
+    paths: {
+
+    },
+    packages: {
+        'modules': {
+            defaultExtension: "js"
+        }
+    }
+});
 
 Promise.all([System.import("@angular/platform-browser-dynamic"), System.import("./modules/app/app.module")])
 .then(([{ platformBrowserDynamic }, { AppModule }]) => {

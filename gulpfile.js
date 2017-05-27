@@ -21,10 +21,9 @@ const nodeFolder = "node_modules/", angularFolder = `${nodeFolder}@angular/`, Rx
 let angularSrcFolder = `${srcScriptsFolder}@angular/`, angularDestFolder = `${destScriptsFolder}@angular/`;
 
 const output = "bundle.js", maints = `${srcScriptsFolder}main.ts`, maintsOutput = `${destScriptsFolder}main.ts`;
-const systemjs = `${nodeFolder}systemjs/dist/system.src.js`, systemjsConfig = `${srcScriptsFolder}systemjsConfig.ts`, systemjsConfigOutput = `${destScriptsFolder}systemjsConfig.js`, systemjsBundle = [systemjs, systemjsConfigOutput];
-const corejs = `${nodeFolder}core-js/client/core.js`;
+const systemjs = `${nodeFolder}systemjs/dist/system.src.js`, corejs = `${nodeFolder}core-js/client/core.js`;
 
-const allHTML = `${srcFolder}**/*.html`, allCSS = `${srcFolder}**/*.css`, allScript = [`${srcFolder}**/*.ts`, `!${srcScriptsFolder}dummyModules.ts`, `!${systemjsConfig}`];
+const allHTML = `${srcFolder}**/*.html`, allCSS = `${srcFolder}**/*.css`, allScript = [`${srcFolder}**/*.ts`, `!${maints}`];
 const otherFiles = [`${srcFolder}**/*`, `!${allHTML}`, `!${allCSS}`, `!${srcFolder}**/*.ts`], appIcon = "dist/favicon.ico", appIconAbsolute = path.join(__dirname, appIcon);
 
 // configurations
@@ -211,12 +210,10 @@ gulp.task("compile", ["clean"], async () => {
                 });
         });
 
-        let systemPro = new Promise((resolve, reject) => {
-            logMsg("Copying systemjs configuration...");
-            let files = [systemjsConfig];
-            appOptions.moduleLoader === systemjs && files.push(maints);
-
-            gulp.src(files)
+        let appPro = new Promise((resolve, reject) => {
+            logMsg("Copying main.ts...");
+            
+            gulp.src([maints])
                 .pipe(gulp.dest(destScriptsFolder))
                 .on("finish", () => {
                     logMsg(`Systemjs configuration copy complete.`);
@@ -228,7 +225,7 @@ gulp.task("compile", ["clean"], async () => {
                 });
         });
 
-        let pResult = await Promise.all([ngPro, ngAniPro, rxPro, systemPro]);
+        let pResult = await Promise.all([ngPro, ngAniPro, rxPro, appPro]);
 
         if (pResult.every(r => r)) {
             logMsg("Compiling & merging angular bundle...");
@@ -249,7 +246,7 @@ gulp.task("compile", ["clean"], async () => {
             });
 
             logMsg("Deleting temporary folders...");
-            let deletionResult = await del([`${destScriptsFolder}/@angular/**`, `${destScriptsFolder}/rxjs/**`, `${destScriptsFolder}systemjsConfig.ts`, maintsOutput], delOptions);
+            let deletionResult = await del([`${destScriptsFolder}/@angular/**`, `${destScriptsFolder}/rxjs/**`, maintsOutput], delOptions);
 
             logMsg("Compressing & merging dependencies...");
             await new Promise((resolve, reject) => {
@@ -276,22 +273,6 @@ gulp.task("compile", ["clean"], async () => {
 
 gulp.task("compileumd", ["clean"], async () => {
     try {
-        await new Promise((resolve, reject) => {
-            logMsg("Compiling dummy modules...");
-            gulp.src([dummyModules, systemjsConfig])
-                .pipe(tsForDummy())
-                .pipe(concat('dummyModules.js'))
-                .pipe(gulp.dest(destScriptsFolder))
-                .on("finish", () => {
-                    logMsg(`Dummy module compilition complete.`);
-                    resolve();
-                })
-                .on("error", () => {
-                    logErr("Error occurred while compiling dummy module.");
-                    reject();
-                });
-        });
-
         //angular
         const rxjs = `${nodeFolder}rxjs/bundles/Rx.js`, zonejs = `${nodeFolder}zone.js/dist/zone.js`;
         const reflectMetadata = `${nodeFolder}reflect-metadata/Reflect.js`;
@@ -425,8 +406,6 @@ gulp.task("build", [appOptions.angular.useUMD ? "compileumd" : "compile"], async
 });
 
 gulp.task("watch", ["build"], async () => {
-    appOptions.moduleLoader === systemjs && allScript.push(`!${maints}`);
-
     //typescript
     try {
         let tsProject = tsc.createProject("tsconfig.json", appOptions.tsc);
