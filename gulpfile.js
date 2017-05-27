@@ -206,16 +206,16 @@ gulp.task("compile", ["clean"], async () => {
         });
 
         let appPro = new Promise((resolve, reject) => {
-            logMsg("Copying main.ts...");
+            logMsg("Copying application scripts...");
             
             gulp.src([maints])
                 .pipe(gulp.dest(destScriptsFolder))
                 .on("finish", () => {
-                    logMsg(`Systemjs configuration copy complete.`);
+                    logMsg(`Application scripts copy complete.`);
                     resolve(true);
                 })
                 .on("error", () => {
-                    logErr("Error occurred while copying systemjs configuration.");
+                    logErr("Error occurred while copying application scripts.");
                     reject(false);
                 });
         });
@@ -299,7 +299,7 @@ gulp.task("compileumd", ["clean"], async () => {
                     resolve(true);
                 })
                 .on("error", () => {
-                    logErr("Error occurred while copying application scripta.");
+                    logErr("Error occurred while copying application scripts.");
                     reject(false);
                 });
         });
