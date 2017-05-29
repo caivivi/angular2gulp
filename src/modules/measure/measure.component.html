@@ -1,6 +1,18 @@
 <canvas id="canMeasure" width="500" height="500"></canvas>
-<div class="measurements">
-    <span class="operator-label">Saturation</span><input class="image-filter" type="range" [(ngModel)]="imgVWR.filter.saturation" (input)="imgVWR.modifyFilter($event, 'saturation')"><br>
-    <span class="operator-label">Hue</span><input class="image-filter" type="range" [(ngModel)]="imgVWR.filter.hue" (input)="imgVWR.modifyFilter($event, 'hue')"><br>
-    <span class="operator-label">Contrast</span><input class="image-filter" type="range" [(ngModel)]="imgVWR.filter.contrast" (input)="imgVWR.modifyFilter($event, 'contrast')"><br>
-</div>
+<fieldset class="measurements">
+    <legend>Filters</legend>
+    <span class="operator-label">Saturation</span><input class="image-filter" type="range" [(ngModel)]="viewer.filterOptions.saturation" (input)="viewer.filterImage('saturation')"><br>
+    <span class="operator-label">Hue</span><input class="image-filter" type="range" [(ngModel)]="viewer.filterOptions.hue" (input)="viewer.filterImage('hue')"><br>
+    <span class="operator-label">Contrast</span><input class="image-filter" type="range" [(ngModel)]="viewer.filterOptions.contrast" (input)="viewer.filterImage('contrast')"><br>
+</fieldset>
+<fieldset class="measurements">
+    <legend>Channel</legend>
+    <span class="operator-label">Red</span><input class="image-channel" type="range" [(ngModel)]="viewer.channel.red" (input)="viewer.filterImage('red')"><br>
+    <span class="operator-label">Green</span><input class="image-channel" type="range" [(ngModel)]="viewer.channel.green" (input)="viewer.filterImage('green')"><br>
+    <span class="operator-label">Blue</span><input class="image-channel" type="range" [(ngModel)]="viewer.channel.blue" (input)="viewer.filterImage('blue')"><br>
+    <span class="operator-label">Alpha</span><input class="image-channel" type="range" [(ngModel)]="viewer.channel.alpha" (input)="viewer.filterImage('alpha')"><br>
+</fieldset>
+<fieldset class="measurements">
+    <legend>Others</legend>
+    <button type="button" (click)="viewer.reverseColor()">Reverse Color</button>
+</fieldset>

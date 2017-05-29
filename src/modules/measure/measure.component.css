@@ -1,3 +1,7 @@
+:root {
+    background: #f00;
+}
+
 #canMeasure {
     border: 1px solid #333;
     display: block;
@@ -5,7 +9,7 @@
 
 .measurements {
     padding: 3px 10px;
-    margin: 3px 0;
+    margin: 3px 5px;
     border: solid 1px #ddd;
     border-radius: 3px;
     display: inline-block;
@@ -16,7 +20,7 @@
     width: 80px;
 }
 
-.image-filter {
+.image-filter, .image-channel {
     display: inline-block;
     margin-left: 5px;
 }
