@@ -1,6 +1,6 @@
 <canvas id="canMeasure" width="500" height="500"></canvas>
 <div class="measurements">
-    <span class="operator-label">Saturation</span><input class="image-filter" type="range" [(ngModel)]="imgFilter.saturation" (input)="modifyFilter($event, 'saturation')"><br>
-    <span class="operator-label">Hue</span><input class="image-filter" type="range" [(ngModel)]="imgFilter.hue" (input)="modifyFilter($event, 'hue')"><br>
-    <span class="operator-label">Contrast</span><input class="image-filter" type="range" [(ngModel)]="imgFilter.contrast" (input)="modifyFilter($event, 'contrast')"><br>
+    <span class="operator-label">Saturation</span><input class="image-filter" type="range" [(ngModel)]="imgVWR.filter.saturation" (input)="imgVWR.modifyFilter($event, 'saturation')"><br>
+    <span class="operator-label">Hue</span><input class="image-filter" type="range" [(ngModel)]="imgVWR.filter.hue" (input)="imgVWR.modifyFilter($event, 'hue')"><br>
+    <span class="operator-label">Contrast</span><input class="image-filter" type="range" [(ngModel)]="imgVWR.filter.contrast" (input)="imgVWR.modifyFilter($event, 'contrast')"><br>
 </div>

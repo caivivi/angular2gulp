@@ -67,3 +67,8 @@ content {
     border-top: solid 1px var(--global-color);
     border-bottom: solid 1px var(--global-color);
 }
+
+input[type='range'] {
+    margin: 0;
+    transform: translateY(3px);
+}

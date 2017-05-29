@@ -4,11 +4,12 @@ import { FormsModule } from "@angular/forms";
 
 import { MeasureComponent } from "./measure.component";
 import { MeasureRoute } from "./measure.router";
+import { ImageViewer } from "./measure.service";
 
 @NgModule({
     imports: [CommonModule, FormsModule, MeasureRoute],
     declarations: [MeasureComponent],
-    providers: []
+    providers: [ImageViewer]
 })
 export class MeasureModule {
     constructor() { }
