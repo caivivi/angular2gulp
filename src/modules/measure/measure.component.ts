@@ -2,7 +2,7 @@ import { Component, OnInit, Inject, Input } from "@angular/core";
 import { LanguageService } from "../app/app.service";
 import { Observable } from "rxjs/Observable";
 import { AppImageFilter, ImageFilterType } from "./measure.model";
-import { ImageViewer } from "./measure.service";
+import { ImageViewerService } from "./measure.service";
 
 @Component({
     selector: "img-measure",
@@ -12,7 +12,7 @@ import { ImageViewer } from "./measure.service";
 export class MeasureComponent implements OnInit {
     constructor(
         @Inject(LanguageService) private langSVC: LanguageService,
-        @Inject(ImageViewer) private viewer: ImageViewer
+        @Inject(ImageViewerService) private viewer: ImageViewerService
     ) { }
 
     ngOnInit() {

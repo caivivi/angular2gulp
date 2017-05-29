@@ -3,7 +3,7 @@ import { Observable } from "rxjs/Observable";
 
 import { AppImageFilter, ImageFilterType, AppImageChannel, ImageChannelType } from "./measure.model";
 
-export class ImageViewer {
+export class ImageViewerService {
     private canvas: HTMLCanvasElement;
     private context: CanvasRenderingContext2D;
     private imageRawData: ImageData;
@@ -14,11 +14,12 @@ export class ImageViewer {
         blue: 100,
         alpha: 100
     };
-
     filterOptions: AppImageFilter = {
         saturation: 0,
         hue: 0,
-        contrast: 0
+        contrast: 0,
+        gamma: 1,
+        sharpness: 0
     };
 
     private get fullSize() {

@@ -1,9 +1,11 @@
 <canvas id="canMeasure" width="500" height="500"></canvas>
 <fieldset class="measurements">
     <legend>Filters</legend>
-    <span class="operator-label">Saturation</span><input class="image-filter" type="range" [(ngModel)]="viewer.filterOptions.saturation" (input)="viewer.filterImage('saturation')"><br>
-    <span class="operator-label">Hue</span><input class="image-filter" type="range" [(ngModel)]="viewer.filterOptions.hue" (input)="viewer.filterImage('hue')"><br>
-    <span class="operator-label">Contrast</span><input class="image-filter" type="range" [(ngModel)]="viewer.filterOptions.contrast" (input)="viewer.filterImage('contrast')"><br>
+    <span class="operator-label">Saturation</span><input class="image-filter" filter-type="saturation" type="range" [(ngModel)]="viewer.filterOptions.saturation" (input)="viewer.filterImage('saturation')"><br>
+    <span class="operator-label">Hue</span><input class="image-filter" filter-type="hue" type="range" [(ngModel)]="viewer.filterOptions.hue" (input)="viewer.filterImage('hue')"><br>
+    <span class="operator-label">Contrast</span><input class="image-filter" filter-type="contrast" type="range" [(ngModel)]="viewer.filterOptions.contrast" (input)="viewer.filterImage('contrast')"><br>
+    <span class="operator-label">Gamma</span><input class="image-filter" filter-type="gamma" type="range" [(ngModel)]="viewer.filterOptions.gamma" (input)="viewer.filterImage('gamma')"><br>
+    <span class="operator-label">Sharpness</span><input class="image-filter" filter-type="sharpness" type="range" [(ngModel)]="viewer.filterOptions.sharpness" (input)="viewer.filterImage('sharpness')"><br>
 </fieldset>
 <fieldset class="measurements">
     <legend>Channel</legend>
