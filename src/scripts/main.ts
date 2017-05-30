@@ -23,11 +23,9 @@
 // }
 SystemJS.config({
     baseURL: "/",
-    paths: {
-
-    },
+    paths: { },
     packages: {
-        'modules': {
+        "modules": {
             defaultExtension: "js"
         }
     }
