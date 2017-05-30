@@ -6,6 +6,7 @@
     --global-link-color: #777;
     --hover-color: #ccc;
     --transition-duration: .2s;
+     -webkit-overflow-scrolling : touch;
 }
 
 body {
@@ -13,12 +14,13 @@ body {
     height: 100%;
     overflow: auto;
     display: grid;
-    grid-template-rows: 30px 1fr 30px;
+    grid-template-rows: 30px calc(100% - 60px) 30px;/*calc is going to be updated to 1fr*/
     font: var(--global-font-size) var(--global-font-family);
+    color: var(--global-color);
 }
 
 a {
-    color: var(--global-color);
+    color: var(--global-link-color);
 }
 
 a:link {
@@ -66,6 +68,7 @@ content {
     padding: 3px 10px;
     border-top: solid 1px var(--global-color);
     border-bottom: solid 1px var(--global-color);
+    overflow: auto;
 }
 
 input[type='range'] {

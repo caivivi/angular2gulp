@@ -15,7 +15,7 @@ export class HomeComponent implements OnInit {
     ngOnInit() { }
 
     randomNumber(e: MouseEvent) {
-        this.number1 = parseInt((Math.random() * 10).toFixed(0));
-        this.number2 = parseInt((Math.random() * 10).toFixed(0));
+        this.number1 = parseInt((Math.random() * 100).toFixed(0));
+        this.number2 = parseInt((Math.random() * 100).toFixed(0));
     }
 }
