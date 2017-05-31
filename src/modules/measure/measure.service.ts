@@ -63,18 +63,18 @@ export class ImageViewerService {
         this.copiedData = this.copyImageData(this.rawImgData);
     }
 
-    filterImage(type: ImageFilterType) {
-        this.rgbProcess(this.copiedData);
+    async filterImage(type: ImageFilterType) {
+        await this.rgbProcess(this.copiedData);
         this.context.putImageData(this.copiedData, 0, 0);
         this.copiedData = this.copyImageData(this.rawImgData);
     }
 
-    rgbProcess(data: ImageData) {
+    async rgbProcess(data: ImageData) {
         let channelFlag = this.channels.alpha !== 1 || this.channels.red !== 1 || this.channels.green !== 1 || this.channels.blue !== 1;
         let brightnessFlag = this.filters.brightness !== 1, contrastFlag = this.filters.contrast !== 0, colorAdjustment = brightnessFlag || contrastFlag;
-        let imgArrLength = data.data.length, colorLength = 255, channelLength = 4, avgR = 0, avgG = 0, avgB = 0;
+        let ir = 0, imgArrLength = data.data.length, colorLength = 255, channelLength = 4, avgR = 0, avgG = 0, avgB = 0;
 
-        for (var ir = 0; ir < imgArrLength; ir += channelLength) {
+        for (ir = 0; ir < imgArrLength; ir += channelLength) {
             let ig = ir + 1, ib = ir + 2, ia = ir + 3;
             
             if (channelFlag) {//channel
