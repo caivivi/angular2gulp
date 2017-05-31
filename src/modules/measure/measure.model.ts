@@ -1,4 +1,4 @@
-export type ImageFilterType = "saturation" | "hue" | "contrast" | "gamma" | "sharpness";
+export type ImageFilterType = "saturation" | "hue" | "contrast" | "gamma" | "brightness" | "sharpness";
 export type ImageChannelType = "red" | "green" | "blue" | "alpha";
 
 export interface AppImageFilter {
@@ -6,7 +6,9 @@ export interface AppImageFilter {
     hue: number;
     contrast: number;
     gamma: number;
+    brightness: number;
     sharpness: number;
+    colorReversed?: boolean;
 }
 
 export interface AppImageChannel {

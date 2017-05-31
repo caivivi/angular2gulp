@@ -1,4 +1,4 @@
-import { Injectable, Inject, Component, OnInit, OnDestroy } from "@angular/core";
+import { Injectable, Inject, Component, OnInit } from "@angular/core";
 import { Observable } from "rxjs/Observable";
 import { LanguageService, AppLanguageCode } from "../app/app.service";
 import "rxjs/add/observable/timer";
@@ -8,7 +8,7 @@ import "rxjs/add/observable/timer";
     templateUrl: "modules/news/news.component.html",
     styleUrls: ["modules/news/news.component.css"]
 })
-export class NewsComponent implements OnInit, OnDestroy {
+export class NewsComponent implements OnInit {
     date: Date = new Date();
     selectedLang: AppLanguageCode = "en-US";
 
@@ -21,6 +21,4 @@ export class NewsComponent implements OnInit, OnDestroy {
     ngOnInit(): void {
         Observable.timer(1000, 1000).subscribe((time) => this.date = new Date());
     }
-
-    ngOnDestroy(): void { }
 }

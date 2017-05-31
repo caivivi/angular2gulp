@@ -1,20 +1,21 @@
 <canvas id="canMeasure" width="500" height="500"></canvas>
 <fieldset class="measurements">
     <legend>Filters</legend>
-    <span class="operator-label">Saturation</span><input class="image-filter" filter-type="saturation" type="range" [(ngModel)]="viewer.filterOptions.saturation" (input)="viewer.filterImage('saturation')"><br>
-    <span class="operator-label">Hue</span><input class="image-filter" filter-type="hue" type="range" [(ngModel)]="viewer.filterOptions.hue" (input)="viewer.filterImage('hue')"><br>
-    <span class="operator-label">Contrast</span><input class="image-filter" filter-type="contrast" type="range" [(ngModel)]="viewer.filterOptions.contrast" (input)="viewer.filterImage('contrast')"><br>
-    <span class="operator-label">Gamma</span><input class="image-filter" filter-type="gamma" type="range" [(ngModel)]="viewer.filterOptions.gamma" (input)="viewer.filterImage('gamma')"><br>
-    <span class="operator-label">Sharpness</span><input class="image-filter" filter-type="sharpness" type="range" [(ngModel)]="viewer.filterOptions.sharpness" (input)="viewer.filterImage('sharpness')"><br>
+    <span class="operator-label">Saturation[{{viewer.filters.saturation}}]</span><input class="image-filter" filter-type="saturation" type="range" [(ngModel)]="viewer.filters.saturation" (input)="viewer.filterImage('saturation')"><br>
+    <span class="operator-label">Hue[{{viewer.filters.hue}}]</span><input class="image-filter" filter-type="hue" type="range" [(ngModel)]="viewer.filters.hue" (input)="viewer.filterImage('hue')"><br>
+    <span class="operator-label">Contrast[{{viewer.filters.contrast}}]</span><input class="image-filter" filter-type="contrast" type="range" [(ngModel)]="viewer.filters.contrast" (input)="viewer.filterImage('contrast')"><br>
+    <span class="operator-label">Gamma[{{viewer.filters.gamma}}]</span><input class="image-filter" filter-type="gamma" type="range" [(ngModel)]="viewer.filters.gamma" (input)="viewer.filterImage('gamma')"><br>
+    <span class="operator-label">Brightness[{{viewer.filters.brightness}}]</span><input class="image-filter" filter-type="brightness" type="range" [(ngModel)]="viewer.filters.brightness" (input)="viewer.filterImage('brightness')"><br>
+    <span class="operator-label">Sharpness[{{viewer.filters.sharpness}}]</span><input class="image-filter" filter-type="sharpness" type="range" [(ngModel)]="viewer.filters.sharpness" (input)="viewer.filterImage('sharpness')"><br>
 </fieldset>
 <fieldset class="measurements">
     <legend>Channel</legend>
-    <span class="operator-label">Red</span><input class="image-channel" type="range" [(ngModel)]="viewer.channel.red" (input)="viewer.filterImage('red')"><br>
-    <span class="operator-label">Green</span><input class="image-channel" type="range" [(ngModel)]="viewer.channel.green" (input)="viewer.filterImage('green')"><br>
-    <span class="operator-label">Blue</span><input class="image-channel" type="range" [(ngModel)]="viewer.channel.blue" (input)="viewer.filterImage('blue')"><br>
-    <span class="operator-label">Alpha</span><input class="image-channel" type="range" [(ngModel)]="viewer.channel.alpha" (input)="viewer.filterImage('alpha')"><br>
+    <span class="operator-label">Red[{{viewer.channels.red}}]</span><input class="image-filter" type="range" [(ngModel)]="viewer.channels.red" (input)="viewer.filterImage('red')"><br>
+    <span class="operator-label">Green[{{viewer.channels.green}}]</span><input class="image-filter" type="range" [(ngModel)]="viewer.channels.green" (input)="viewer.filterImage('green')"><br>
+    <span class="operator-label">Blue[{{viewer.channels.blue}}]</span><input class="image-filter" type="range" [(ngModel)]="viewer.channels.blue" (input)="viewer.filterImage('blue')"><br>
+    <span class="operator-label">Alpha[{{viewer.channels.alpha}}]</span><input class="image-filter" type="range" [(ngModel)]="viewer.channels.alpha" (input)="viewer.filterImage('alpha')"><br>
 </fieldset>
 <fieldset class="measurements">
     <legend>Others</legend>
-    <button type="button" (click)="viewer.reverseColor()">Reverse Color</button>
+    <span class="operator-label">Reverse Color</span><input type="checkbox" [(ngModel)]="viewer.filters.colorReversed" (change)="viewer.filterImage()">
 </fieldset>

@@ -73,5 +73,5 @@ content {
 
 input[type='range'] {
     margin: 0;
-    transform: translateY(3px);
+    transform: translateY(25%);
 }
