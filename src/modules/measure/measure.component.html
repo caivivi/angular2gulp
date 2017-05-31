@@ -17,5 +17,6 @@
 </fieldset>
 <fieldset class="measurements">
     <legend>Others</legend>
-    <span class="operator-label">Reverse Color</span><input type="checkbox" [(ngModel)]="viewer.filters.colorReversed" (change)="viewer.filterImage()">
+    <span class="operator-label">Reverse Color</span><input type="checkbox" [(ngModel)]="viewer.filters.colorReversed" (change)="viewer.filterImage()"><br>
+    <button type="button" (click)="viewer.resetImage()">Reset</button>
 </fieldset>

@@ -4,30 +4,18 @@ import { Observable } from "rxjs/Observable";
 import { AppImageFilter, ImageFilterType, AppImageChannel, ImageChannelType } from "./measure.model";
 
 export class ImageViewerService {
-    filters: AppImageFilter = {
-        saturation: 0,
-        hue: 1,
-        contrast: 0,
-        gamma: 0,
-        brightness: 1,
-        sharpness: 1,
-        colorReversed: false
-    };
+    filters = new AppImageFilter();
+    channels = new AppImageChannel();
+
     private canvas: HTMLCanvasElement;
     private context: CanvasRenderingContext2D;
     private imgStream: Observable<any>;
 
     private rawImgData: ImageData;
+    private copiedData: ImageData;
     private get currentImgData(): ImageData {
         return this.context ? (<any>this.context).getImageData(...this.fullSize) : null;
     }
-    private channels: AppImageChannel = {
-        red: 1,
-        green: 1,
-        blue: 1,
-        alpha: 1
-    };
-    
     private get fullSize() {
         return [0, 0, this.canvas.width, this.canvas.height];
     }
@@ -50,6 +38,7 @@ export class ImageViewerService {
                 img.onload = (e) => {
                     (<any>this.context).drawImage(img, ...this.fullSize);
                     this.rawImgData = this.currentImgData;
+                    this.copiedData = this.copyImageData(this.rawImgData);
                     subscriber.next();
                 };
 
@@ -67,45 +56,66 @@ export class ImageViewerService {
         return new ImageData(rawDataCopy, this.canvas.width, this.canvas.height);
     }
 
-    async filterImage(type: ImageFilterType) {
-        let copy = this.copyImageData(this.rawImgData);
-
-        (this.channels.alpha !== 1 || this.channels.red !== 1 || this.channels.green !== 1 || this.channels.blue !== 1) && this.channel(copy);
-        this.filters.colorReversed && this.reverseColor(copy);
-        this.filters.brightness !== 1 && this.brightness(copy);
-        this.filters.saturation !== 1 && this.saturate(copy);
-
-        this.context.putImageData(copy, 0, 0);
+    resetImage() {
+        this.filters = new AppImageFilter();
+        this.channels = new AppImageChannel();
+        this.context.putImageData(this.rawImgData, 0, 0);
+        this.copiedData = this.copyImageData(this.rawImgData);
     }
 
-    reverseColor(data: ImageData) {
-        for (let i = 0; i < data.data.length; i++) (i + 1) % 4 && (data.data[i] = 255 - data.data[i]);
+    filterImage(type: ImageFilterType) {
+        this.rgbProcess(this.copiedData);
+        this.context.putImageData(this.copiedData, 0, 0);
+        this.copiedData = this.copyImageData(this.rawImgData);
     }
 
-    channel (data: ImageData) {
-        for (let i = 0; i < data.data.length; i += 4) {
-            data.data[i] *= this.channels.red;
-            data.data[i + 1] *= this.channels.green;
-            data.data[i + 2] *= this.channels.blue;
-            data.data[i + 3] *= this.channels.alpha;
+    rgbProcess(data: ImageData) {
+        let channelFlag = this.channels.alpha !== 1 || this.channels.red !== 1 || this.channels.green !== 1 || this.channels.blue !== 1;
+        let brightnessFlag = this.filters.brightness !== 1, contrastFlag = this.filters.contrast !== 0, colorAdjustment = brightnessFlag || contrastFlag;
+        let imgArrLength = data.data.length, colorLength = 255, channelLength = 4, avgR = 0, avgG = 0, avgB = 0;
+
+        for (var ir = 0; ir < imgArrLength; ir += channelLength) {
+            let ig = ir + 1, ib = ir + 2, ia = ir + 3;
+            
+            if (channelFlag) {//channel
+                data.data[ir] *= this.channels.red;
+                data.data[ig] *= this.channels.green;
+                data.data[ib] *= this.channels.blue;
+                data.data[ia] *= this.channels.alpha;
+            }
+            if (colorAdjustment) {
+                avgR += data.data[ir];
+                avgG += data.data[ig];
+                avgB += data.data[ib];
+
+                if (brightnessFlag) {//brightness
+                    data.data[ir] *= this.filters.brightness;
+                    data.data[ig] *= this.filters.brightness;
+                    data.data[ib] *= this.filters.brightness;
+                }
+            }
+            if (this.filters.colorReversed) {//color reverse
+                data.data[ir] = colorLength ^ data.data[ir];
+                data.data[ig] = colorLength ^ data.data[ig];
+                data.data[ib] = colorLength ^ data.data[ib];
+            }
         }
-    }
 
-    brightness(data: ImageData) {
-        for (let i = 0; i < data.data.length; i += 4) {
-            data.data[i] *= (this.filters.brightness);
-            data.data[i + 1] *= this.filters.brightness;
-            data.data[i + 2] *= this.filters.brightness;
+        if (colorAdjustment) {//contrast
+            const pixelLength = ir / channelLength;
+
+            avgR /= pixelLength;
+            avgG /= pixelLength;
+            avgB /= pixelLength;
+
+            for (ir = 0; ir < imgArrLength; ir += channelLength) {
+                let ig = ir + 1, ib = ir + 2;
+                let diffR = data.data[ir] - avgR, diffG = data.data[ig] - avgG, diffB = data.data[ib] - avgB;
+
+                data.data[ir] += diffR * this.filters.contrast;
+                data.data[ig] += diffG * this.filters.contrast;
+                data.data[ib] += diffB * this.filters.contrast;
+            }
         }
-    }
-
-    saturate(data: ImageData) {
-        // for (let i = 0; i < data.data.length; i += 4) {
-        //     let r = data.data[i], g = data.data[i + 1], b = data.data[i + 2];
-        //     let hue = (r * 299 + g * 587 + b * 114) / 3000;
-        //     data.data[i] += (r - hue) * 100 * this.filters.hue / 255;
-        //     data.data[i + 1] += (g - hue) * 100 * this.filters.hue / 255;
-        //     data.data[i + 2] += (b - hue) * 100 * this.filters.hue / 255;
-        // }
     }
 }
