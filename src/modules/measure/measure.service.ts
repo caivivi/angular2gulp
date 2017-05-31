@@ -101,7 +101,7 @@ export class ImageViewerService {
             }
         }
 
-        if (colorAdjustment) {//contrast
+        if (contrastFlag) {//contrast
             const pixelLength = ir / channelLength;
 
             avgR /= pixelLength;
