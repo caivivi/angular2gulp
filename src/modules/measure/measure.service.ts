@@ -89,7 +89,7 @@ export class ImageViewerService {
                 data.data[ib] *= this.channels.blue;
                 data.data[ia] *= this.channels.alpha;
             }
-            if (avgFlag) {
+            if (avgFlag) {//
                 avgR += data.data[ir];
                 avgG += data.data[ig];
                 avgB += data.data[ib];
@@ -99,7 +99,7 @@ export class ImageViewerService {
                 data.data[ig] *= this.filters.brightness;
                 data.data[ib] *= this.filters.brightness;
             }
-            if (gammaFlag) {
+            if (gammaFlag) {//gamma
                 data.data[ir] = Math.pow(data.data[ir] / IPConsts.colorLength, this.filters.gamma) * IPConsts.colorLength;
                 data.data[ig] = Math.pow(data.data[ig] / IPConsts.colorLength, this.filters.gamma) * IPConsts.colorLength;
                 data.data[ib] = Math.pow(data.data[ib] / IPConsts.colorLength, this.filters.gamma) * IPConsts.colorLength;
@@ -115,7 +115,7 @@ export class ImageViewerService {
                 data.data[ig] = IPConsts.colorLength ^ data.data[ig];
                 data.data[ib] = IPConsts.colorLength ^ data.data[ib];
             }
-            !!matrixArr.length && this.matrixProcess(ir, matrixArr);
+            !!matrixArr.length && this.matrixProcess(ir, matrixArr);//matrix processing such as sharpness, blur, edge and so on.
         }
 
         if (contrastFlag) {//contrast
