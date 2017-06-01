@@ -39,6 +39,7 @@ export class ImageViewerService {
                     (<any>this.context).drawImage(img, ...this.fullSize);
                     this.rawImgData = this.currentImgData;
                     this.copiedData = this.copyImageData(this.rawImgData);
+                    this.filterImage();
                     subscriber.next();
                 };
 
@@ -63,7 +64,7 @@ export class ImageViewerService {
         this.copiedData = this.copyImageData(this.rawImgData);
     }
 
-    async filterImage(type: ImageFilterType) {
+    async filterImage(type: ImageFilterType = null) {
         await this.rgbProcess(this.copiedData);
         this.context.putImageData(this.copiedData, 0, 0);
         this.copiedData = this.copyImageData(this.rawImgData);
@@ -71,8 +72,9 @@ export class ImageViewerService {
 
     async rgbProcess(data: ImageData) {
         let channelFlag = this.channels.alpha !== 1 || this.channels.red !== 1 || this.channels.green !== 1 || this.channels.blue !== 1;
-        let brightnessFlag = this.filters.brightness !== 1, contrastFlag = this.filters.contrast !== 0, colorAdjustment = brightnessFlag || contrastFlag;
-        let ir = 0, imgArrLength = data.data.length, colorLength = 255, channelLength = 4, avgR = 0, avgG = 0, avgB = 0;
+        let brightnessFlag = this.filters.brightness !== 1, contrastFlag = this.filters.contrast !== 0, saturationFlag = this.filters.saturation !== 0;
+        let avgFlag = contrastFlag, gammaFlag = this.filters.gamma !== 1;
+        let ir = 0, imgArrLength = data.data.length, colorLength = 255, middleColor = 128, channelLength = 4, avgR = 0, avgG = 0, avgB = 0;
 
         for (ir = 0; ir < imgArrLength; ir += channelLength) {
             let ig = ir + 1, ib = ir + 2, ia = ir + 3;
@@ -83,16 +85,26 @@ export class ImageViewerService {
                 data.data[ib] *= this.channels.blue;
                 data.data[ia] *= this.channels.alpha;
             }
-            if (colorAdjustment) {
+            if (avgFlag) {
                 avgR += data.data[ir];
                 avgG += data.data[ig];
                 avgB += data.data[ib];
-
-                if (brightnessFlag) {//brightness
-                    data.data[ir] *= this.filters.brightness;
-                    data.data[ig] *= this.filters.brightness;
-                    data.data[ib] *= this.filters.brightness;
-                }
+            }
+            if (brightnessFlag) {//brightness
+                data.data[ir] *= this.filters.brightness;
+                data.data[ig] *= this.filters.brightness;
+                data.data[ib] *= this.filters.brightness;
+            }
+            if (gammaFlag) {
+                data.data[ir] = Math.pow(data.data[ir] / colorLength, this.filters.gamma) * colorLength;
+                data.data[ig] = Math.pow(data.data[ig] / colorLength, this.filters.gamma) * colorLength;
+                data.data[ib] = Math.pow(data.data[ib] / colorLength, this.filters.gamma) * colorLength;
+            }
+            if (saturationFlag) {//saturation
+                let rs = data.data[ir] * this.filters.saturation, gs = data.data[ig] * this.filters.saturation, bs = data.data[ib] * this.filters.saturation;
+                data.data[ir] += data.data[ir] >= middleColor ? rs : -rs;
+                data.data[ig] += data.data[ig] >= middleColor ? gs : -gs;
+                data.data[ib] += data.data[ib] >= middleColor ? bs : -bs;
             }
             if (this.filters.colorReversed) {//color reverse
                 data.data[ir] = colorLength ^ data.data[ir];

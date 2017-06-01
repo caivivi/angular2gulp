@@ -1,3 +1,7 @@
+<span>Select Image</span>
+<select class="ddl-images" [(ngModel)]="selectedImage" (change)="viewer.loadImage(selectedImage)">
+    <option *ngFor="let img of images">{{img}}</option>
+</select>
 <canvas id="canMeasure" width="500" height="500"></canvas>
 <fieldset class="measurements">
     <legend>Filters</legend>

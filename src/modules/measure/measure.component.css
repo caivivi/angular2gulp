@@ -18,10 +18,14 @@
 
 .operator-label {
     display: inline-block;
-    width: 120px;
+    width: 130px;
 }
 
 .image-filter {
     display: inline-block;
     margin-left: 5px;
+}
+
+.ddl-images {
+    display: inline-block;
 }

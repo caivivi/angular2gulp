@@ -1,9 +1,9 @@
-export type ImageFilterType = "saturation" | "hue" | "contrast" | "gamma" | "brightness" | "sharpness";
+export type ImageFilterType = "saturation" | "hue" | "contrast" | "gamma" | "brightness" | "sharpness" | null;
 export type ImageChannelType = "red" | "green" | "blue" | "alpha";
 
 export class AppImageFilter {
-    saturation: number = 1;
-    hue: number = 1;
+    saturation: number = 0;
+    hue: number = 0;
     contrast: number = 0;
     gamma: number = 1;
     brightness: number = 1;

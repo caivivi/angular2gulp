@@ -10,18 +10,18 @@ export class FilterDirective implements OnInit {
     constructor(@Inject(ElementRef) private el: ElementRef) { }
 
     ngOnInit() {
-        let nativeEle = this.el.nativeElement;
-
-        nativeEle.min = 0;
-        nativeEle.max = 2;
-        nativeEle.step = 0.01;
+        let ele = this.el.nativeElement;
+        ele.min = 0;
+        ele.max = 1;
+        ele.step = 0.01;
         
         switch (this.filterType) {
-            case "saturation": break;
-            case "hue": break;
-            case "contrast": nativeEle.min = -1;
-            case "brightness" || "contrast": nativeEle.max = 5; break;
-            default: nativeEle.max = 1; break;
+            case "sharpness": ele.max = 2; break;
+            case "gamma": ele.max = 3; break;
+            case "saturation": ele.min = -2; break;
+            case "contrast": ele.min = -1;
+            case "brightness" || "contrast": ele.max = 5; break;
+            default: break;
         }
     }
 }

@@ -10,6 +10,17 @@ import { ImageViewerService } from "./measure.service";
     styleUrls: ["modules/measure/measure.component.css"]
 })
 export class MeasureComponent implements OnInit {
+    selectedImage: string;
+    images: string[] = [
+        "resources/images/worm1.jpg",
+        "resources/images/spider.jpg",
+        "resources/images/butterfly.jpg",
+        "resources/images/specimen1.jpg",
+        "resources/images/specimen2.jpg",
+        "resources/images/specimen3.jpg",
+        "resources/images/mm1.jpg"
+    ];
+
     constructor(
         @Inject(LanguageService) private langSVC: LanguageService,
         @Inject(ImageViewerService) private viewer: ImageViewerService
@@ -17,6 +28,7 @@ export class MeasureComponent implements OnInit {
 
     ngOnInit() {
         this.viewer.initialize(<HTMLCanvasElement>document.querySelector("#canMeasure"));
-        this.viewer.loadImage("resources/images/specimen1.jpg");
+        this.selectedImage = this.images[0];
+        this.viewer.loadImage(this.selectedImage);
     }
 }
