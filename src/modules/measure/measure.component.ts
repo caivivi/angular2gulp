@@ -12,12 +12,12 @@ import { ImageViewerService } from "./measure.service";
 export class MeasureComponent implements OnInit {
     selectedImage: string;
     images: string[] = [
-        "resources/images/worm1.jpg",
-        "resources/images/spider.jpg",
-        "resources/images/butterfly.jpg",
         "resources/images/specimen1.jpg",
         "resources/images/specimen2.jpg",
         "resources/images/specimen3.jpg",
+        "resources/images/worm1.jpg",
+        "resources/images/spider.jpg",
+        "resources/images/butterfly.jpg",
         "resources/images/mm1.jpg"
     ];
 
