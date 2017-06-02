@@ -1,11 +1,12 @@
 import { Injectable } from "@angular/core";
 import { Observable } from "rxjs/Observable";
 
-import { AppImageFilter, ImageFilterType, AppImageChannel, ImageChannelType, IPConsts, Convolution } from "./measure.model";
+import { AppImageFilter, AppImageNoise, ImageFilterType, AppImageChannel, ImageChannelType, IPConsts, AppColor, Convolution } from "./measure.model";
 
 export class ImageViewerService {
-    filters = new AppImageFilter();
-    channels = new AppImageChannel();
+    filters: AppImageFilter = new AppImageFilter();
+    noises: AppImageNoise = new AppImageNoise();
+    channels: AppImageChannel = new AppImageChannel();
 
     private canvas: HTMLCanvasElement;
     private context: CanvasRenderingContext2D;
@@ -60,14 +61,17 @@ export class ImageViewerService {
     resetImage() {
         this.filters = new AppImageFilter();
         this.channels = new AppImageChannel();
+        this.noises = new AppImageNoise();
         this.context.putImageData(this.rawImgData, 0, 0);
         this.copiedData = this.copyImageData(this.rawImgData);
     }
 
-    async filterImage(type: ImageFilterType = null) {
+    async filterImage() {
         await this.rgbProcess(this.copiedData);
         this.context.putImageData(this.copiedData, 0, 0);
         this.copiedData = this.copyImageData(this.rawImgData);
+
+        // this.noSignal();
     }
 
     async rgbProcess(data: ImageData) {
@@ -75,8 +79,8 @@ export class ImageViewerService {
         let exposureFlag = this.filters.exposure !== 1, contrastFlag = this.filters.contrast !== 0, saturationFlag = this.filters.saturation !== 0;
         let avgFlag = contrastFlag, gammaFlag = this.filters.gamma !== 1;
         let sharpnessFlag = this.filters.sharpness !== 0;
+        let gaussianFlag = this.noises.gaussian !== 0, saltPepperFlag = this.noises.saltpepper !== 0, guassianLevel = 20, noiseArray = this.randomGaussion(guassianLevel);
         let ir = 0, avgR = 0, avgG = 0, avgB = 0, imgArrLength = data.data.length;
-
         let matrixArr: Convolution[] = [];
         sharpnessFlag && matrixArr.push(IPConsts.convolutionList.get("sharpness"));
 
@@ -89,33 +93,47 @@ export class ImageViewerService {
                 data.data[ib] *= this.channels.blue;
                 data.data[ia] *= this.channels.alpha;
             }
-            if (avgFlag) {//
+
+            if (avgFlag) {
                 avgR += data.data[ir];
                 avgG += data.data[ig];
                 avgB += data.data[ib];
             }
+
             if (exposureFlag) {//exposure
                 data.data[ir] *= this.filters.exposure;
                 data.data[ig] *= this.filters.exposure;
                 data.data[ib] *= this.filters.exposure;
             }
+
             if (gammaFlag) {//gamma
                 data.data[ir] = Math.pow(data.data[ir] / IPConsts.colorLength, this.filters.gamma) * IPConsts.colorLength;
                 data.data[ig] = Math.pow(data.data[ig] / IPConsts.colorLength, this.filters.gamma) * IPConsts.colorLength;
                 data.data[ib] = Math.pow(data.data[ib] / IPConsts.colorLength, this.filters.gamma) * IPConsts.colorLength;
             }
+
             if (saturationFlag) {//saturation
                 let rs = data.data[ir] * this.filters.saturation, gs = data.data[ig] * this.filters.saturation, bs = data.data[ib] * this.filters.saturation;
                 data.data[ir] += data.data[ir] >= IPConsts.middleColor ? rs : -rs;
                 data.data[ig] += data.data[ig] >= IPConsts.middleColor ? gs : -gs;
                 data.data[ib] += data.data[ib] >= IPConsts.middleColor ? bs : -bs;
             }
+            
+            if (gaussianFlag) {
+                let color = noiseArray[Math.random() * guassianLevel >> 0];
+
+                data.data[ir] = (data.data[ir] * (1 - this.noises.gaussian)) + (color.red * this.noises.gaussian);
+                data.data[ig] = (data.data[ig] * (1 - this.noises.gaussian)) + (color.green * this.noises.gaussian);
+                data.data[ib] = (data.data[ib] * (1 - this.noises.gaussian)) + (color.blue * this.noises.gaussian);
+            }
+
+            !!matrixArr.length && this.matrixProcess(ir, matrixArr);//matrix processing such as sharpness, blur, edge and so on.
+
             if (this.filters.colorReversed) {//color reverse
                 data.data[ir] = IPConsts.colorLength ^ data.data[ir];
                 data.data[ig] = IPConsts.colorLength ^ data.data[ig];
                 data.data[ib] = IPConsts.colorLength ^ data.data[ib];
             }
-            !!matrixArr.length && this.matrixProcess(ir, matrixArr);//matrix processing such as sharpness, blur, edge and so on.
         }
 
         if (contrastFlag) {//contrast
@@ -136,7 +154,28 @@ export class ImageViewerService {
         }
     }
 
-    matrixProcess(index: number = 0, arrMatrix: Convolution[]) {
-        
+    randomGaussion(level) {
+        let gaussians = [];
+
+        for (var i = 0; i < level; i++) gaussians.push(AppColor.random(false));
+
+        return gaussians;
+    }
+
+    matrixProcess(index: number = 0, arrMatrix: Convolution[]) { }
+
+    noSignal() {
+        setInterval(() => {
+            let copied = this.copyImageData(this.rawImgData);
+            for (let ir = 0; ir < copied.data.length; ir += IPConsts.channelLength) {
+                let ig = ir + 1, ib = ir + 2, ia = ir + 3, color = AppColor.random(false);
+
+                copied.data[ir] = color.red;
+                copied.data[ig] = color.green;
+                copied.data[ib] = color.blue;
+            }
+
+            this.context.putImageData(copied, 0, 0);
+        }, 20);
     }
 }

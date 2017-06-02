@@ -20,7 +20,7 @@ export class FilterDirective implements OnInit {
             case "gamma": ele.max = 3; ele.step = 0.1; break;
             case "saturation": ele.min = -2; break;
             case "contrast": ele.min = -1;
-            case "brightness" || "contrast": ele.max = 5; break;
+            case "exposure" || "contrast": ele.max = 5; break;
             default: break;
         }
     }

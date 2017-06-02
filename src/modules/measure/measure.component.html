@@ -6,23 +6,28 @@
 <div class="measurement-groups">
     <fieldset class="measurement">
         <legend>Filters</legend>
-        <span class="operator-label">Saturation[{{viewer.filters.saturation}}]</span><input class="operator-filter" filter-type="saturation" type="range" [(ngModel)]="viewer.filters.saturation" (input)="viewer.filterImage('saturation')">
-        <span class="operator-label">Hue[{{viewer.filters.hue}}]</span><input class="operator-filter" filter-type="hue" type="range" [(ngModel)]="viewer.filters.hue" (input)="viewer.filterImage('hue')">
-        <span class="operator-label">Contrast[{{viewer.filters.contrast}}]</span><input class="operator-filter" filter-type="contrast" type="range" [(ngModel)]="viewer.filters.contrast" (input)="viewer.filterImage('contrast')">
-        <span class="operator-label">Gamma[{{viewer.filters.gamma}}]</span><input class="operator-filter" filter-type="gamma" type="range" [(ngModel)]="viewer.filters.gamma" (input)="viewer.filterImage('gamma')">
-        <span class="operator-label">Exposure[{{viewer.filters.exposure}}]</span><input class="operator-filter" filter-type="exposure" type="range" [(ngModel)]="viewer.filters.exposure" (input)="viewer.filterImage('exposure')">
+        <span class="operator-label">Saturation[{{viewer.filters.saturation}}]</span><input class="operator-filter" filter-type="saturation" type="range" [(ngModel)]="viewer.filters.saturation" (input)="viewer.filterImage()">
+        <span class="operator-label">Hue[{{viewer.filters.hue}}]</span><input class="operator-filter" filter-type="hue" type="range" [(ngModel)]="viewer.filters.hue" (input)="viewer.filterImage()">
+        <span class="operator-label">Contrast[{{viewer.filters.contrast}}]</span><input class="operator-filter" filter-type="contrast" type="range" [(ngModel)]="viewer.filters.contrast" (input)="viewer.filterImage()">
+        <span class="operator-label">Gamma[{{viewer.filters.gamma}}]</span><input class="operator-filter" filter-type="gamma" type="range" [(ngModel)]="viewer.filters.gamma" (input)="viewer.filterImage()">
+        <span class="operator-label">Exposure[{{viewer.filters.exposure}}]</span><input class="operator-filter" filter-type="exposure" type="range" [(ngModel)]="viewer.filters.exposure" (input)="viewer.filterImage()">
+    </fieldset>
+    <fieldset class="measurement" *ngIf="false">
+        <legend>Convolutions</legend>
+        <span class="operator-label">Sharpness[{{viewer.filters.sharpness}}]</span><input class="operator-filter" filter-type="sharpness" type="range" [(ngModel)]="viewer.filters.sharpness" (input)="viewer.filterImage()">
+        <span class="operator-label">Blur[{{viewer.filters.blur}}]</span><input class="operator-filter" filter-type="blur" type="range" [(ngModel)]="viewer.filters.blur" (input)="viewer.filterImage()">
     </fieldset>
     <fieldset class="measurement">
-        <legend>Convolutions</legend>
-        <span class="operator-label">Sharpness[{{viewer.filters.sharpness}}]</span><input class="operator-filter" filter-type="sharpness" type="range" [(ngModel)]="viewer.filters.sharpness" (input)="viewer.filterImage('sharpness')">
-        <span class="operator-label">Blur[{{viewer.filters.blur}}]</span><input class="operator-filter" filter-type="blur" type="range" [(ngModel)]="viewer.filters.blur" (input)="viewer.filterImage('blur')">
+        <legend>Noises</legend>
+        <span class="operator-label">Gaussian[{{viewer.noises.gaussian}}]</span><input class="operator-filter" filter-type="gaussian" type="range" [(ngModel)]="viewer.noises.gaussian" (input)="viewer.filterImage()">
+        <span class="operator-label">SaltPepper[{{viewer.noises.saltpepper}}]</span><input class="operator-filter" filter-type="saltpepper" type="range" [(ngModel)]="viewer.noises.saltpepper" (input)="viewer.filterImage()">
     </fieldset>
     <fieldset class="measurement">
         <legend>Channel</legend>
-        <span class="operator-label">Red[{{viewer.channels.red}}]</span><input class="operator-filter" type="range" [(ngModel)]="viewer.channels.red" (input)="viewer.filterImage('red')">
-        <span class="operator-label">Green[{{viewer.channels.green}}]</span><input class="operator-filter" type="range" [(ngModel)]="viewer.channels.green" (input)="viewer.filterImage('green')">
-        <span class="operator-label">Blue[{{viewer.channels.blue}}]</span><input class="operator-filter" type="range" [(ngModel)]="viewer.channels.blue" (input)="viewer.filterImage('blue')">
-        <span class="operator-label">Alpha[{{viewer.channels.alpha}}]</span><input class="operator-filter" type="range" [(ngModel)]="viewer.channels.alpha" (input)="viewer.filterImage('alpha')">
+        <span class="operator-label">Red[{{viewer.channels.red}}]</span><input class="operator-filter" type="range" [(ngModel)]="viewer.channels.red" (input)="viewer.filterImage()">
+        <span class="operator-label">Green[{{viewer.channels.green}}]</span><input class="operator-filter" type="range" [(ngModel)]="viewer.channels.green" (input)="viewer.filterImage()">
+        <span class="operator-label">Blue[{{viewer.channels.blue}}]</span><input class="operator-filter" type="range" [(ngModel)]="viewer.channels.blue" (input)="viewer.filterImage()">
+        <span class="operator-label">Alpha[{{viewer.channels.alpha}}]</span><input class="operator-filter" type="range" [(ngModel)]="viewer.channels.alpha" (input)="viewer.filterImage()">
     </fieldset>
     <fieldset class="measurement">
         <legend>Others</legend>

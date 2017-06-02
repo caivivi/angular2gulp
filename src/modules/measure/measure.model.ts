@@ -15,11 +15,36 @@ export class AppImageFilter {
     colorReversed: boolean = false;
 }
 
+export class AppImageNoise {
+    gaussian: number = 0;
+    saltpepper: number = 0;
+}
+
 export class AppImageChannel {
     red: number = 1;
     green: number = 1;
     blue: number = 1;
     alpha: number = 1;
+}
+
+export class AppColor {
+    constructor(public red: number = IPConsts.colorLength, public green: number = IPConsts.colorLength, public blue: number = IPConsts.colorLength, public alpha: number = IPConsts.colorLength) { }
+
+    static random(colorful = true) {
+        let color = new AppColor();
+
+        if (colorful) {
+            color.red = Math.random() * IPConsts.colorLength >> 0;
+            color.green = Math.random() * IPConsts.colorLength >> 0;
+            color.blue = Math.random() * IPConsts.colorLength >> 0;
+        } else {
+            let depth = Math.random() * IPConsts.colorLength >> 0;
+            color.blue = color.green = color.red = depth;
+        }
+        
+
+        return color;
+    }
 }
 
 export class IPConsts {
