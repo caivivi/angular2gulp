@@ -2,7 +2,7 @@ import { Directive, ElementRef, OnInit, Inject, Input } from "@angular/core";
 import { ImageFilterType } from "./measure.model";
 
 @Directive({
-    selector: "input.image-filter"
+    selector: "input[type='range'].operator-filter"
 })
 export class FilterDirective implements OnInit {
     @Input("filter-type") filterType: ImageFilterType;

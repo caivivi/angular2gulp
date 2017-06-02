@@ -19,7 +19,7 @@
 
 .measurement {
     --frame-border-color: #777;
-    padding: 0 17px 12px 10px;
+    padding: 3 17px 10px 10px;
     margin: 7px 0;
     border: solid 1px var(--frame-border-color);
     border-radius: 5px 0;
@@ -28,18 +28,33 @@
 .measurement legend {
     border: solid 1px var(--frame-border-color);
     padding: 2px 10px;
-    background: linear-gradient(#fff, #ddd);
+    background: #eee;
     border-radius: 5px 0;
+    font-weight: bold;
 }
 
 .operator-label {
+    --filter-line-height: 23px;
     display: inline-block;
-    width: 130px;
     font-size: .7rem;
+    width: 130px;
+    height: var(--filter-line-height);
+    line-height: var(--filter-line-height);
 }
 
-.image-filter {
+.operator-filter {
     display: inline-block;
-    margin-left: 5px;
+    margin: 0 0 0 5px;
     width: calc(100% - 135px);
+    height: var(--filter-line-height);
+    line-height: var(--filter-line-height);
+}
+
+.operator-button {
+    margin: 3px 0;
+}
+
+input[type='checkbox'].operator-filter {
+    width: auto;
+    margin: 0 calc(100% - 200px) 0 0;
 }

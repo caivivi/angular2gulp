@@ -6,8 +6,12 @@ export class AppImageFilter {
     hue: number = 0;
     contrast: number = 0;
     gamma: number = 1;
-    brightness: number = 1;
+    exposure: number = 1;
+
     sharpness: number = 0;
+    blur: number = 0;
+    
+    edgeDetect: boolean = false;
     colorReversed: boolean = false;
 }
 

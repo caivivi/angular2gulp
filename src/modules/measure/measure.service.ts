@@ -72,7 +72,7 @@ export class ImageViewerService {
 
     async rgbProcess(data: ImageData) {
         let channelFlag = this.channels.alpha !== 1 || this.channels.red !== 1 || this.channels.green !== 1 || this.channels.blue !== 1;
-        let brightnessFlag = this.filters.brightness !== 1, contrastFlag = this.filters.contrast !== 0, saturationFlag = this.filters.saturation !== 0;
+        let exposureFlag = this.filters.exposure !== 1, contrastFlag = this.filters.contrast !== 0, saturationFlag = this.filters.saturation !== 0;
         let avgFlag = contrastFlag, gammaFlag = this.filters.gamma !== 1;
         let sharpnessFlag = this.filters.sharpness !== 0;
         let ir = 0, avgR = 0, avgG = 0, avgB = 0, imgArrLength = data.data.length;
@@ -94,10 +94,10 @@ export class ImageViewerService {
                 avgG += data.data[ig];
                 avgB += data.data[ib];
             }
-            if (brightnessFlag) {//brightness
-                data.data[ir] *= this.filters.brightness;
-                data.data[ig] *= this.filters.brightness;
-                data.data[ib] *= this.filters.brightness;
+            if (exposureFlag) {//exposure
+                data.data[ir] *= this.filters.exposure;
+                data.data[ig] *= this.filters.exposure;
+                data.data[ib] *= this.filters.exposure;
             }
             if (gammaFlag) {//gamma
                 data.data[ir] = Math.pow(data.data[ir] / IPConsts.colorLength, this.filters.gamma) * IPConsts.colorLength;

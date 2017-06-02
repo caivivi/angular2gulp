@@ -71,7 +71,7 @@ content {
     overflow: auto;
 }
 
-input[type='range'] {
+input[type='range'], input[type='checkbox'] {
     margin: 0;
     transform: translateY(25%);
 }
