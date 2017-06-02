@@ -20,8 +20,6 @@
     <fieldset class="measurement">
         <legend>Noises</legend>
         <span class="operator-label">Gaussian[{{viewer.noises.gaussian}}]</span><input class="operator-filter" filter-type="gaussian" type="range" [(ngModel)]="viewer.noises.gaussian" (input)="viewer.filterImage()">
-        <span class="operator-label">SaltPepper[{{viewer.noises.saltpepper}}]</span><input class="operator-filter" filter-type="saltpepper" type="range" [(ngModel)]="viewer.noises.saltpepper" (input)="viewer.filterImage()">
-    </fieldset>
     <fieldset class="measurement">
         <legend>Channel</legend>
         <span class="operator-label">Red[{{viewer.channels.red}}]</span><input class="operator-filter" type="range" [(ngModel)]="viewer.channels.red" (input)="viewer.filterImage()">

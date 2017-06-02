@@ -41,6 +41,7 @@ export class ImageViewerService {
                     this.rawImgData = this.currentImgData;
                     this.copiedData = this.copyImageData(this.rawImgData);
                     this.filterImage();
+
                     subscriber.next();
                 };
 
@@ -79,7 +80,7 @@ export class ImageViewerService {
         let exposureFlag = this.filters.exposure !== 1, contrastFlag = this.filters.contrast !== 0, saturationFlag = this.filters.saturation !== 0;
         let avgFlag = contrastFlag, gammaFlag = this.filters.gamma !== 1;
         let sharpnessFlag = this.filters.sharpness !== 0;
-        let gaussianFlag = this.noises.gaussian !== 0, saltPepperFlag = this.noises.saltpepper !== 0, guassianLevel = 20, noiseArray = this.randomGaussion(guassianLevel);
+        let gaussianFlag = this.noises.gaussian !== 0, guassianLevel = 20, guassianNoiseArray = this.randomGaussion(guassianLevel);
         let ir = 0, avgR = 0, avgG = 0, avgB = 0, imgArrLength = data.data.length;
         let matrixArr: Convolution[] = [];
         sharpnessFlag && matrixArr.push(IPConsts.convolutionList.get("sharpness"));
@@ -119,8 +120,8 @@ export class ImageViewerService {
                 data.data[ib] += data.data[ib] >= IPConsts.middleColor ? bs : -bs;
             }
             
-            if (gaussianFlag) {
-                let color = noiseArray[Math.random() * guassianLevel >> 0];
+            if (gaussianFlag) {//guassian noise
+                let color = guassianNoiseArray[Math.random() * guassianLevel >> 0];
 
                 data.data[ir] = (data.data[ir] * (1 - this.noises.gaussian)) + (color.red * this.noises.gaussian);
                 data.data[ig] = (data.data[ig] * (1 - this.noises.gaussian)) + (color.green * this.noises.gaussian);
