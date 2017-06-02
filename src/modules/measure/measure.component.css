@@ -1,31 +1,45 @@
-:root {
-    background: #f00;
+:root { }
+
+.ddl-images {
+    display: inline-block;
+    margin: 0 5px;
 }
 
 #canMeasure {
-    border: 1px solid #333;
+    margin: 10px 0;
+    box-shadow: 0 0 7px #000;
     display: block;
     max-width: 100%;
 }
 
-.measurements {
-    padding: 0 10px 7px;
-    margin: 3px 5px;
-    border: solid 1px #ddd;
-    border-radius: 3px;
-    display: inline-block;
+.measurement-groups {
+    width: 500px;
+    max-width: 100%;
+}
+
+.measurement {
+    --frame-border-color: #777;
+    padding: 0 17px 12px 10px;
+    margin: 7px 0;
+    border: solid 1px var(--frame-border-color);
+    border-radius: 5px 0;
+}
+
+.measurement legend {
+    border: solid 1px var(--frame-border-color);
+    padding: 2px 10px;
+    background: linear-gradient(#fff, #ddd);
+    border-radius: 5px 0;
 }
 
 .operator-label {
     display: inline-block;
     width: 130px;
+    font-size: .7rem;
 }
 
 .image-filter {
     display: inline-block;
     margin-left: 5px;
-}
-
-.ddl-images {
-    display: inline-block;
+    width: calc(100% - 135px);
 }
