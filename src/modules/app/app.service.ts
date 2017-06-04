@@ -1,8 +1,5 @@
 import { Inject, Injectable, OnInit } from "@angular/core";
 import { Http, HttpModule, Response } from "@angular/http";
-import { Observable } from "rxjs/Observable";
-import 'rxjs/add/operator/map';
-import 'rxjs/add/operator/delay';
 
 export declare type AppLanguageCode = "en-US" | "en-AU" | "es-ES" | "fr-GF" | "ja-JP" | "zh-CN" | "zh-TW";
 
