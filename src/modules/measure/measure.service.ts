@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { Observable } from "rxjs/Observable";
 
-import { ImageConfig, AppImageFilter, AppImageNoise, ImageFilterType, AppImageChannel, ImageChannelType, IPConsts, AppColor, Convolution, RGBHistogram } from "./measure.model";
+import { ImageConfig, ImageFilterFlags, AppImageFilter, AppImageNoise, ImageFilterType, AppImageChannel, ImageChannelType, IPConsts, AppColor, RGBHistogram, Step1Result } from "./measure.model";
 
 export class ImageViewerService {
     config: ImageConfig = new ImageConfig();
@@ -12,9 +12,9 @@ export class ImageViewerService {
 
     private canvas: HTMLCanvasElement;
     private context: CanvasRenderingContext2D;
-    private imgStream: Observable<any>;
 
     private rawImgData: ImageData;
+    private thresholdedData: ImageData;
     private copiedData: ImageData;
     private get currentImgData(): ImageData {
         return this.context ? (<any>this.context).getImageData(...this.fullSize) : null;
@@ -36,22 +36,17 @@ export class ImageViewerService {
 
     loadImage(url: string) {
         if (!!url) {
-            this.imgStream = new Observable((subscriber) => {
-                let img = new Image();
+            let img = new Image();
 
-                img.onload = (e) => {
-                    (<any>this.context).drawImage(img, ...this.fullSize);
-                    this.rawImgData = this.currentImgData;
-                    this.copiedData = this.copyImageData(this.rawImgData);
-                    this.preProcessImage(this.copiedData);
-                    this.filterImage();
-                    subscriber.next();
-                };
+            img.onload = (e) => {
+                (<any>this.context).drawImage(img, ...this.fullSize);
+                this.rawImgData = this.currentImgData;
+                this.thresholdedData = this.currentImgData;
+                this.preProcessImage();
+                this.filterImage();
+            };
 
-                img.src = url;
-            });
-
-            this.imgStream.subscribe();
+            img.src = url;
         }
     }
 
@@ -71,135 +66,131 @@ export class ImageViewerService {
         return new ImageData(rawDataCopy, this.canvas.width, this.canvas.height);
     }
 
-    preProcessImage(data: ImageData) {
-        this.iterateImageData(data, (ir, ig, ib, ia) => {//rgb threshold
+    preProcessImage() {
+        this.iterateImageData(this.thresholdedData, (ir, ig, ib, ia) => {//rgb threshold
             if (this.config.thresholdDevisor > 1) {
-                data.data[ir] = (data.data[ir] / this.config.thresholdDevisor >> 0) * this.config.thresholdDevisor;
-                data.data[ig] = (data.data[ig] / this.config.thresholdDevisor >> 0) * this.config.thresholdDevisor;
-                data.data[ib] = (data.data[ib] / this.config.thresholdDevisor >> 0) * this.config.thresholdDevisor;
+                this.thresholdedData.data[ir] = (this.thresholdedData.data[ir] / this.config.thresholdDevisor >> 0) * this.config.thresholdDevisor;
+                this.thresholdedData.data[ig] = (this.thresholdedData.data[ig] / this.config.thresholdDevisor >> 0) * this.config.thresholdDevisor;
+                this.thresholdedData.data[ib] = (this.thresholdedData.data[ib] / this.config.thresholdDevisor >> 0) * this.config.thresholdDevisor;
             }
         });
 
-        this.histogram = RGBHistogram.fromData(data);//lookup table
-        this.context.putImageData(data, 0, 0);
+        this.histogram = RGBHistogram.fromData(this.thresholdedData);
+        this.context.putImageData(this.thresholdedData, 0, 0);
+        this.copiedData = this.copyImageData(this.thresholdedData);
     }
 
     resetImage() {
         this.filters = new AppImageFilter();
         this.channels = new AppImageChannel();
         this.noises = new AppImageNoise();
-        this.context.putImageData(this.rawImgData, 0, 0);
-        this.copiedData = this.copyImageData(this.rawImgData);
+        this.context.putImageData(this.thresholdedData, 0, 0);
+        this.copiedData = this.copyImageData(this.thresholdedData);
     }
 
     async filterImage() {
         await this.updateImageData(this.copiedData);
         
         this.context.putImageData(this.copiedData, 0, 0);
-        this.copiedData = this.copyImageData(this.rawImgData);
+        this.copiedData = this.copyImageData(this.thresholdedData);
         
         // this.noSignal();
     }
 
     async updateImageData(data: ImageData) {
-        let channelFlag = this.channels.alpha !== 1 || this.channels.red !== 1 || this.channels.green !== 1 || this.channels.blue !== 1;
-        let exposureFlag = this.filters.exposure !== 1, contrastFlag = this.filters.contrast !== 0, saturationFlag = this.filters.saturation !== 0;
-        let avgFlag = contrastFlag, gammaFlag = this.filters.gamma !== 1;
-        let sharpnessFlag = this.filters.sharpness !== 0;
-        let gaussianFlag = this.noises.gaussian !== 0, guassianLevel = 20, guassianNoiseArray = this.randomGaussion(guassianLevel);
-        let ir = 0, avgR = 0, avgG = 0, avgB = 0, imgArrLength = data.data.length;
-        let matrixArr: Convolution[] = [];
-        sharpnessFlag && matrixArr.push(IPConsts.convolutionList.get("sharpness"));
+        let flags: ImageFilterFlags = {
+            channelFlag: this.channels.alpha !== 1 || this.channels.red !== 1 || this.channels.green !== 1 || this.channels.blue !== 1,
+            exposureFlag: this.filters.exposure !== 1,
+            contrastFlag: this.filters.contrast !== 0,
+            saturationFlag: this.filters.saturation !== 0,
+            gammaFlag: this.filters.gamma !== 1,
+            sharpnessFlag: this.filters.sharpness !== 0,
+            gaussianFlag: this.noises.gaussian !== 0,
+            imgArrLength: data.data.length,
+            guassianNoiseArray: this.randomGaussion(this.config.guassianLevel),
+        };
 
-        gammaFlag && await Promise.all([
-            this.gammaChannel(data, this.histogram.red),
-            this.gammaChannel(data, this.histogram.green),
-            this.gammaChannel(data, this.histogram.blue)
+        let [redResult, greenResult, blueResult] = await Promise.all([
+            this.channelStep1(data, "red", flags),
+            this.channelStep1(data, "green", flags),
+            this.channelStep1(data, "blue", flags),
+            this.alphaStep1(data, flags)
         ]);
 
-        this.iterateImageData(data, (ir, ig, ib, ia) => {
-            if (channelFlag) {//channel
-                data.data[ir] *= this.channels.red;
-                data.data[ig] *= this.channels.green;
-                data.data[ib] *= this.channels.blue;
-                data.data[ia] *= this.channels.alpha;
-            }
+        await Promise.all([
+            this.channelStep2(data, redResult, flags),
+            this.channelStep2(data, greenResult, flags),
+            this.channelStep2(data, blueResult, flags)
+        ]);
 
-            if (avgFlag) {
-                avgR += data.data[ir];
-                avgG += data.data[ig];
-                avgB += data.data[ib];
-            }
+        flags.gaussianFlag && this.iterateImageData(data, (ir, ig, ib, ia) => {
+            let color = flags.guassianNoiseArray[Math.random() * this.config.guassianLevel >> 0];
 
-            if (exposureFlag) {//exposure
-                data.data[ir] *= this.filters.exposure;
-                data.data[ig] *= this.filters.exposure;
-                data.data[ib] *= this.filters.exposure;
-            }
-
-            if (saturationFlag) {//saturation
-                let rs = data.data[ir] * this.filters.saturation, gs = data.data[ig] * this.filters.saturation, bs = data.data[ib] * this.filters.saturation;
-                data.data[ir] += data.data[ir] >= IPConsts.middleColor ? rs : -rs;
-                data.data[ig] += data.data[ig] >= IPConsts.middleColor ? gs : -gs;
-                data.data[ib] += data.data[ib] >= IPConsts.middleColor ? bs : -bs;
-            }
-            
-            if (gaussianFlag) {//guassian noise
-                let color = guassianNoiseArray[Math.random() * guassianLevel >> 0];
-
-                data.data[ir] = (data.data[ir] * (1 - this.noises.gaussian)) + (color.red * this.noises.gaussian);
-                data.data[ig] = (data.data[ig] * (1 - this.noises.gaussian)) + (color.green * this.noises.gaussian);
-                data.data[ib] = (data.data[ib] * (1 - this.noises.gaussian)) + (color.blue * this.noises.gaussian);
-            }
-
-            !!matrixArr.length && this.matrixProcess(ir, matrixArr);//matrix processing such as sharpness, blur, edge and so on.
-
-            if (this.filters.colorReversed) {//color reverse
-                data.data[ir] = IPConsts.colorLength ^ data.data[ir];
-                data.data[ig] = IPConsts.colorLength ^ data.data[ig];
-                data.data[ib] = IPConsts.colorLength ^ data.data[ib];
-            }
+            data.data[ir] = (data.data[ir] * (1 - this.noises.gaussian)) + (color.red * this.noises.gaussian);
+            data.data[ig] = (data.data[ig] * (1 - this.noises.gaussian)) + (color.green * this.noises.gaussian);
+            data.data[ib] = (data.data[ib] * (1 - this.noises.gaussian)) + (color.blue * this.noises.gaussian);
         });
+    }
 
-        if (contrastFlag) {//contrast
-            const pixelLength = ir / IPConsts.channelLength;
+    async channelStep1(data: ImageData, type: ImageChannelType, flags: ImageFilterFlags): Promise<Step1Result> {
+        let colorTotal = 0, channel = this.getChannelInfo(type);
 
-            avgR /= pixelLength;
-            avgG /= pixelLength;
-            avgB /= pixelLength;
+        for (let [val, indexes] of channel.lookupMap) {
+            if (flags.saturationFlag) {
+                let saturation = val * this.filters.saturation;
+                val += val >= IPConsts.middleColor ? saturation : -saturation;
+            }
+            flags.contrastFlag && (colorTotal += val * indexes.length);
+            flags.channelFlag && (val *= channel.stepValue);
+            flags.exposureFlag && (val *= this.filters.exposure);
+            flags.gammaFlag && (val = Math.pow(val / IPConsts.colorLength, this.filters.gamma) * IPConsts.colorLength);
+            this.filters.colorReversed && (val = IPConsts.colorLength ^ val);
 
-            for (ir = 0; ir < imgArrLength; ir += IPConsts.channelLength) {
-                let ig = ir + 1, ib = ir + 2;
-                let diffR = data.data[ir] - avgR, diffG = data.data[ig] - avgG, diffB = data.data[ib] - avgB;
+            indexes.forEach((i) => data.data[i] = val);
+        }
 
-                data.data[ir] += diffR * this.filters.contrast;
-                data.data[ig] += diffG * this.filters.contrast;
-                data.data[ib] += diffB * this.filters.contrast;
+        return { channel, colorTotal };
+    }
+
+    async alphaStep1(data: ImageData, flags: ImageFilterFlags): Promise<any> {
+        if (flags.channelFlag) {
+            for (let [val, indexes] of this.histogram.alpha) {
+                val *= this.channels.alpha;
+                indexes.forEach((i) => data.data[i] = val);
             }
         }
     }
 
-    gammaChannel(data, channel: Map<number, number[]>): Promise<any> {
-        return new Promise((res, rej) => {
-            for (let [val, indexes] of channel) {
-                let gamma = Math.pow(val / IPConsts.colorLength, this.filters.gamma) * IPConsts.colorLength;
+    async channelStep2(data: ImageData, result: Step1Result, flags: ImageFilterFlags): Promise<any> {
+        let pixelLength = flags.imgArrLength / IPConsts.channelLength, avgColor = result.colorTotal / pixelLength >> 0;
 
-                indexes.forEach((i) => data.data[i] = gamma);
+        for (let [val, indexes] of result.channel.lookupMap) {
+            if (flags.contrastFlag) {
+                val = (val - avgColor) * this.filters.contrast;
+                indexes.forEach((i) => data.data[i] += val);
             }
-
-            res();
-        });
+        }
     }
 
-    randomGaussion(level) {
+    getChannelInfo(type: ImageChannelType) {
+        let vm = this;
+
+        return {
+            type,
+            lookupMap: this.histogram[type],
+            get stepValue() {
+                return vm.channels[type];
+            }
+        };
+    }
+
+    randomGaussion(level): AppColor[] {
         let gaussians = [];
 
         for (var i = 0; i < level; i++) gaussians.push(AppColor.random(false));
 
         return gaussians;
     }
-
-    matrixProcess(index: number = 0, arrMatrix: Convolution[]) { }
 
     noSignal() {
         setInterval(() => {

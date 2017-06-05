@@ -1,19 +1,36 @@
-export type ImageFilterType = "saturation" | "hue" | "contrast" | "gamma" | "brightness" | "sharpness" | "gaussian"| null;
-export type ImageChannelType = "red" | "green" | "blue" | "alpha" | null;
+export type ImageFilterType = "saturation" | "hue" | "contrast" | "gamma" | "brightness" | "sharpness" | "gaussian";
+export type ImageChannelType = "red" | "green" | "blue" | "alpha";
+
+export interface ImageFilterFlags {
+    channelFlag: boolean,
+    exposureFlag: boolean,
+    contrastFlag: boolean,
+    saturationFlag: boolean,
+    gammaFlag: boolean,
+    sharpnessFlag: boolean,
+    gaussianFlag: boolean,
+    imgArrLength: number,
+    guassianNoiseArray: AppColor[],
+}
+
+export interface Step1Result {
+    channel: {
+        type: ImageChannelType;
+        lookupMap: Map<number, number[]>;
+        stepValue: number;
+    },
+    colorTotal: number;
+}
 
 export class ImageConfig {
     thresholdDevisor: number = 4;
+    guassianLevel: number = 20;
 }
 
 export class IPConsts {
     static readonly colorLength: number = 255;
     static readonly middleColor: number = 128;
     static readonly channelLength: number = 4;
-    static readonly convolutionList: ReadonlyMap<string, Convolution> = new Map([
-        ["sharpness", { type: "sharpness", matrix: [0, -2, 0, -2, 11, -2, 0, -2, 0] }],
-        ["blur", { type: "blur", matrix: [1, 2, 1, 2, 4, 2, 1, 2, 1] }],
-        ["edge", { type: "edge", matrix: [1, 1, 1, 1, -7, 1, 1, 1, 1] }]
-    ]);
 }
 
 export class AppImageFilter {
@@ -64,26 +81,23 @@ export class AppColor {
     }
 }
 
-export interface Convolution {
-    type: string;
-    matrix: number[];
-}
-
 export class RGBHistogram {
     red: Map<number, number[]> = new Map<number, number[]>();
     green: Map<number, number[]> = new Map<number, number[]>();
     blue: Map<number, number[]> = new Map<number, number[]>();
+    alpha: Map<number, number[]> = new Map<number, number[]>();
 
     static fromData(data: ImageData): RGBHistogram {
         let histo = new RGBHistogram();
 
         for (var ir = 0; ir < data.data.length; ir += IPConsts.channelLength) {
-            let ig = ir +1, ib = ir + 2;
-            let red = data.data[ir], green = data.data[ig], blue = data.data[ib];
+            let ig = ir +1, ib = ir + 2, ia = ir + 3;
+            let red = data.data[ir], green = data.data[ig], blue = data.data[ib], alpha = data.data[ia];
 
             histo.red.has(red) ? histo.red.get(red).push(ir) :  histo.red.set(red, [ir]);
             histo.green.has(green) ? histo.green.get(green).push(ig) :  histo.green.set(green, [ig]);
             histo.blue.has(blue) ? histo.blue.get(blue).push(ib) :  histo.blue.set(blue, [ib]);
+            histo.alpha.has(alpha) ? histo.alpha.get(alpha).push(ia) :  histo.alpha.set(alpha, [ia]);
         }
 
         return histo;
