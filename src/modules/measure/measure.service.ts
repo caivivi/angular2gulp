@@ -1,9 +1,10 @@
 import { Injectable } from "@angular/core";
 import { Observable } from "rxjs/Observable";
 
-import { AppImageFilter, AppImageNoise, ImageFilterType, AppImageChannel, ImageChannelType, IPConsts, AppColor, Convolution, RGBHistogram } from "./measure.model";
+import { ImageConfig, AppImageFilter, AppImageNoise, ImageFilterType, AppImageChannel, ImageChannelType, IPConsts, AppColor, Convolution, RGBHistogram } from "./measure.model";
 
 export class ImageViewerService {
+    config: ImageConfig = new ImageConfig();
     filters: AppImageFilter = new AppImageFilter();
     noises: AppImageNoise = new AppImageNoise();
     channels: AppImageChannel = new AppImageChannel();
@@ -37,13 +38,13 @@ export class ImageViewerService {
         if (!!url) {
             this.imgStream = new Observable((subscriber) => {
                 let img = new Image();
+
                 img.onload = (e) => {
                     (<any>this.context).drawImage(img, ...this.fullSize);
                     this.rawImgData = this.currentImgData;
                     this.copiedData = this.copyImageData(this.rawImgData);
-                    this.histogram = RGBHistogram.fromData(this.rawImgData);
+                    this.preProcessImage(this.copiedData);
                     this.filterImage();
-
                     subscriber.next();
                 };
 
@@ -54,11 +55,33 @@ export class ImageViewerService {
         }
     }
 
+    iterateImageData(data: ImageData, action: (ir: number, ig: number, ib: number, ia: number) => any) {
+        let imgArrLength = data.data.length;
+
+        for (let ir = 0; ir < imgArrLength; ir += IPConsts.channelLength) {
+            let ig = ir + 1, ib = ir + 2, ia = ir + 3;
+            action(ir, ig, ib, ia);
+        }
+    }
+
     copyImageData(origin: ImageData): ImageData {
         let rawDataCopy = new Uint8ClampedArray(origin.data);
         rawDataCopy.set(origin.data);
 
         return new ImageData(rawDataCopy, this.canvas.width, this.canvas.height);
+    }
+
+    preProcessImage(data: ImageData) {
+        this.iterateImageData(data, (ir, ig, ib, ia) => {//rgb threshold
+            if (this.config.thresholdDevisor > 1) {
+                data.data[ir] = (data.data[ir] / this.config.thresholdDevisor >> 0) * this.config.thresholdDevisor;
+                data.data[ig] = (data.data[ig] / this.config.thresholdDevisor >> 0) * this.config.thresholdDevisor;
+                data.data[ib] = (data.data[ib] / this.config.thresholdDevisor >> 0) * this.config.thresholdDevisor;
+            }
+        });
+
+        this.histogram = RGBHistogram.fromData(data);//lookup table
+        this.context.putImageData(data, 0, 0);
     }
 
     resetImage() {
@@ -78,7 +101,7 @@ export class ImageViewerService {
         // this.noSignal();
     }
 
-   async updateImageData(data: ImageData) {
+    async updateImageData(data: ImageData) {
         let channelFlag = this.channels.alpha !== 1 || this.channels.red !== 1 || this.channels.green !== 1 || this.channels.blue !== 1;
         let exposureFlag = this.filters.exposure !== 1, contrastFlag = this.filters.contrast !== 0, saturationFlag = this.filters.saturation !== 0;
         let avgFlag = contrastFlag, gammaFlag = this.filters.gamma !== 1;
@@ -94,9 +117,7 @@ export class ImageViewerService {
             this.gammaChannel(data, this.histogram.blue)
         ]);
 
-        for (ir = 0; ir < imgArrLength; ir += IPConsts.channelLength) {
-            let ig = ir + 1, ib = ir + 2, ia = ir + 3;
-            
+        this.iterateImageData(data, (ir, ig, ib, ia) => {
             if (channelFlag) {//channel
                 data.data[ir] *= this.channels.red;
                 data.data[ig] *= this.channels.green;
@@ -115,12 +136,6 @@ export class ImageViewerService {
                 data.data[ig] *= this.filters.exposure;
                 data.data[ib] *= this.filters.exposure;
             }
-
-            // if (gammaFlag) {//gamma
-            //     data.data[ir] = Math.pow(data.data[ir] / IPConsts.colorLength, this.filters.gamma) * IPConsts.colorLength;
-            //     data.data[ig] = Math.pow(data.data[ig] / IPConsts.colorLength, this.filters.gamma) * IPConsts.colorLength;
-            //     data.data[ib] = Math.pow(data.data[ib] / IPConsts.colorLength, this.filters.gamma) * IPConsts.colorLength;
-            // }
 
             if (saturationFlag) {//saturation
                 let rs = data.data[ir] * this.filters.saturation, gs = data.data[ig] * this.filters.saturation, bs = data.data[ib] * this.filters.saturation;
@@ -144,7 +159,7 @@ export class ImageViewerService {
                 data.data[ig] = IPConsts.colorLength ^ data.data[ig];
                 data.data[ib] = IPConsts.colorLength ^ data.data[ib];
             }
-        }
+        });
 
         if (contrastFlag) {//contrast
             const pixelLength = ir / IPConsts.channelLength;

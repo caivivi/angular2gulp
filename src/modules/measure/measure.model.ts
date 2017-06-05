@@ -1,6 +1,10 @@
 export type ImageFilterType = "saturation" | "hue" | "contrast" | "gamma" | "brightness" | "sharpness" | "gaussian"| null;
 export type ImageChannelType = "red" | "green" | "blue" | "alpha" | null;
 
+export class ImageConfig {
+    thresholdDevisor: number = 4;
+}
+
 export class IPConsts {
     static readonly colorLength: number = 255;
     static readonly middleColor: number = 128;
@@ -77,9 +81,9 @@ export class RGBHistogram {
             let ig = ir +1, ib = ir + 2;
             let red = data.data[ir], green = data.data[ig], blue = data.data[ib];
 
-            histo.red.has(data.data[ir]) ? histo.red.get(red).push(ir) :  histo.red.set(red, [ir]);
-            histo.green.has(data.data[ig]) ? histo.green.get(green).push(ig) :  histo.green.set(green, [ig]);
-            histo.blue.has(data.data[ib]) ? histo.blue.get(blue).push(ib) :  histo.blue.set(blue, [ib]);
+            histo.red.has(red) ? histo.red.get(red).push(ir) :  histo.red.set(red, [ir]);
+            histo.green.has(green) ? histo.green.get(green).push(ig) :  histo.green.set(green, [ig]);
+            histo.blue.has(blue) ? histo.blue.get(blue).push(ib) :  histo.blue.set(blue, [ib]);
         }
 
         return histo;
