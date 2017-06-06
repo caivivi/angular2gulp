@@ -1,9 +1,23 @@
+@font-face {
+    font-family: "zeiss";
+    src: url('resources/fonts/ZEISSFrutigerNextW1G-Reg.ttf');
+}
+@font-face {
+    font-family: "zeissmed";
+    src: url('resources/fonts/ZEISSFrutigerNextW1G-Medium.ttf');
+}
+@font-face {
+    font-family: "zeissbold";
+    src: url('resources/fonts/ZEISSFrutigerNextW1G-bold.ttf');
+}
+
 :root {
     height: 100%;
     --global-font-size: 13px;
-    --global-font-family: monospace;
+    --global-font-family: zeiss, monospace;
+    --global-font-bold: zeissbold, monospace;
     --global-color: #444;
-    --global-link-color: #777;
+    --global-link-color: #555;
     --hover-color: #ccc;
     --transition-duration: .2s;
      -webkit-overflow-scrolling : touch;
@@ -16,6 +30,7 @@ body {
     display: grid;
     grid-template-rows: 30px calc(100% - 60px) 30px;/*calc is going to be updated to 1fr*/
     font: var(--global-font-size) var(--global-font-family);
+    font-display: swap;
     color: var(--global-color);
 }
 
@@ -39,9 +54,9 @@ header, footer {
 
 header .menu, footer .menu {
     flex: 1;
-    font-weight: bold;
+    font-family: var(--global-font-bold);
     display: inline-block;
-    line-height: 22px;
+    line-height: 25px;
     text-decoration: none;
     padding: 3px 10px;
     text-align: center;
@@ -69,6 +84,14 @@ content {
     border-top: solid 1px var(--global-color);
     border-bottom: solid 1px var(--global-color);
     overflow: auto;
+}
+
+input, button, select {
+    font: var(--global-font-size) var(--global-font-family);
+}
+
+input[type='button'], button, legend {
+    padding: 3px 10px 0;
 }
 
 input[type='range'], input[type='checkbox'] {
