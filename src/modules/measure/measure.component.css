@@ -28,6 +28,7 @@
 
 .measurement legend {
     border: solid 1px var(--frame-border-color);
+    line-height: 18px;
     background: #eee;
     border-radius: 5px 0;
     font-family: var(--global-font-bold);
