@@ -75,7 +75,6 @@ export class AppColor {
             let depth = Math.random() * IPConsts.colorLength >> 0;
             color.blue = color.green = color.red = depth;
         }
-        
 
         return color;
     }

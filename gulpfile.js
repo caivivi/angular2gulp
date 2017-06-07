@@ -23,6 +23,7 @@ const angularDestFolder = `${destScriptsFolder}@angular/`;
 const output = "bundle.js", maints = `${srcScriptsFolder}main.ts`, maintsOutput = `${destScriptsFolder}main.ts`, mainJs = `${destScriptsFolder}main.js`, serviceWorkerTS = `${srcFolder}serviceWorker.ts`;
 const reflectMetadata = `${nodeFolder}reflect-metadata/Reflect.js`, zonejs = `${nodeFolder}zone.js/dist/zone.js`, corejs = `${nodeFolder}core-js/client/core.js`;
 const systemjs = `${nodeFolder}systemjs/dist/system.src.js`, dummyModule = `${srcScriptsFolder}dummyModules.ts`, angularPolyfill = [zonejs, reflectMetadata, systemjs];
+const openseadragonjs = `${nodeFolder}openseadragon/build/openseadragon/openseadragon.js`;
 
 const allHTML = `${srcFolder}**/*.html`, allCSS = `${srcFolder}**/*.css`, allScript = [`${srcFolder}**/*.ts`, `!${maints}`, `!${dummyModule}`, `!${serviceWorkerTS}`];
 const otherFiles = [`${srcFolder}**/*`, `!${allHTML}`, `!${allCSS}`, `!${srcFolder}**/*.ts`], appIcon = "dist/favicon.ico", appIconAbsolute = path.join(__dirname, appIcon);
@@ -324,24 +325,10 @@ gulp.task("compileumd", ["clean"], async () => {
         await del([maintsOutput, mainJs], delOptions);
         
         await new Promise((resolve, reject) => {
-            logMsg("Merging angular bundle...");
+            logMsg("Merging & compressing angular bundle...");
 
             angularStream = gulp.src([...angularBundle, mainJs])
                 .pipe(concat(output))
-                .on("finish", () => {
-                    logMsg(`Angular bundle merge complete.`);
-                    resolve();
-                })
-                .on("error", () => {
-                    logErr("Error occurred while merging angular bundle.");
-                    reject();
-                });
-        });
-
-        await new Promise((resolve, reject) => {
-            logMsg("Compressing angular bundle...");
-
-            angularStream
                 .pipe(uglify())
                 .pipe(gulp.dest(destScriptsFolder))
                 .on("finish", () => {
@@ -349,7 +336,7 @@ gulp.task("compileumd", ["clean"], async () => {
                     resolve();
                 })
                 .on("error", () => {
-                    logErr("Error occurred while compressing angular bundle.");
+                    logErr("Error occurred while compressing bundle.");
                     reject();
                 });
         });
@@ -360,6 +347,24 @@ gulp.task("compileumd", ["clean"], async () => {
 
 gulp.task("build", [buildOptions.angular.useUMD ? "compileumd" : "compile"], async () => {
     let tsProject = tsc.createProject("tsconfig.json", buildOptions.tsc);
+
+    //js third party libraries
+    let jsLibPro = new Promise((resolve, reject) => {
+        logMsg("Compressing third party libraries...");
+        let files = [openseadragonjs];
+
+        gulp.src(files)
+            .pipe(uglify())
+            .pipe(gulp.dest(destScriptsFolder))
+            .on("finish", () => {
+                logMsg("Third party libraries compression complete.");
+                resolve(true);
+            })
+            .on("error", () => {
+                logErr("Error occurred while compressing third party libraries.");
+                reject(false);
+            });
+    });
 
     //typescript
     let tsPro = new Promise((resolve, reject) => {
@@ -420,7 +425,7 @@ gulp.task("build", [buildOptions.angular.useUMD ? "compileumd" : "compile"], asy
             });
     });
 
-    await Promise.all([tsPro, cssPro, htmlPro, otherPro]);
+    await Promise.all([jsLibPro, tsPro, cssPro, htmlPro, otherPro]);
 });
 
 gulp.task("watch", ["build"], async () => {

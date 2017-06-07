@@ -23,7 +23,16 @@
 // }
 SystemJS.config({
     baseURL: "/",
-    paths: { },
+    paths: {
+        "openseadragon": "scripts/openseadragon.js"
+    },
+    meta: {
+        "openseadragon": {
+            format: "global",
+            exports: "OpenSeadragon",
+            deps: []
+        }
+    },
     packages: {
         "modules": {
             defaultExtension: "js"

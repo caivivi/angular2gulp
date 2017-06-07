@@ -1,5 +1,6 @@
 import { Injectable } from "@angular/core";
 import { Observable } from "rxjs/Observable";
+import * as openseadragon from "openseadragon";
 
 import { ImageConfig, ImageFilterFlags, AppImageFilter, AppImageNoise, ImageFilterType, AppImageChannel, ImageChannelType, IPConsts, AppColor, RGBHistogram, Step1Result } from "./measure.model";
 
@@ -35,6 +36,7 @@ export class ImageViewerService {
     }
 
     loadImage(url: string) {
+        console.log("openseadragon", openseadragon, openseadragon === (<any>window).OpenSeadragon);
         if (!!url) {
             let img = new Image();
 
