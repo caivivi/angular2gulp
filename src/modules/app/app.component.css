@@ -80,10 +80,14 @@ header .menu:last-of-type, footer .menu:last-of-type {
 }
 
 content {
-    padding: 3px 10px;
     border-top: solid 1px var(--global-color);
     border-bottom: solid 1px var(--global-color);
     overflow: auto;
+}
+
+router-outlet + * {
+    display: block;
+    padding: 3px 10px;
 }
 
 input, button, select {

@@ -1,4 +1,6 @@
-:root { }
+:host {
+    --filter-line-height: 23px;
+}
 
 .ddl-images {
     display: inline-block;
@@ -35,7 +37,7 @@
 }
 
 .operator-label {
-    --filter-line-height: 23px;
+    
     display: inline-block;
     font-size: .7rem;
     width: 130px;

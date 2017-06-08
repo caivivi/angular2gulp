@@ -39,8 +39,9 @@ SystemJS.config({
     }
 });
 
-Promise.all([System.import("@angular/platform-browser-dynamic"), System.import("./modules/app/app.module")])
-.then(([{ platformBrowserDynamic }, { AppModule }]) => {
+Promise.all([System.import("@angular/platform-browser-dynamic"), System.import("@angular/core"), System.import("./modules/app/app.module")])
+.then(([{ platformBrowserDynamic }, { enableProdMode }, { AppModule }]) => {
+    // enableProdMode();
     platformBrowserDynamic().bootstrapModule(AppModule)
         //.then(() => (appReady = true) && initSWData())
         .catch((err) => console.error("Application bootstrap error:", err));
