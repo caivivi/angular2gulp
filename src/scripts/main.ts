@@ -22,15 +22,14 @@
 //     !!swChannel && appReady && swReady && navigator.serviceWorker.controller.postMessage(data, [swChannel.port2]);
 // }
 SystemJS.config({
-    baseURL: "/",
-    paths: {
+    map: {
         "openseadragon": "scripts/openseadragon.js"
     },
     meta: {
         "openseadragon": {
             format: "global",
             exports: "OpenSeadragon",
-            deps: []
+            esmExports: false,
         }
     },
     packages: {
