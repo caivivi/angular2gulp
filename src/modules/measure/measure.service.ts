@@ -1,6 +1,8 @@
 import { Injectable } from "@angular/core";
 import { Observable } from "rxjs/Observable";
 
+import leaflet from "leaflet";
+
 import { ImageConfig, ImageFilterFlags, AppImageFilter, AppImageNoise, ImageFilterType, AppImageChannel, ImageChannelType, IPConsts, AppColor, RGBHistogram, Step1Result } from "./measure.model";
 
 export class ImageViewerService {
@@ -27,11 +29,17 @@ export class ImageViewerService {
 
     initialize(can: HTMLCanvasElement): void {
         this.canvas = can;
-
-        if (!this.canvas || !(this.canvas instanceof HTMLCanvasElement)) throw new Error("ImageViewer failed tp initialize.");
+        this.loadViewer();
+        if (!this.canvas || !(this.canvas instanceof HTMLCanvasElement)) throw new Error("ImageViewer failed to initialize.");
         else {
             this.context = this.canvas.getContext("2d");
         }
+    }
+
+    loadViewer() {
+        console.log("map", leaflet, leaflet === (<any>window).L);
+        let view = leaflet.map('imgView').setView([51.505, -0.09], 13);
+        let marker = leaflet.marker([51.5, -0.09]).addTo(view);
     }
 
     loadImage(url: string) {

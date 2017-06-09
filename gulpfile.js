@@ -23,7 +23,7 @@ const angularDestFolder = `${destScriptsFolder}@angular/`;
 const output = "bundle.js", maints = `${srcScriptsFolder}main.ts`, maintsOutput = `${destScriptsFolder}main.ts`, mainJs = `${destScriptsFolder}main.js`, serviceWorkerTS = `${srcFolder}serviceWorker.ts`;
 const reflectMetadata = `${nodeFolder}reflect-metadata/Reflect.js`, zonejs = `${nodeFolder}zone.js/dist/zone.js`, corejs = `${nodeFolder}core-js/client/core.js`;
 const systemjs = `${nodeFolder}systemjs/dist/system.src.js`, dummyModule = `${srcScriptsFolder}dummyModules.ts`, angularPolyfill = [zonejs, reflectMetadata, systemjs];
-const openseadragonjs = `${nodeFolder}openseadragon/build/openseadragon/openseadragon.js`;
+const openseadragonjs = `${nodeFolder}openseadragon/build/openseadragon/openseadragon.js`, leafletjs = `${nodeFolder}leaflet/dist/leaflet-src.js`;
 
 const allHTML = `${srcFolder}**/*.html`, allCSS = `${srcFolder}**/*.css`, allScript = [`${srcFolder}**/*.ts`, `!${maints}`, `!${dummyModule}`, `!${serviceWorkerTS}`];
 const otherFiles = [`${srcFolder}**/*`, `!${allHTML}`, `!${allCSS}`, `!${srcFolder}**/*.ts`], appIcon = "dist/favicon.ico", appIconAbsolute = path.join(__dirname, appIcon);
@@ -351,10 +351,11 @@ gulp.task("build", [buildOptions.angular.useUMD ? "compileumd" : "compile"], asy
     //js third party libraries
     let jsLibPro = new Promise((resolve, reject) => {
         logMsg("Compressing third party libraries...");
-        let files = [openseadragonjs];
+        let files = [openseadragonjs, leafletjs];
 
         gulp.src(files)
             .pipe(uglify())
+            .pipe(rename((path) => path.basename = path.basename.replace(/-src/ig, "")))
             .pipe(gulp.dest(destScriptsFolder))
             .on("finish", () => {
                 logMsg("Third party libraries compression complete.");

@@ -23,13 +23,18 @@
 // }
 SystemJS.config({
     map: {
-        "openseadragon": "scripts/openseadragon.js"
+        "openseadragon": "scripts/openseadragon.js",
+        "leaflet": "scripts/leaflet.js"
     },
     meta: {
         "openseadragon": {
             format: "global",
             exports: "OpenSeadragon",
             esmExports: false,
+        },
+        "leaflet": {
+            format: "global",
+            exports: "L",
         }
     },
     packages: {
