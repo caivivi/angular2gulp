@@ -1,13 +1,13 @@
 "use strict";
 const packageJson = require('./package.json');
 const gulp = require("gulp");
-const WebServer = require("gulp-webserver");
+const webServer = require("gulp-WebServer");
 const gulpWatch = require("gulp-watch");
 const rename = require("gulp-rename");
 const uglify = require("gulp-uglify");
 const concat = require("gulp-concat");
 const cleanCSS = require("gulp-clean-css");
-const HtmlMin = require("gulp-htmlmin");
+const htmlMin = require("gulp-htmlmin");
 const tsc = require("gulp-typescript");
 const eleBuilder = require('electron-builder');
 const del = require("del");
@@ -17,13 +17,17 @@ const colors = require("colors");
 //folders
 const srcFolder = "src/", srcScriptsFolder = `${srcFolder}scripts/`, appOutputFolder = "output/";
 const destFolder = "dist/", destScriptsFolder = `${destFolder}scripts/`, licenseFile = "license.txt";
+const srcResourceFolder = `${srcFolder}resources/`, destResourceFolder = `${destFolder}resources/`;
+const srcImageFolder = `${srcResourceFolder}images/`, destImageFolder = `${destResourceFolder}images/`;
 const nodeFolder = "node_modules/", angularFolder = `${nodeFolder}@angular/`, RxFolder = `${nodeFolder}rxjs/src/`, rxDestFolder = `${destScriptsFolder}rxjs/`;
 const angularDestFolder = `${destScriptsFolder}@angular/`;
 
 const output = "bundle.js", maints = `${srcScriptsFolder}main.ts`, maintsOutput = `${destScriptsFolder}main.ts`, mainJs = `${destScriptsFolder}main.js`, serviceWorkerTS = `${srcFolder}serviceWorker.ts`;
 const reflectMetadata = `${nodeFolder}reflect-metadata/Reflect.js`, zonejs = `${nodeFolder}zone.js/dist/zone.js`, corejs = `${nodeFolder}core-js/client/core.js`;
 const systemjs = `${nodeFolder}systemjs/dist/system.src.js`, dummyModule = `${srcScriptsFolder}dummyModules.ts`, angularPolyfill = [zonejs, reflectMetadata, systemjs];
-const openseadragonjs = `${nodeFolder}openseadragon/build/openseadragon/openseadragon.js`, leafletjs = `${nodeFolder}leaflet/dist/leaflet-src.js`;
+const openseadragonFolder = `${nodeFolder}openseadragon/build/openseadragon/`, openseadragonImageFolder = `${openseadragonFolder}images/`;;
+const openseadragonjs = `${openseadragonFolder}openseadragon.js`
+const leafletjs = `${nodeFolder}leaflet/dist/leaflet-src.js`;
 
 const allHTML = `${srcFolder}**/*.html`, allCSS = `${srcFolder}**/*.css`, allScript = [`${srcFolder}**/*.ts`, `!${maints}`, `!${dummyModule}`, `!${serviceWorkerTS}`];
 const otherFiles = [`${srcFolder}**/*`, `!${allHTML}`, `!${allCSS}`, `!${srcFolder}**/*.ts`], appIcon = "dist/favicon.ico", appIconAbsolute = path.join(__dirname, appIcon);
@@ -400,7 +404,7 @@ gulp.task("build", [buildOptions.angular.useUMD ? "compileumd" : "compile"], asy
     //html
     let htmlPro = new Promise((resolve, reject) => {
         gulp.src(allHTML)
-            .pipe(HtmlMin(htmlMinOptions))
+            .pipe(htmlMin(htmlMinOptions))
             .pipe(gulp.dest(destFolder))
             .on("finish", () => {
                 logMsg("App html compilation complete.");
@@ -410,6 +414,31 @@ gulp.task("build", [buildOptions.angular.useUMD ? "compileumd" : "compile"], asy
                 logErr("An error occurred while compiling app html.");
                 reject(false);
             });
+    });
+
+    //images
+    let imgPro = new Promise((resolve, reject) => {
+        logMsg("Copying third party library images...");
+        
+        let openseadragonFlag = false;
+        let openseadragonStream = gulp.src([`${openseadragonImageFolder}*`])
+            .pipe(gulp.dest(`${destImageFolder}openseadragon/`));
+
+        indicateImageProEnd(openseadragonStream, () => openseadragonFlag = true);
+            
+        function indicateImageProEnd(stream, flagCallback) {
+            flagCallback();
+            stream.on("finish", () => {
+                if (openseadragonFlag) {
+                    logMsg("Third party library images copy complete.");
+                    resolve(true);
+                }
+            })
+            .on("error", () => {
+                logErr("An error occurred while copying third party library images:");
+                reject(false);
+            });
+        }
     });
 
     //other
@@ -426,7 +455,7 @@ gulp.task("build", [buildOptions.angular.useUMD ? "compileumd" : "compile"], asy
             });
     });
 
-    await Promise.all([jsLibPro, tsPro, cssPro, htmlPro, otherPro]);
+    await Promise.all([jsLibPro, tsPro, cssPro, htmlPro, otherPro, imgPro]);
 });
 
 gulp.task("watch", ["build"], async () => {
@@ -486,7 +515,7 @@ gulp.task("watch", ["build"], async () => {
 
         function compile(files) {
             gulp.src(!!files && files.length ? files : allHTML)
-                .pipe(HtmlMin(htmlMinOptions))
+                .pipe(htmlMin(htmlMinOptions))
                 .pipe(gulp.dest(!!files && files.length === 1 ? path.dirname(files[0].toDist()) : destFolder));
         }
     } catch (ex) {
@@ -512,7 +541,7 @@ gulp.task("watch", ["build"], async () => {
 });
 
 gulp.task("startDevServer", [], async () => {
-    gulp.src(destFolder).pipe(WebServer(serverOptions));
+    gulp.src(destFolder).pipe(webServer(serverOptions));
 });
 
 gulp.task("releaseApp", ["build"], async () => {
