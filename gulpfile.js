@@ -1,7 +1,7 @@
 "use strict";
 const packageJson = require('./package.json');
 const gulp = require("gulp");
-const webServer = require("gulp-WebServer");
+const webServer = require("gulp-webserver");
 const gulpWatch = require("gulp-watch");
 const rename = require("gulp-rename");
 const uglify = require("gulp-uglify");
