@@ -27,6 +27,10 @@ const rootRouterCocnfig: Routes = [
     {
         path: "measure",
         loadChildren: "modules/measure/measure.module#MeasureModule"
+    },
+    {
+        path: "viewer",
+        loadChildren: "modules/viewer/viewer.module#ViewerModule"
     }
 ];
 

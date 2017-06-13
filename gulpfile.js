@@ -26,7 +26,7 @@ const output = "bundle.js", maints = `${srcScriptsFolder}main.ts`, maintsOutput 
 const reflectMetadata = `${nodeFolder}reflect-metadata/Reflect.js`, zonejs = `${nodeFolder}zone.js/dist/zone.js`, corejs = `${nodeFolder}core-js/client/core.js`;
 const systemjs = `${nodeFolder}systemjs/dist/system.src.js`, dummyModule = `${srcScriptsFolder}dummyModules.ts`, angularPolyfill = [zonejs, reflectMetadata, systemjs];
 const openseadragonFolder = `${nodeFolder}openseadragon/build/openseadragon/`, openseadragonImageFolder = `${openseadragonFolder}images/`;;
-const openseadragonjs = `${openseadragonFolder}openseadragon.js`
+const openseadragonjs = `${openseadragonFolder}openseadragon.js`, openseadragonFiltering = `${nodeFolder}openseadragon-filtering/openseadragon-filtering.js`;
 const leafletjs = `${nodeFolder}leaflet/dist/leaflet-src.js`;
 
 const allHTML = `${srcFolder}**/*.html`, allCSS = `${srcFolder}**/*.css`, allScript = [`${srcFolder}**/*.ts`, `!${maints}`, `!${dummyModule}`, `!${serviceWorkerTS}`];
@@ -355,7 +355,15 @@ gulp.task("build", [buildOptions.angular.useUMD ? "compileumd" : "compile"], asy
     //js third party libraries
     let jsLibPro = new Promise((resolve, reject) => {
         logMsg("Compressing third party libraries...");
+        let bundles = {
+            openseadragon: [openseadragonjs, openseadragonFiltering],
+            leaflet: [leafletjs]
+        };
         let files = [openseadragonjs, leafletjs];
+
+        for (let bundle in bundles) {
+            
+        }
 
         gulp.src(files)
             .pipe(uglify())

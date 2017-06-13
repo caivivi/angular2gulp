@@ -4,7 +4,6 @@ import { FormsModule } from "@angular/forms";
 
 import { newsRoute } from "./news.router";
 import { NewsComponent } from "./news.component";
-import { NewsService } from "./news.service";
 
 @NgModule({
     imports: [FormsModule, CommonModule, newsRoute],

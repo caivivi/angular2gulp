@@ -57,6 +57,7 @@
     "karma": "^1.6.0",
     "leaflet": "^1.0.3",
     "openseadragon": "^2.2.1",
+    "openseadragon-filtering": "https://github.com/usnistgov/OpenSeadragonFiltering.git",
     "path": "^0.12.7",
     "reflect-metadata": "^0.1.10",
     "rxjs": "^5.4.0",

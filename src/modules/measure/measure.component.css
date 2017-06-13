@@ -7,16 +7,12 @@
     margin: 0 5px;
 }
 
-#canMeasure, #imgView {
+#canMeasure {
     margin: 10px 0;
     box-shadow: 0 0 7px #000;
     display: block;
     max-width: 100%;
     width: 500px;
-}
-
-#imgView {
-    height: 500px;
 }
 
 .measurement-groups {
