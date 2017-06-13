@@ -27,6 +27,7 @@ const reflectMetadata = `${nodeFolder}reflect-metadata/Reflect.js`, zonejs = `${
 const systemjs = `${nodeFolder}systemjs/dist/system.src.js`, dummyModule = `${srcScriptsFolder}dummyModules.ts`, angularPolyfill = [zonejs, reflectMetadata, systemjs];
 const openseadragonFolder = `${nodeFolder}openseadragon/build/openseadragon/`, openseadragonImageFolder = `${openseadragonFolder}images/`;;
 const openseadragonjs = `${openseadragonFolder}openseadragon.js`, openseadragonFiltering = `${nodeFolder}openseadragon-filtering/openseadragon-filtering.js`;
+const openseadragonAnnotations = `${nodeFolder}openseadragon-annotations/dist/openseadragon-annotations.js`;
 const leafletjs = `${nodeFolder}leaflet/dist/leaflet-src.js`;
 
 const allHTML = `${srcFolder}**/*.html`, allCSS = `${srcFolder}**/*.css`, allScript = [`${srcFolder}**/*.ts`, `!${maints}`, `!${dummyModule}`, `!${serviceWorkerTS}`];
@@ -142,7 +143,7 @@ gulp.task("clean", [], async () => {
     }
 });
 
-gulp.task("compile", ["clean"], async () => {
+gulp.task("compileAngular", ["clean"], async () => {
     try {
         const es5 = buildOptions.angular.useES5 ? ".es5" : "";
         /* angular */
@@ -271,7 +272,7 @@ gulp.task("compile", ["clean"], async () => {
     }
 });
 
-gulp.task("compileumd", ["clean"], async () => {
+gulp.task("compileAngularUMD", ["clean"], async () => {
     try {
         //angular
         const rxjs = `${nodeFolder}rxjs/bundles/Rx.js`;
@@ -349,35 +350,33 @@ gulp.task("compileumd", ["clean"], async () => {
     }
 });
 
-gulp.task("build", [buildOptions.angular.useUMD ? "compileumd" : "compile"], async () => {
+gulp.task("build", [buildOptions.angular.useUMD ? "compileAngularUMD" : "compileAngular"], async () => {
     let tsProject = tsc.createProject("tsconfig.json", buildOptions.tsc);
 
     //js third party libraries
-    let jsLibPro = new Promise((resolve, reject) => {
-        logMsg("Compressing third party libraries...");
-        let bundles = {
-            openseadragon: [openseadragonjs, openseadragonFiltering],
-            leaflet: [leafletjs]
-        };
-        let files = [openseadragonjs, leafletjs];
+    const bundles = {
+        OpenSeadragon: [openseadragonjs, openseadragonFiltering, openseadragonAnnotations],//
+        Leaflet: [leafletjs]
+    }, bundleTasks = [];
 
-        for (let bundle in bundles) {
-            
-        }
+    for (let bundle in bundles) {
+        bundleTasks.push(new Promise((resolve, reject) => {
+            logMsg(`Compressing ${bundle}...`);
 
-        gulp.src(files)
-            .pipe(uglify())
-            .pipe(rename((path) => path.basename = path.basename.replace(/-src/ig, "")))
-            .pipe(gulp.dest(destScriptsFolder))
-            .on("finish", () => {
-                logMsg("Third party libraries compression complete.");
-                resolve(true);
-            })
-            .on("error", () => {
-                logErr("Error occurred while compressing third party libraries.");
-                reject(false);
-            });
-    });
+            gulp.src(bundles[bundle])
+                .pipe(concat(`${bundle.toLocaleLowerCase()}.js`))
+                .pipe(uglify())
+                .pipe(gulp.dest(destScriptsFolder))
+                .on("finish", () => {
+                    logMsg(`${bundle} compression complete.`);
+                    resolve(true);
+                })
+                .on("error", () => {
+                    logErr(`Error occurred while compressing ${bundle.capitalize()}.`);
+                    reject(false);
+                });
+        }));
+    }
 
     //typescript
     let tsPro = new Promise((resolve, reject) => {
@@ -463,7 +462,7 @@ gulp.task("build", [buildOptions.angular.useUMD ? "compileumd" : "compile"], asy
             });
     });
 
-    await Promise.all([jsLibPro, tsPro, cssPro, htmlPro, otherPro, imgPro]);
+    await Promise.all([tsPro, cssPro, htmlPro, otherPro, imgPro, ...bundleTasks]);
 });
 
 gulp.task("watch", ["build"], async () => {
