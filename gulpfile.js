@@ -16,7 +16,7 @@ const colors = require("colors");
 
 //folders
 const srcFolder = "src/", srcScriptsFolder = `${srcFolder}scripts/`, appOutputFolder = "output/";
-const destFolder = "dist/", destScriptsFolder = `${destFolder}scripts/`, licenseFile = "license.txt";
+const destFolder = "dist/", destScriptsFolder = `${destFolder}scripts/`, destStyleFolder = `${destFolder}styles/`, licenseFile = "license.txt";
 const srcResourceFolder = `${srcFolder}resources/`, destResourceFolder = `${destFolder}resources/`;
 const srcImageFolder = `${srcResourceFolder}images/`, destImageFolder = `${destResourceFolder}images/`;
 const nodeFolder = "node_modules/", angularFolder = `${nodeFolder}@angular/`, RxFolder = `${nodeFolder}rxjs/src/`, rxDestFolder = `${destScriptsFolder}rxjs/`;
@@ -28,7 +28,7 @@ const systemjs = `${nodeFolder}systemjs/dist/system.src.js`, dummyModule = `${sr
 const openseadragonFolder = `${nodeFolder}openseadragon/build/openseadragon/`, openseadragonImageFolder = `${openseadragonFolder}images/`;;
 const openseadragonjs = `${openseadragonFolder}openseadragon.js`, openseadragonFiltering = `${nodeFolder}openseadragon-filtering/openseadragon-filtering.js`;
 const openseadragonAnnotations = `${nodeFolder}openseadragon-annotations/dist/openseadragon-annotations.js`;
-const leafletjs = `${nodeFolder}leaflet/dist/leaflet-src.js`;
+const leafletFolder = `${nodeFolder}leaflet/dist/`, leafletjs = `${leafletFolder}leaflet-src.js`, leafletcss = `${leafletFolder}leaflet.css`;
 
 const allHTML = `${srcFolder}**/*.html`, allCSS = `${srcFolder}**/*.css`, allScript = [`${srcFolder}**/*.ts`, `!${maints}`, `!${dummyModule}`, `!${serviceWorkerTS}`];
 const otherFiles = [`${srcFolder}**/*`, `!${allHTML}`, `!${allCSS}`, `!${srcFolder}**/*.ts`], appIcon = "dist/favicon.ico", appIconAbsolute = path.join(__dirname, appIcon);
@@ -393,8 +393,8 @@ gulp.task("build", [buildOptions.angular.useUMD ? "compileAngularUMD" : "compile
             });
     });
 
-    //css
-    let cssPro = new Promise((resolve, reject) => {
+    //app css
+    let appCssPro = new Promise((resolve, reject) => {
         gulp.src(allCSS)
             .pipe(cleanCSS(cleanCSSOptions))
             .pipe(gulp.dest(destFolder))
@@ -419,6 +419,21 @@ gulp.task("build", [buildOptions.angular.useUMD ? "compileAngularUMD" : "compile
             })
             .on("error", () => {
                 logErr("An error occurred while compiling app html.");
+                reject(false);
+            });
+    });
+
+    //third party css
+    let cssPro = new Promise((resolve, reject) => {
+        gulp.src([leafletcss])
+            .pipe(cleanCSS(cleanCSSOptions))
+            .pipe(gulp.dest(destStyleFolder))
+            .on("finish", () => {
+                logMsg("App css compilation complete.");
+                resolve(true);
+            })
+            .on("error", () => {
+                logErr("An error occurred while compiling app css.");
                 reject(false);
             });
     });
@@ -462,7 +477,7 @@ gulp.task("build", [buildOptions.angular.useUMD ? "compileAngularUMD" : "compile
             });
     });
 
-    await Promise.all([tsPro, cssPro, htmlPro, otherPro, imgPro, ...bundleTasks]);
+    await Promise.all([tsPro, appCssPro, cssPro, htmlPro, otherPro, imgPro, ...bundleTasks]);
 });
 
 gulp.task("watch", ["build"], async () => {

@@ -1,4 +1,5 @@
 import OpenSeadragon from "openseadragon";
+import leaflet from "leaflet";
 
 export interface IViewerService { }
 
@@ -9,16 +10,6 @@ export class ViewerService implements IViewerService {
     constructor() { }
 
     loadViewer(id: string) {
-        // console.log("map", leaflet, leaflet === (<any>window).L);
-        // let view = leaflet.map('imgView').setView([51.505, -0.09], 13);
-        // let marker = leaflet.marker([51.5, -0.09]).addTo(view);
-
-        // let viewer = OpenSeadragon({
-        //     id: "imgView",
-        //     prefixUrl: "resources/images/openseadragon/",
-        //     tileSources: "https://openseadragon.github.io/example-images/pnp/pan/6a32000/6a32400/6a32487_files/0/"
-        // });
-        
         this.id = id;
         this.viewer = OpenSeadragon({
             id: id,
@@ -41,9 +32,8 @@ export class ViewerService implements IViewerService {
             }
         });
 
-        this.viewer.initializeAnnotations();
-        (<any>window).anno = this.viewer.annotations;
-
+        // this.viewer.initializeAnnotations();
+        // (<any>window).anno = this.viewer.annotations;
         // viewer.setFilterOptions({
         //     filters: {
         //         processors: [
@@ -54,6 +44,14 @@ export class ViewerService implements IViewerService {
         //         loadMode: "sync"
         //     }
         // });
+        
+        /* leaflet */
+        let view = leaflet.map('imgView2', {
+            minZoom: 0,
+            maxZoom: 10
+        }).setView([0, 0], 0);
+        let positron = leaflet.tileLayer("https://openseadragon.github.io/example-images/highsmith/highsmith_files/{z}/{x}_{y}.jpg").addTo(view);//http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png
+        // let marker = leaflet.marker([0, 0]).addTo(view);
     }
 
     clearAnnotations() {
