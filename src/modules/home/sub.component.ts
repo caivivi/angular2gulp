@@ -9,7 +9,5 @@ export class SubComponent implements OnChanges {
 
     constructor() { }
 
-    ngOnChanges(changes: SimpleChanges) {
-        console.log("Change detected on sub component:", changes);
-    }
+    ngOnChanges(changes: SimpleChanges) { }
 }

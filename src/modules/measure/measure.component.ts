@@ -19,7 +19,8 @@ export class MeasureComponent implements OnInit {
         "resources/images/worm1.jpg",
         "resources/images/spider.jpg",
         "resources/images/butterfly.jpg",
-        "resources/images/mm1.jpg"
+        "resources/images/mm1.jpg",
+        "http://upload.wikimedia.org/wikipedia/commons/8/8a/Museum_Boerhaave_-_Specimen_by_Brugmans.jpg"
     ];
 
     constructor(
