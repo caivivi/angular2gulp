@@ -82,12 +82,20 @@ header .menu:last-of-type, footer .menu:last-of-type {
 content {
     border-top: solid 1px var(--global-color);
     border-bottom: solid 1px var(--global-color);
-    overflow: auto;
+    overflow: hidden;
+    background: #fff;
 }
 
 router-outlet + * {
     display: block;
     padding: 3px 10px;
+    height: 100%;
+    overflow: auto;
+    mix-blend-mode: difference;
+}
+
+router-outlet + * > * {
+    filter: invert(1);
 }
 
 input, button, select {

@@ -1,4 +1,4 @@
-import { NgModule } from "@angular/core";
+import { NgModule, NO_ERRORS_SCHEMA } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
 
@@ -9,7 +9,8 @@ import { NewsService } from "./news.service";
 @NgModule({
     imports: [FormsModule, CommonModule, newsRoute],
     declarations: [NewsComponent],
-    providers: []
+    providers: [],
+    schemas: [NO_ERRORS_SCHEMA]
 })
 export class NewsModule {
     constructor() { }
