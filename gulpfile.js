@@ -355,7 +355,7 @@ gulp.task("build", [buildOptions.angular.useUMD ? "compileAngularUMD" : "compile
 
     //js third party libraries
     const bundles = {
-        OpenSeadragon: [openseadragonjs, openseadragonFiltering, openseadragonAnnotations],//
+        OpenSeadragon: [openseadragonjs, openseadragonAnnotations, openseadragonFiltering],//
         Leaflet: [leafletjs]
     }, bundleTasks = [];
 

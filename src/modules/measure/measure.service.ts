@@ -37,6 +37,7 @@ export class ImageViewerService implements IImageViewerService {
         if (!!url) {
             let img = new Image();
 
+            img.crossOrigin = "Anonymous";
             img.onload = (e) => {
                 (<any>this.context).drawImage(img, ...this.fullSize);
                 this.rawImgData = this.currentImgData;

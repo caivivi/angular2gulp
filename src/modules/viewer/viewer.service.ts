@@ -3,6 +3,9 @@ import OpenSeadragon from "openseadragon";
 export interface IViewerService { }
 
 export class ViewerService implements IViewerService {
+    private viewer: any;
+    private id: string;
+
     constructor() { }
 
     loadViewer(id: string) {
@@ -16,13 +19,14 @@ export class ViewerService implements IViewerService {
         //     tileSources: "https://openseadragon.github.io/example-images/pnp/pan/6a32000/6a32400/6a32487_files/0/"
         // });
         
-        let viewer = OpenSeadragon({
+        this.id = id;
+        this.viewer = OpenSeadragon({
             id: id,
             prefixUrl: "resources/images/openseadragon/",
             showNavigator: true,
             tileSources: {
-                // crossOriginPolicy: "Anonymous",
-                // ajaxWithCredentials: false,
+                crossOriginPolicy: "Anonymous",
+                ajaxWithCredentials: false,
                 Image: {
                     xmlns: "http://schemas.microsoft.com/deepzoom/2008",
                     Url: "https://openseadragon.github.io/example-images/highsmith/highsmith_files/",
@@ -37,6 +41,9 @@ export class ViewerService implements IViewerService {
             }
         });
 
+        this.viewer.initializeAnnotations();
+        (<any>window).anno = this.viewer.annotations;
+
         // viewer.setFilterOptions({
         //     filters: {
         //         processors: [
@@ -47,5 +54,9 @@ export class ViewerService implements IViewerService {
         //         loadMode: "sync"
         //     }
         // });
+    }
+
+    clearAnnotations() {
+        this.viewer.annotations.clean();
     }
 }

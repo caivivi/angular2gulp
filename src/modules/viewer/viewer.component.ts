@@ -11,4 +11,8 @@ export class ViewerComponent implements OnInit {
     ngOnInit() {
         this.vwrSVC.loadViewer("imgView");
     }
+
+    clearAnnotations() {
+        this.vwrSVC.clearAnnotations();
+    }
 }
