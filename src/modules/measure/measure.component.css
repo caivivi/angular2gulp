@@ -5,6 +5,7 @@
 .ddl-images {
     display: inline-block;
     margin: 0 5px;
+    max-width: 100%;
 }
 
 #canMeasure {

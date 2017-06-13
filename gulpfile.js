@@ -429,11 +429,11 @@ gulp.task("build", [buildOptions.angular.useUMD ? "compileAngularUMD" : "compile
             .pipe(cleanCSS(cleanCSSOptions))
             .pipe(gulp.dest(destStyleFolder))
             .on("finish", () => {
-                logMsg("App css compilation complete.");
+                logMsg("Third party css compilation complete.");
                 resolve(true);
             })
             .on("error", () => {
-                logErr("An error occurred while compiling app css.");
+                logErr("An error occurred while compiling third party css.");
                 reject(false);
             });
     });

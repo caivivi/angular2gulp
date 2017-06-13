@@ -90,7 +90,8 @@ router-outlet + * {
     display: block;
     padding: 3px 10px;
     height: 100%;
-    overflow: auto;
+    overflow-x: hidden;
+    overflow-y: auto;
     mix-blend-mode: difference;
 }
 
