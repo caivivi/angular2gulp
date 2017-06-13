@@ -57,6 +57,7 @@
     "karma": "^1.6.0",
     "leaflet": "^1.0.3",
     "openseadragon": "^2.2.1",
+    "openseadragon-annotations": "^1.0.2",
     "openseadragon-filtering": "https://github.com/usnistgov/OpenSeadragonFiltering.git",
     "path": "^0.12.7",
     "reflect-metadata": "^0.1.10",
@@ -66,7 +67,5 @@
     "url": "^0.11.0",
     "zone.js": "^0.8.5"
   },
-  "dependencies": {
-    "electron-updater": "^1.15.0"
-  }
+  "dependencies": {}
 }
