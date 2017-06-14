@@ -55,7 +55,7 @@
     "gulp-watch": "^4.3.11",
     "gulp-webserver": "^0.9.1",
     "karma": "^1.6.0",
-    "leaflet": "^1.0.3",
+    "leaflet": "0.7.2",
     "openseadragon": "^2.2.1",
     "openseadragon-annotations": "^1.0.2",
     "openseadragon-filtering": "https://github.com/usnistgov/OpenSeadragonFiltering.git",
