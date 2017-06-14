@@ -28,9 +28,9 @@ const systemjs = `${nodeFolder}systemjs/dist/system.src.js`, dummyModule = `${sr
 const openseadragonFolder = `${nodeFolder}openseadragon/build/openseadragon/`, openseadragonImageFolder = `${openseadragonFolder}images/`;;
 const openseadragonjs = `${openseadragonFolder}openseadragon.js`, openseadragonFiltering = `${nodeFolder}openseadragon-filtering/openseadragon-filtering.js`;
 const openseadragonAnnotations = `${nodeFolder}openseadragon-annotations/dist/openseadragon-annotations.js`;
-const leafletFolder = `${nodeFolder}leaflet/dist/`, leafletjs = `${leafletFolder}leaflet-src.js`, leafletcss = `${leafletFolder}leaflet.css`;
+const leafletFolder = `${nodeFolder}leaflet/dist/`, leafletjs = `${leafletFolder}leaflet-src.js`, leafletcss = `${leafletFolder}leaflet.css`, leafletDeepZoom = `${srcScriptsFolder}leaflet-deepzoom.js`;
 
-const allHTML = `${srcFolder}**/*.html`, allCSS = `${srcFolder}**/*.css`, allScript = [`${srcFolder}**/*.ts`, `!${maints}`, `!${dummyModule}`, `!${serviceWorkerTS}`];
+const allHTML = `${srcFolder}**/*.html`, allCSS = `${srcFolder}**/*.css`, allScript = [`${srcFolder}**/*.ts`, `!${maints}`, `!${dummyModule}`, `!${serviceWorkerTS}`, `!${leafletDeepZoom}`];
 const otherFiles = [`${srcFolder}**/*`, `!${allHTML}`, `!${allCSS}`, `!${srcFolder}**/*.ts`], appIcon = "dist/favicon.ico", appIconAbsolute = path.join(__dirname, appIcon);
 
 // configurations
@@ -356,7 +356,7 @@ gulp.task("build", [buildOptions.angular.useUMD ? "compileAngularUMD" : "compile
     //js third party libraries
     const bundles = {
         OpenSeadragon: [openseadragonjs, openseadragonAnnotations, openseadragonFiltering],//
-        Leaflet: [leafletjs]
+        Leaflet: [leafletjs, leafletDeepZoom]
     }, bundleTasks = [];
 
     for (let bundle in bundles) {
@@ -563,7 +563,7 @@ gulp.task("watch", ["build"], async () => {
 });
 
 gulp.task("startDevServer", [], async () => {
-    gulp.src(destFolder).pipe(webServer(serverOptions));
+    gulp.src(path.join(__dirname, destFolder)).pipe(webServer(serverOptions));
 });
 
 gulp.task("releaseApp", ["build"], async () => {

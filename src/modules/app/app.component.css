@@ -1,14 +1,14 @@
 @font-face {
     font-family: "zeiss";
-    src: url('resources/fonts/ZEISSFrutigerNextW1G-Reg.ttf');
+    src: url('/resources/fonts/ZEISSFrutigerNextW1G-Reg.ttf');
 }
 @font-face {
     font-family: "zeissmed";
-    src: url('resources/fonts/ZEISSFrutigerNextW1G-Medium.ttf');
+    src: url('/resources/fonts/ZEISSFrutigerNextW1G-Medium.ttf');
 }
 @font-face {
     font-family: "zeissbold";
-    src: url('resources/fonts/ZEISSFrutigerNextW1G-Bold.ttf');
+    src: url('/resources/fonts/ZEISSFrutigerNextW1G-Bold.ttf');
 }
 
 :root {

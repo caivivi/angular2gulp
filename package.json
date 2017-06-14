@@ -56,6 +56,7 @@
     "gulp-webserver": "^0.9.1",
     "karma": "^1.6.0",
     "leaflet": "^1.0.3",
+    "leaflet-deepzoom": "git+https://github.com/alfarisi/leaflet-deepzoom.git#1b1f11509fb6f1e265e0a9fe055153ad18ae3e8a",
     "openseadragon": "^2.2.1",
     "openseadragon-annotations": "^1.0.2",
     "openseadragon-filtering": "https://github.com/usnistgov/OpenSeadragonFiltering.git",
