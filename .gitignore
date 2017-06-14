@@ -3,6 +3,7 @@ app/**/*.js
 app/*.js.map
 app/*.js
 
+package-lock.json
 dev-app-update.yml
 
 node_modules/
