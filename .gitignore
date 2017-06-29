@@ -3,6 +3,7 @@ app/**/*.js
 app/*.js.map
 app/*.js
 
+.yarnclean
 package-lock.json
 dev-app-update.yml
 
