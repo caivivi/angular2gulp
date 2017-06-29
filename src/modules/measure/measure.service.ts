@@ -137,7 +137,7 @@ export class ImageViewerService implements IImageViewerService {
 
         for (let [val, indexes] of channel.lookupMap) {
             if (flags.saturationFlag) {
-                let saturation = val * this.filters.saturation;
+                let saturation = val * this.filters.saturation >> 0;
                 val += val >= IPConsts.middleColor ? saturation : -saturation;
             }
             flags.contrastFlag && (colorTotal += val * indexes.length);
@@ -155,7 +155,7 @@ export class ImageViewerService implements IImageViewerService {
     async alphaStep1(data: ImageData, flags: ImageFilterFlags): Promise<any> {
         if (flags.channelFlag) {
             for (let [val, indexes] of this.histogram.alpha) {
-                val *= this.channels.alpha;
+                val = val * this.channels.alpha >> 0;
                 indexes.forEach((i) => data.data[i] = val);
             }
         }
@@ -166,7 +166,7 @@ export class ImageViewerService implements IImageViewerService {
 
         for (let [val, indexes] of result.channel.lookupMap) {
             if (flags.contrastFlag) {
-                val = (val - avgColor) * this.filters.contrast;
+                val = (val - avgColor) * this.filters.contrast >> 0;
                 indexes.forEach((i) => data.data[i] += val);
             }
         }
