@@ -1,12 +1,12 @@
 import { Injectable, Inject, Component, OnInit } from "@angular/core";
 import { Observable } from "rxjs/Observable";
-import { LanguageService, AppLanguageCode } from "../app/app.service";
+import { LanguageService, AppLanguageCode } from "../app.service";
 import "rxjs/add/observable/timer";
 
 @Component({
     selector: "app-news",
-    templateUrl: "modules/news/news.component.html",
-    styleUrls: ["modules/news/news.component.css"]
+    templateUrl: "app/news/news.component.html",
+    styleUrls: ["app/news/news.component.css"]
 })
 export class NewsComponent implements OnInit {
     date: Date = new Date();

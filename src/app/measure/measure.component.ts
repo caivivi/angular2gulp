@@ -1,13 +1,13 @@
 import { Component, OnInit, Inject, Input, ViewEncapsulation } from "@angular/core";
-import { LanguageService } from "../app/app.service";
+import { LanguageService } from "../app.service";
 import { Observable } from "rxjs/Observable";
 import { AppImageFilter, ImageFilterType } from "./measure.model";
 import { ImageViewerService } from "./measure.service";
 
 @Component({
     selector: "img-measure",
-    templateUrl: "modules/measure/measure.component.html",
-    styleUrls: ["modules/measure/measure.component.css"],
+    templateUrl: "app/measure/measure.component.html",
+    styleUrls: ["app/measure/measure.component.css"],
     encapsulation: ViewEncapsulation.None
 })
 export class MeasureComponent implements OnInit {

@@ -38,13 +38,13 @@ SystemJS.config({
         }
     },
     packages: {
-        "modules": {
+        "app": {
             defaultExtension: "js"
         }
     }
 });
 
-Promise.all([System.import("@angular/platform-browser-dynamic"), System.import("@angular/core"), System.import("./modules/app/app.module")])
+Promise.all([System.import("@angular/platform-browser-dynamic"), System.import("@angular/core"), System.import("./app/app.module")])
 .then(([{ platformBrowserDynamic }, { enableProdMode }, { AppModule }]) => {
     // enableProdMode();
     platformBrowserDynamic().bootstrapModule(AppModule)

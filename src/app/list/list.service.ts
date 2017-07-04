@@ -10,6 +10,6 @@ export class ImageService implements IImageService {
     constructor(@Inject(Http) private http: Http) { }
 
     getImages() {
-        return this.http.get("modules/list/list.json");
+        return this.http.get("app/list/list.json");
     }
 }

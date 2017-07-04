@@ -7,8 +7,8 @@ import 'rxjs/add/operator/catch';
 
 @Component({
     selector: "img-list",
-    templateUrl: "modules/list/list.component.html",
-    styleUrls: ["modules/list/list.component.css"]
+    templateUrl: "app/list/list.component.html",
+    styleUrls: ["app/list/list.component.css"]
 })
 export class ListComponent implements OnInit, OnDestroy {
     Images: MSImage[] = [];
