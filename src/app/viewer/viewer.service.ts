@@ -9,7 +9,7 @@ export class ViewerService implements IViewerService {
 
     constructor() { }
 
-    loadViewer(id: string) {
+    loadViewer(id: string):void {
         this.id = id;
         // this.viewer = OpenSeadragon({
         //     id: id,

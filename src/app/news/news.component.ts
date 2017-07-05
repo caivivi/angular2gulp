@@ -5,8 +5,8 @@ import "rxjs/add/observable/timer";
 
 @Component({
     selector: "app-news",
-    templateUrl: "app/news/news.component.html",
-    styleUrls: ["app/news/news.component.css"]
+    templateUrl: "./news.component.html",
+    styleUrls: ["./news.component.css"]
 })
 export class NewsComponent implements OnInit {
     date: Date = new Date();

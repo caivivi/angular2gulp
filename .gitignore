@@ -1,7 +1,8 @@
-app/**/*.js.map
-app/**/*.js
-app/*.js.map
-app/*.js
+src/**/*.js.map
+src/**/*.js
+src/*.js.map
+src/*.js
+!src/scripts/leaflet-deepzoom.js
 
 package-lock.json
 dev-app-update.yml
@@ -9,4 +10,5 @@ dev-app-update.yml
 node_modules/
 .vscode/
 dist/
+aot/
 output/

@@ -5,7 +5,7 @@ export declare type AppLanguageCode = "en-US" | "en-AU" | "es-ES" | "fr-GF" | "j
 
 export interface ILanguageService {
     current: AppLanguageData;
-    switchLanguage(code: AppLanguageCode);
+    switchLanguage(code: AppLanguageCode): void;
 }
 
 export interface AppLanguageData {
@@ -25,7 +25,7 @@ export class LanguageService implements ILanguageService {
     
     constructor(@Inject(Http) private http: Http) { }
 
-    switchLanguage(code: AppLanguageCode = "en-US") {
+    switchLanguage(code: AppLanguageCode = "en-US"): void {
         if (this.loadedLangs.has(code)) {
             this.current = this.loadedLangs.get(code);
         } else {

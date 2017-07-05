@@ -15,14 +15,14 @@ const path = require("path");
 const colors = require("colors");
 
 //folders
-const srcFolder = "src/", srcScriptsFolder = `${srcFolder}scripts/`, appOutputFolder = "output/";
+const srcFolder = "src/", srcScriptsFolder = `${srcFolder}scripts/`, appOutputFolder = "output/", aotFolder = 'aot/';
 const destFolder = "dist/", destScriptsFolder = `${destFolder}scripts/`, destStyleFolder = `${destFolder}styles/`, licenseFile = "license.txt";
 const srcResourceFolder = `${srcFolder}resources/`, destResourceFolder = `${destFolder}resources/`;
 const srcImageFolder = `${srcResourceFolder}images/`, destImageFolder = `${destResourceFolder}images/`;
 const nodeFolder = "node_modules/", angularFolder = `${nodeFolder}@angular/`, RxFolder = `${nodeFolder}rxjs/src/`, rxDestFolder = `${destScriptsFolder}rxjs/`;
 const angularDestFolder = `${destScriptsFolder}@angular/`;
 
-const output = "bundle.js", maints = `${srcFolder}main.ts`, maintsOutput = `${destScriptsFolder}main.ts`, mainJs = `${destScriptsFolder}main.js`, serviceWorkerTS = `${srcFolder}serviceWorker.ts`;
+const output = "bundle.js", maints = `${srcFolder}main-jit.ts`, maintsOutput = `${destScriptsFolder}main.ts`, mainJs = `${destScriptsFolder}main.js`, serviceWorkerTS = `${srcFolder}serviceWorker.ts`;
 const reflectMetadata = `${nodeFolder}reflect-metadata/Reflect.js`, zonejs = `${nodeFolder}zone.js/dist/zone.js`, corejs = `${nodeFolder}core-js/client/core.js`;
 const systemjs = `${nodeFolder}systemjs/dist/system.src.js`, dummyModule = `${srcScriptsFolder}dummyModules.ts`, angularPolyfill = [zonejs, reflectMetadata, systemjs];
 const openseadragonFolder = `${nodeFolder}openseadragon/build/openseadragon/`, openseadragonImageFolder = `${openseadragonFolder}images/`;
@@ -32,6 +32,7 @@ const leafletFolder = `${nodeFolder}leaflet/dist/`, leafletjs = `${leafletFolder
 
 const allHTML = `${srcFolder}**/*.html`, allCSS = `${srcFolder}**/*.css`, allScript = [`${srcFolder}**/*.ts`, `!${maints}`, `!${dummyModule}`, `!${serviceWorkerTS}`, `!${leafletDeepZoom}`];
 const otherFiles = [`${srcFolder}**/*`, `!${allHTML}`, `!${allCSS}`, `!${srcFolder}**/*.ts`], appIcon = "dist/favicon.ico", appIconAbsolute = path.join(__dirname, appIcon);
+const srcJS = `${srcFolder}**/*.js`, jsMap = `${srcFolder}**/*.js.map`;
 
 // configurations
 const buildOptions = {
@@ -136,7 +137,7 @@ let tsForDummy = tsc.createProject({ target: "es5", lib: ["dom", "es2017"], modu
 //app tasks
 gulp.task("clean", [], async () => {
     try {
-        let deletionResult = await del([`${destFolder}**/*`, `${appOutputFolder}**/*`], delOptions);
+        let deletionResult = await del([`${destFolder}**/*`, `${appOutputFolder}**/*`, `${aotFolder}**/*`, `${srcJS}`, `${jsMap}`, `!${leafletDeepZoom}`], delOptions);
         logMsg(deletionResult.length.toString().blue, `file${deletionResult.length <= 1 ? " has" : "s have"} been deleted.`);
     } catch (ex) {
         logErr(`An error occurred while cleanninng:`, ex);

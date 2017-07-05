@@ -6,8 +6,8 @@ import { ImageViewerService } from "./measure.service";
 
 @Component({
     selector: "img-measure",
-    templateUrl: "app/measure/measure.component.html",
-    styleUrls: ["app/measure/measure.component.css"],
+    templateUrl: "./measure.component.html",
+    styleUrls: ["./measure.component.css"],
     encapsulation: ViewEncapsulation.None
 })
 export class MeasureComponent implements OnInit {

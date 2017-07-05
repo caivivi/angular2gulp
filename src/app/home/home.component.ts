@@ -2,8 +2,8 @@ import { Component, ViewEncapsulation, Input, OnInit, EventEmitter } from "@angu
 
 @Component({
     selector: "app-home",
-    templateUrl: "app/home/home.component.html",
-    styleUrls: ["app/home/home.component.css"],
+    templateUrl: "./home.component.html",
+    styleUrls: ["./home.component.css"],
     encapsulation: ViewEncapsulation.Emulated
 })
 export class HomeComponent implements OnInit {

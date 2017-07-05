@@ -3,8 +3,8 @@ import { LanguageService, AppLanguageCode } from "./app.service";
 
 @Component({
     selector: "body",
-    templateUrl: "app/app.component.html",
-    styleUrls: ["app/app.component.css"],
+    templateUrl: "./app.component.html",
+    styleUrls: ["./app.component.css"],
     encapsulation: ViewEncapsulation.None
 })
 export class AppComponent implements OnInit, OnDestroy {
