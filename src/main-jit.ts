@@ -1,4 +1,4 @@
-/// <reference path="../node_modules/@types/systemjs/index.d.ts" />
+/// <reference path="../../node_modules/@types/systemjs/index.d.ts" />
 // let swChannel: MessageChannel, appReady = false, swReady = !!navigator.serviceWorker.controller;
 
 // if ("serviceWorker" in navigator) {
